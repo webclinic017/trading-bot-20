@@ -1,12 +1,13 @@
-from src import db, app
+import unittest
+
+from src import app
 
 
-def test_index():
-    db.create_all()
+class MainTest(unittest.TestCase):
 
-    app.testing = True
-    client = app.test_client()
-
-    r = client.get('/', environ_base={'REMOTE_ADDR': '127.0.0.1'})
-    assert r.status_code == 200
-    assert '127.0' in r.data.decode('utf-8')
+    def test_index(self):
+        app.testing = True
+        client = app.test_client()
+        response = client.get('/', environ_base={'REMOTE_ADDR': '127.0.0.1'})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response.data.decode('utf-8'), '127.0')
