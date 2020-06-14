@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Forward</title>
+</head>
+<body>
+<a href="/">Main</a>
+<br>
+<p>Cash: {{ cash }}</p>
+<p>Value: {{ total_value }}</p>
+<p>Total: {{ total }}</p>
+<br>
+<table>
+    <thead>
+    <tr>
+        <th>Ticker</th>
+        <th>Number</th>
+        <th>Price</th>
+        <th>Value</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for ticker, entry in inventory.items() %}
+    <tr>
+        <td>{{ ticker }}</td>
+        <td>{{ entry.price }}</td>
+        <td>{{ entry.number }}</td>
+        <td>{{ entry.value() }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<br>
+<table>
+    <thead>
+    <tr>
+        <th>Date</th>
+        <th>Ticker</th>
+        <th>Action</th>
+        <th>Price</th>
+        <th>Number</th>
+        <th>Cash</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for forward in forwards %}
+    <tr>
+        <td>{{ forward.date }}</td>
+        <td>{{ forward.ticker }}</td>
+        <td>{{ forward.action }}</td>
+        <td>{{ forward.price }}</td>
+        <td>{{ forward.number }}</td>
+        <td>{{ forward.cash }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>

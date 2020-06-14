@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Process</title>
+</head>
+<body>
+<a href="/">Main</a>
+{% if running %}
+<p>Process Manager is running</p>
+{% else %}
+<p>Process Manager is not running</p>
+{% endif %}
+<ul>
+    {% for process in active_processes %}
+    <li>{{ process }}</li>
+    {% endfor %}
+</ul>
+{% for process in active_processes %}
+<a href="/process/stop/{{ process }}">Stop {{ process }}</a>
+<br>
+{% endfor %}
+{% for process in inactive_processes %}
+<a href="/process/start/{{ process }}">Start {{ process }}</a>
+<br>
+{% endfor %}
+</body>
+</html>

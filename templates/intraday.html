@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Intraday</title>
+</head>
+<body>
+<a href="/">Main</a>
+{% for table in tables %}
+{{ table|safe }}
+{% endfor %}
+</body>
+</html>

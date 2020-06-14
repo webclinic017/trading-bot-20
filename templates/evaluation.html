@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Evaluation</title>
+</head>
+<body>
+<a href="/">Main</a>
+<table>
+    <thead>
+    <tr>
+        <th>Timestamp</th>
+        <th>Sum</th>
+        <th>Funds</th>
+        <th>Amountbuy</th>
+        <th>Distancebuy</th>
+        <th>Deltabuy</th>
+        <th>Amountsell</th>
+        <th>Distancesell</th>
+        <th>Deltasell</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for evaluation in evaluations %}
+    <tr>
+        <td>{{ evaluation.timestamp }}</td>
+        <td>{{ evaluation.sum }}</td>
+        <td>{{ evaluation.funds }}</td>
+        <td>{{ evaluation.amountbuy }}</td>
+        <td>{{ evaluation.distancebuy }}</td>
+        <td>{{ evaluation.deltabuy }}</td>
+        <td>{{ evaluation.amountsell }}</td>
+        <td>{{ evaluation.distancesell }}</td>
+        <td>{{ evaluation.deltasell }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>

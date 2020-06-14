@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stock Intraday</title>
+</head>
+<body>
+<a href="/stock">Stock</a>
+<table>
+    <thead>
+    <tr>
+        <th>Date</th>
+        <th>Open</th>
+        <th>High</th>
+        <th>Low</th>
+        <th>Close</th>
+        <th>Volume</th>
+        <th>Ticker</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for intraday in intradays %}
+    <tr>
+        <td>{{ intraday.date }}</td>
+        <td>{{ intraday.open }}</td>
+        <td>{{ intraday.high }}</td>
+        <td>{{ intraday.low }}</td>
+        <td>{{ intraday.close }}</td>
+        <td>{{ intraday.volume }}</td>
+        <td>{{ intraday.ticker }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>
