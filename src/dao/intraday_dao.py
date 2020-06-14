@@ -28,7 +28,7 @@ class IntradayDAO:
             data, meta_data = ts.get_intraday(symbol=ticker[0].replace('.', '-'), outputsize='full')
             data = data.reset_index()
             for index, row in data.iterrows():
-                intraday = IntradayDAO.init(row, ticker)
+                intraday = IntradayDAO.init(row, ticker[0])
                 DAO.persist(intraday)
         except ValueError as e:
             logging.exception(e)
@@ -39,7 +39,7 @@ class IntradayDAO:
         for row in rows:
             intraday = IntradayEntity()
             for key, value in row.items():
-                setattr(intraday, key, value)
+                setattr(intraday, key, str(value))
             DAO.persist(intraday)
 
     @staticmethod
@@ -90,7 +90,7 @@ class IntradayDAO:
     def init(row, ticker):
         intraday = IntradayEntity()
         for key, value in row.items():
-            setattr(intraday, key.split()[-1], value)
+            setattr(intraday, key.split()[-1], str(value))
         intraday.ticker = ticker
         return intraday
 
