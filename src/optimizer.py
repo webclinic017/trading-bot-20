@@ -78,7 +78,8 @@ class Optimizer:
     def start(portfolio, number, group_number):
         group_size = int(number / group_number)
         groups = tuple(Utils.group(group_size, portfolio[:number]))
-        Optimizer.optimise(IntradayDAO.dataframe_group(groups))
+        while True:
+            Optimizer.optimise(IntradayDAO.dataframe_group(groups))
 
 
 if __name__ == '__main__':

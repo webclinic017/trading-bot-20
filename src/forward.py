@@ -14,16 +14,17 @@ class Forward:
 
     @staticmethod
     def start():
-        evaluation = EvaluationDAO.read_order_by_sum()
-        read_latest_date = IntradayDAO.read_latest_date()
-        latest_date_dict = {r.ticker: r[0] for r in read_latest_date}
-        rows = IntradayDAO.read_order_by_date_asc()
-        frame = IntradayDAO.dataframe(rows)
-        inventory, cash = Forward.init()
-        broker = Broker(cash, FEE, ForwardDAO, inventory)
-        statistic = Statistic('forward')
-        attempt = Attempt.from_evaluation(evaluation)
-        Analyser.analyse(frame, Strategy.counter_cyclical, broker, statistic, attempt, latest_date_dict)
+        while True:
+            evaluation = EvaluationDAO.read_order_by_sum()
+            read_latest_date = IntradayDAO.read_latest_date()
+            latest_date_dict = {r.ticker: r[0] for r in read_latest_date}
+            rows = IntradayDAO.read_order_by_date_asc()
+            frame = IntradayDAO.dataframe(rows)
+            inventory, cash = Forward.init()
+            broker = Broker(cash, FEE, ForwardDAO, inventory)
+            statistic = Statistic('forward')
+            attempt = Attempt.from_evaluation(evaluation)
+            Analyser.analyse(frame, Strategy.counter_cyclical, broker, statistic, attempt, latest_date_dict)
 
     @staticmethod
     def init():

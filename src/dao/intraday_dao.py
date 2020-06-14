@@ -96,22 +96,9 @@ class IntradayDAO:
 
     @staticmethod
     def update(*portfolio):
-        StockDAO.create_if_not_exists(portfolio)
-        rows = IntradayEntity.query.with_entities(IntradayEntity.ticker).filter(
-            IntradayEntity.ticker.in_(portfolio)).distinct(IntradayEntity.ticker).all()
-        if len(rows) < len(portfolio):
-            tickers = list(map(lambda r: r.ticker, rows))
-            differences = list(set(portfolio) - set(tickers))
-            if differences is not None and len(differences) > 0:
-                IntradayDAO.create_ticker(differences[0])
-        else:
-            rows = db.session.query(IntradayEntity.ticker, db.func.max(IntradayEntity.date)).group_by(
-                IntradayEntity.ticker).all()
-            if rows is not None:
-                latest_date = max(list(map(lambda r: r[1], rows)))
-                tickers = list(map(lambda r: r.ticker, list(filter(lambda f: (f[1] != latest_date), rows))))
-                if tickers is not None and len(tickers) > 0:
-                    IntradayDAO.create_ticker(tickers[0])
+        while True:
+            StockDAO.create_if_not_exists(portfolio)
+            IntradayDAO.create_portfolio(*portfolio)
 
 
 if __name__ == '__main__':
