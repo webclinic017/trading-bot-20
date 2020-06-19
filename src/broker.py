@@ -1,4 +1,5 @@
 import math
+from typing import Dict
 
 from src.constants import INITIAL_CASH, FEE
 from src.dao.broker_dao import BrokerDAO
@@ -7,22 +8,23 @@ from src.inventory import Inventory
 
 class Broker:
 
-    def __init__(self, cash=INITIAL_CASH, fee=FEE, dao=BrokerDAO, inventory=None):
-        self.dao = dao
-        self.cash = cash
-        self.fee = fee
-        self.inventory = dict() if inventory is None else inventory
+    def __init__(self, cash: float = INITIAL_CASH, fee: float = FEE, dao: callable = BrokerDAO,
+                 inventory: Inventory = None) -> None:
+        self.dao: callable = dao
+        self.cash: float = cash
+        self.fee: float = fee
+        self.inventory = Dict[str, Inventory] if inventory is None else inventory
 
-    def update(self, ticker, price):
+    def update(self, ticker: str, price: float) -> None:
         if not math.isnan(price):
-            entry = self.inventory.get(ticker, Inventory(0, price))
+            entry: Dict[str, Inventory] = self.inventory.get(ticker, Inventory(0, price))
             entry.price = price
             self.inventory[ticker] = entry
 
-    def buy(self, ticker, price, number):
-        total_price = price * number
+    def buy(self, ticker: str, price: float, number: int) -> bool:
+        total_price: float = price * number
         if self.cash >= total_price:
-            entry = self.inventory.get(ticker, Inventory(0, price))
+            entry: Inventory = self.inventory.get(ticker, Inventory(0, price))
             entry.number += number
             entry.price = price
             self.inventory[ticker] = entry
@@ -31,9 +33,9 @@ class Broker:
             return True
         return False
 
-    def sell(self, ticker, price, number):
-        total_price = price * number
-        entry = self.inventory.get(ticker, Inventory(0, price))
+    def sell(self, ticker: str, price: float, number: int) -> bool:
+        total_price: float = price * number
+        entry: Inventory = self.inventory.get(ticker, Inventory(0, price))
         if entry.number >= number:
             entry.number -= number
             entry.price = price
@@ -43,8 +45,8 @@ class Broker:
             return True
         return False
 
-    def funds(self):
-        value = 0
+    def funds(self) -> float:
+        value: float = 0
         for ticker in self.inventory:
             value += self.inventory[ticker].value()
         return self.cash + value

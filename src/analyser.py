@@ -1,19 +1,27 @@
+from typing import Dict
+
+from pandas import DataFrame
+
+from src.attempt import Attempt
+from src.broker import Broker
 from src.constants import BUY, SELL
+from src.statistic import Statistic
 
 
 class Analyser:
     @staticmethod
-    def analyse(frame, strategy, broker, statistic=None, attempt=None, latest_date_dict=None):
+    def analyse(frame: DataFrame, strategy: callable, broker: Broker, statistic: Statistic = None,
+                attempt: Attempt = None, latest_date_dict: Dict[str, str] = None) -> Statistic:
         for i in range(frame.shape[0]):
             for j in range(frame.shape[1]):
-                ticker = frame.columns[j]
-                date = frame.index.values[i]
+                ticker: str = frame.columns[j]
+                date: str = frame.index.values[i]
                 if latest_date_dict is not None and latest_date_dict[ticker] != date:
                     continue
-                price = frame.iloc[i][j]
+                price: float = frame.iloc[i][j]
                 action, number = strategy(frame, i, j, attempt)
-                buy = False
-                sell = False
+                buy: bool = False
+                sell: bool = False
                 if action == BUY:
                     buy = broker.buy(ticker, price, number)
                 elif action == SELL:

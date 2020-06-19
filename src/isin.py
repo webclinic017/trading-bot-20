@@ -5,7 +5,7 @@ import requests
 
 class Isin:
     @staticmethod
-    def isin(ticker):
+    def isin(ticker: str) -> str:
         url = 'https://markets.businessinsider.com/ajax/' \
               'SearchController_Suggest?max_results=25&query=%s' \
               % ticker
