@@ -62,7 +62,7 @@ class Optimizer:
             evaluation_sum += broker.funds()
             analysis_funds.append(broker.funds())
             if analysis_number == table_number and evaluation_sum > optimise_sum:
-                EvaluationDAO.create(str(evaluation_sum), ','.join(map(str, analysis_funds)), evaluation_attempt)
+                EvaluationDAO.create(evaluation_sum, ','.join(map(str, analysis_funds)), evaluation_attempt)
 
     @staticmethod
     def main():

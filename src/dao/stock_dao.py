@@ -1,3 +1,5 @@
+from typing import Tuple, List
+
 from src.dao.dao import DAO
 from src.entity.stock_entity import StockEntity
 from src.isin import Isin
@@ -5,21 +7,21 @@ from src.isin import Isin
 
 class StockDAO:
     @staticmethod
-    def create_if_not_exists(portfolio):
+    def create_if_not_exists(portfolio: Tuple[str]) -> None:
         rows = StockEntity.query.with_entities(StockEntity.ticker).filter(StockEntity.ticker.in_(portfolio)).all()
         if len(rows) < len(portfolio):
             StockDAO.update(*portfolio)
 
     @staticmethod
-    def read_all():
+    def read_all() -> List[StockEntity]:
         return StockEntity.query.all()
 
     @staticmethod
-    def read_ticker():
+    def read_ticker() -> List[StockEntity]:
         return StockEntity.query.with_entities(StockEntity.ticker).all()
 
     @staticmethod
-    def update(*portfolio):
+    def update(*portfolio: str) -> None:
         for ticker in portfolio:
             stock = StockEntity()
             stock.ticker = ticker

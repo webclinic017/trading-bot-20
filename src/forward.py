@@ -1,3 +1,5 @@
+from typing import Dict
+
 from src.analyser import Analyser
 from src.attempt import Attempt
 from src.broker import Broker
@@ -29,7 +31,7 @@ class Forward:
     @staticmethod
     def init():
         rows = ForwardDAO.read()
-        inventory = dict()
+        inventory = Dict[str, Inventory]
         cash = INITIAL_CASH
         for row in rows:
             entry = inventory.get(row.ticker, Inventory(0, row.price))

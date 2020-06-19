@@ -7,7 +7,7 @@ from src import db
 
 class DAO:
     @staticmethod
-    def persist(entity):
+    def persist(entity: db.Model) -> None:
         try:
             db.session.add(entity)
             db.session.commit()
