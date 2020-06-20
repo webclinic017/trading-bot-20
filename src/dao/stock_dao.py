@@ -8,7 +8,8 @@ from src.isin import Isin
 class StockDAO:
     @staticmethod
     def create_if_not_exists(portfolio: Tuple[str]) -> None:
-        rows = StockEntity.query.with_entities(StockEntity.ticker).filter(StockEntity.ticker.in_(portfolio)).all()
+        rows: List[StockEntity] = StockEntity.query.with_entities(StockEntity.ticker).filter(
+            StockEntity.ticker.in_(portfolio)).all()
         if len(rows) < len(portfolio):
             StockDAO.update(*portfolio)
 
@@ -23,7 +24,7 @@ class StockDAO:
     @staticmethod
     def update(*portfolio: str) -> None:
         for ticker in portfolio:
-            stock = StockEntity()
+            stock: StockEntity = StockEntity()
             stock.ticker = ticker
             stock.isin = Isin.isin(ticker)
             DAO.persist(stock)

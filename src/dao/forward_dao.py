@@ -2,11 +2,12 @@ import datetime
 from typing import List
 
 from src.constants import SELL, BUY
+from src.dao.broker_dao import BrokerDAO
 from src.dao.dao import DAO
 from src.entity.forward_entity import ForwardEntity
 
 
-class ForwardDAO:
+class ForwardDAO(BrokerDAO):
     @staticmethod
     def create_buy(ticker: str, price: float, number: int, cash: float) -> None:
         forward: ForwardEntity = ForwardDAO.init(BUY, ticker, price, number, cash)

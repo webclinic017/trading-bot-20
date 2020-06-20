@@ -41,7 +41,7 @@ class IntradayDAO:
     def create_from_file(file: FileStorage) -> None:
         rows = json.loads(file.read())
         for row in rows:
-            intraday = IntradayEntity()
+            intraday: IntradayEntity = IntradayEntity()
             for key, value in row.items():
                 setattr(intraday, key, str(value))
             DAO.persist(intraday)
@@ -80,7 +80,7 @@ class IntradayDAO:
         return IntradayDAO.dataframe(rows)
 
     @staticmethod
-    def dataframe_group(*group: Tuple[str]) -> List[DataFrame]:
+    def dataframe_group(*group: Tuple[Tuple[str]]) -> List[DataFrame]:
         return list(map(lambda g: IntradayDAO.dataframe_portfolio(*g), group[0]))
 
     @staticmethod

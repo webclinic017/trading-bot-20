@@ -1,5 +1,5 @@
 import math
-from typing import Dict
+from typing import Dict, Type
 
 from src.constants import INITIAL_CASH, FEE
 from src.dao.broker_dao import BrokerDAO
@@ -8,16 +8,16 @@ from src.inventory import Inventory
 
 class Broker:
 
-    def __init__(self, cash: float = INITIAL_CASH, fee: float = FEE, dao: callable = BrokerDAO,
+    def __init__(self, cash: float = INITIAL_CASH, fee: float = FEE, dao: Type[BrokerDAO] = BrokerDAO,
                  inventory: Inventory = None) -> None:
         self.dao: callable = dao
         self.cash: float = cash
         self.fee: float = fee
-        self.inventory = Dict[str, Inventory] if inventory is None else inventory
+        self.inventory: Dict[str, Inventory] = dict() if inventory is None else inventory
 
     def update(self, ticker: str, price: float) -> None:
         if not math.isnan(price):
-            entry: Dict[str, Inventory] = self.inventory.get(ticker, Inventory(0, price))
+            entry: Inventory = self.inventory.get(ticker, Inventory(0, price))
             entry.price = price
             self.inventory[ticker] = entry
 

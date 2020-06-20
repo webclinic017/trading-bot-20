@@ -25,13 +25,13 @@ class EvaluationDAO:
 
     @staticmethod
     def read_attempt(attempt: Attempt) -> EvaluationEntity:
-        return EvaluationEntity.query. \
-            filter_by(amountbuy=attempt.amount_buy). \
-            filter_by(distancebuy=attempt.distance_buy). \
-            filter_by(deltabuy=attempt.delta_buy). \
-            filter_by(amountsell=attempt.amount_sell). \
-            filter_by(distancesell=attempt.distance_sell). \
-            filter_by(deltasell=attempt.delta_sell).first()
+        return EvaluationEntity.query.filter_by(
+            amountbuy=attempt.amount_buy).filter_by(
+            distancebuy=attempt.distance_buy).filter_by(
+            deltabuy=attempt.delta_buy).filter_by(
+            amountsell=attempt.amount_sell).filter_by(
+            distancesell=attempt.distance_sell).filter_by(
+            deltasell=attempt.delta_sell).first()
 
     @staticmethod
     def read_all() -> List[EvaluationEntity]:
