@@ -9,7 +9,7 @@ from src.inventory import Inventory
 class Broker:
 
     def __init__(self, cash: float = INITIAL_CASH, fee: float = FEE, dao: Type[BrokerDAO] = BrokerDAO,
-                 inventory: Inventory = None) -> None:
+                 inventory: Dict[str, Inventory] = None) -> None:
         self.dao: callable = dao
         self.cash: float = cash
         self.fee: float = fee

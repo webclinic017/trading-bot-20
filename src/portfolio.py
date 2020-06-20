@@ -1,7 +1,7 @@
 import hashlib
 import json
 import re
-from typing import List, Tuple, Dict, Any
+from typing import List, Tuple, Dict
 
 import lxml.html as lh
 import requests
@@ -25,24 +25,24 @@ class Portfolio:
         return Portfolio.test_portfolio() + Portfolio.prod_portfolio()
 
     @staticmethod
-    def berkshire_hathaway_cnbc() -> Tuple[Any, ...]:
+    def berkshire_hathaway_cnbc() -> Tuple[str]:
         url: str = 'https://docs.google.com/spreadsheet/tq?key=0AvnqqjtntdHRdENTQ283OGZTUWVMejRGTUVjZXphWlE'
         headers: Dict[str, str] = {'User-Agent': UserAgent().chrome}
         page: Response = requests.get(url, headers=headers)
         content: str = re.search(r'\((.*?)\)', page.text).group(1)
         data: Dict[str, Dict[str, List[str]]] = json.loads(content)
         return tuple(
-            map(lambda e: e['c'][1]['v'], list(filter(lambda x: x['c'][1] is not None, data['table']['rows']))))
+            map(lambda e: str(e['c'][1]['v']), list(filter(lambda x: x['c'][1] is not None, data['table']['rows']))))
 
     @staticmethod
-    def berkshire_hathaway_yahoo() -> Tuple[Any, ...]:
+    def berkshire_hathaway_yahoo() -> Tuple[str]:
         url: str = 'https://finance.yahoo.com/u/yahoo-finance/watchlists/the-berkshire-hathaway-portfolio'
         headers: Dict[str, str] = {'User-Agent': UserAgent().chrome}
         page: Response = requests.get(url, headers=headers)
         doc = lh.fromstring(page.content)
         elements: List[lh.HtmlElement] = doc.xpath(
             '//*[@id="Col1-0-WatchlistDetail-Proxy"]/div/section[3]/div/div/table/tbody/tr/td[1]')
-        return tuple(map(lambda e: e.text_content(), elements))
+        return tuple(map(lambda e: str(e.text_content()), elements))
 
     @staticmethod
     def berkshire_hathaway_wikipedia() -> Tuple[str]:

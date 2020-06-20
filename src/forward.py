@@ -1,4 +1,4 @@
-from typing import Dict, List, Iterable
+from typing import Dict, List, Tuple
 
 from pandas import DataFrame
 
@@ -34,9 +34,9 @@ class Forward:
             Analyser.analyse(frame, Strategy.counter_cyclical, broker, statistic, attempt, latest_date_dict)
 
     @staticmethod
-    def init() -> Iterable[Dict[str, Inventory], float]:
+    def init() -> Tuple[Dict[str, Inventory], float]:
         rows: List[ForwardEntity] = ForwardDAO.read()
-        inventory: Dict[str, Inventory] = Dict[str, Inventory]
+        inventory: Dict[str, Inventory] = dict()
         cash: float = INITIAL_CASH
         for row in rows:
             entry: Inventory = inventory.get(row.ticker, Inventory(0, row.price))
@@ -51,7 +51,7 @@ class Forward:
         return inventory, cash
 
     @staticmethod
-    def update(inventory: Dict[str, Inventory], cash: float) -> Iterable[Dict[str, Inventory], float, float]:
+    def update(inventory: Dict[str, Inventory], cash: float) -> Tuple[Dict[str, Inventory], float, float]:
         total: float = 0
         total_value: float = 0
         for ticker, entry in inventory.items():
