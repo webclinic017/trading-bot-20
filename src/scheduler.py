@@ -20,9 +20,9 @@ class Scheduler:
 
     @staticmethod
     def start() -> None:
-        schedule.every(10).seconds.do(Scheduler.update_table_intraday)
-        schedule.every(10).seconds.do(Scheduler.optimize)
-        schedule.every(10).seconds.do(Scheduler.forward)
+        schedule.every(10).minutes.do(Scheduler.update_table_intraday)
+        schedule.every(10).minutes.do(Scheduler.optimize)
+        schedule.every(10).minutes.do(Scheduler.forward)
         while True:
             schedule.run_pending()
             time.sleep(1)
