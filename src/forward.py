@@ -21,17 +21,16 @@ class Forward:
 
     @staticmethod
     def start() -> None:
-        while True:
-            evaluation: EvaluationEntity = EvaluationDAO.read_order_by_sum()
-            read_latest_date: List[IntradayEntity] = IntradayDAO.read_latest_date()
-            latest_date_dict: Dict[str, str] = {r.ticker: r[0] for r in read_latest_date}
-            rows: List[IntradayEntity] = IntradayDAO.read_order_by_date_asc()
-            frame: DataFrame = IntradayDAO.dataframe(rows)
-            inventory, cash = Forward.init()
-            broker: Broker = Broker(cash, FEE, ForwardDAO, inventory)
-            statistic: Statistic = Statistic('forward')
-            attempt: Attempt = Attempt.from_evaluation(evaluation)
-            Analyser.analyse(frame, Strategy.counter_cyclical, broker, statistic, attempt, latest_date_dict)
+        evaluation: EvaluationEntity = EvaluationDAO.read_order_by_sum()
+        read_latest_date: List[IntradayEntity] = IntradayDAO.read_latest_date()
+        latest_date_dict: Dict[str, str] = {r.ticker: r[0] for r in read_latest_date}
+        rows: List[IntradayEntity] = IntradayDAO.read_order_by_date_asc()
+        frame: DataFrame = IntradayDAO.dataframe(rows)
+        inventory, cash = Forward.init()
+        broker: Broker = Broker(cash, FEE, ForwardDAO, inventory)
+        statistic: Statistic = Statistic('forward')
+        attempt: Attempt = Attempt.from_evaluation(evaluation)
+        Analyser.analyse(frame, Strategy.counter_cyclical, broker, statistic, attempt, latest_date_dict)
 
     @staticmethod
     def init() -> Tuple[Dict[str, Inventory], float]:
