@@ -39,13 +39,13 @@ class Forward:
         inventory: Dict[str, Inventory] = dict()
         cash: float = INITIAL_CASH
         for row in rows:
-            entry: Inventory = inventory.get(row.ticker, Inventory(0, row.price))
-            total_price: float = row.price * row.number
+            entry: Inventory = inventory.get(row.ticker, Inventory(0, float(row.price)))
+            total_price: float = float(row.price) * int(row.number)
             if row.action == BUY:
-                entry.number += row.number
+                entry.number += int(row.number)
                 cash = cash + total_price - FEE
             elif row.action == SELL:
-                entry.number -= row.number
+                entry.number -= int(row.number)
                 cash = cash - total_price - FEE
             inventory[row.ticker] = entry
         return inventory, cash
@@ -56,7 +56,7 @@ class Forward:
         total_value: float = 0
         for ticker, entry in inventory.items():
             intraday: IntradayEntity = IntradayDAO.read_filter_by_ticker_first(ticker)
-            entry.price = intraday.close
+            entry.price = float(intraday.close)
             total_value += entry.value()
         total += cash + total_value
         return inventory, total_value, total
