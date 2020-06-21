@@ -14,6 +14,7 @@ from src.forward import Forward
 from src.optimizer import Optimizer
 from src.portfolio import Portfolio
 from src.process_manager import ProcessManager
+from src.scheduler import Scheduler
 
 process_manager: ProcessManager = ProcessManager()
 processes: Dict[str, Dict[str, Tuple[Any, ...]]] = {
@@ -24,6 +25,10 @@ processes: Dict[str, Dict[str, Tuple[Any, ...]]] = {
     'update-table-intraday': {
         TARGET: IntradayDAO.update,
         ARGS: Portfolio.test_prod_portfolio()
+    },
+    'schedule': {
+        TARGET: Scheduler.start,
+        ARGS: []
     },
     'optimize': {
         TARGET: Optimizer.start,
