@@ -1,3 +1,4 @@
+import logging
 import time
 
 import requests
@@ -8,19 +9,23 @@ class Scheduler:
 
     @staticmethod
     def update_table_intraday():
+        logging.warning('Scheduler update_table_intraday')
         requests.get('http://127.0.0.1:5000/process/start/update-table-intraday')
 
     @staticmethod
     def optimize():
+        logging.warning('Scheduler optimize')
         requests.get('http://127.0.0.1:5000/process/start/optimize')
 
     @staticmethod
     def forward():
+        logging.warning('Scheduler forward')
         requests.get('http://127.0.0.1:5000/process/start/forward')
 
     @staticmethod
     def start() -> None:
-        schedule.every(10).minutes.do(Scheduler.update_table_intraday)
+        logging.warning('Scheduler start')
+        schedule.seconds(30).minutes.do(Scheduler.update_table_intraday)
         schedule.every(10).minutes.do(Scheduler.optimize)
         schedule.every(10).minutes.do(Scheduler.forward)
         while True:
