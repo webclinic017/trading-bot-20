@@ -13,9 +13,9 @@ class Utils:
 
     @staticmethod
     def inverse() -> float:
-        return random.random() if random.random() < 0.5 else 1 / random.random()
+        return random.random() if random.random() < 0.5 else 1 / (1 - random.random())
 
     @staticmethod
-    def group(n: int, iterable: List[str]) -> Tuple[Tuple[str]]:
-        args: Iterable[Iterator] = [iter(iterable)] * n
+    def group(number: int, iterable: List[any]) -> Tuple[Tuple[str]]:
+        args: Iterable[Iterator] = [iter(iterable)] * number
         return tuple(zip(*args))
