@@ -6,7 +6,7 @@ from src.attempt import Attempt
 from src.strategy import Strategy
 
 
-class StrategyTest(unittest.TestCase):
+class StrategyTestCase(unittest.TestCase):
     def test_buy(self):
         data = {'IBM': [10, 1]}
         frame = pd.DataFrame(data)

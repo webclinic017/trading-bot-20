@@ -11,7 +11,7 @@ from src.statistic import Statistic
 from src.strategy import Strategy
 
 
-class AnalyserCase(unittest.TestCase):
+class AnalyserTestCase(unittest.TestCase):
 
     def test_analyser(self):
         dates = pd.date_range('1/1/2000', periods=150)

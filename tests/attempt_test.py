@@ -4,7 +4,7 @@ from src.attempt import Attempt
 from src.entity.evaluation_entity import EvaluationEntity
 
 
-class AttemptTest(unittest.TestCase):
+class AttemptTestCase(unittest.TestCase):
     def test_init(self):
         attempt = Attempt()
         self.assertEqual(attempt.amount_buy, 1000)

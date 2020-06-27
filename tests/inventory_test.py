@@ -3,7 +3,7 @@ import unittest
 from src.inventory import Inventory
 
 
-class InventoryTest(unittest.TestCase):
+class InventoryTestCase(unittest.TestCase):
     def test_init(self):
         inventory = Inventory(1, 2)
         self.assertEqual(inventory.number, 1)

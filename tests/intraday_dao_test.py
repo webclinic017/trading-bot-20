@@ -1,4 +1,5 @@
 import unittest
+from datetime import datetime
 
 import pandas as pd
 
@@ -17,12 +18,12 @@ class IntraDayDAOTestCase(unittest.TestCase):
         frame = pd.DataFrame(data)
         for index, row in frame.iterrows():
             intraday = IntradayDAO.init(row, 'IBM')
-            self.assertEqual(intraday.date, row['date'])
-            self.assertEqual(intraday.open, row['1. open'])
-            self.assertEqual(intraday.high, row['2. high'])
-            self.assertEqual(intraday.low, row['3. low'])
-            self.assertEqual(intraday.close, row['4. close'])
-            self.assertEqual(intraday.volume, row['5. volume'])
+            self.assertEqual(intraday.date, datetime.fromisoformat(row['date']))
+            self.assertEqual(intraday.open, float(row['1. open']))
+            self.assertEqual(intraday.high, float(row['2. high']))
+            self.assertEqual(intraday.low, float(row['3. low']))
+            self.assertEqual(intraday.close, float(row['4. close']))
+            self.assertEqual(intraday.volume, float(row['5. volume']))
             self.assertEqual(intraday.ticker, 'IBM')
 
 

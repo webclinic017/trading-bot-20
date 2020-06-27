@@ -4,7 +4,7 @@ from src.broker import Broker
 from src.inventory import Inventory
 
 
-class BrokerTest(unittest.TestCase):
+class BrokerTestCase(unittest.TestCase):
     def test_update(self):
         broker = Broker()
         broker.update('AAA', 0.1)

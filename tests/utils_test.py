@@ -4,7 +4,7 @@ import unittest
 from src.utils import Utils
 
 
-class MyTestCase(unittest.TestCase):
+class UtilsTestCase(unittest.TestCase):
     def test_valid(self):
         valid = Utils.valid(1, 2, 3)
         self.assertEqual(valid, True)
