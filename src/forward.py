@@ -2,10 +2,11 @@ from typing import Dict, List, Tuple
 
 from pandas import DataFrame
 
+from src.action import Action
 from src.analyser import Analyser
 from src.attempt import Attempt
 from src.broker import Broker
-from src.constants import BUY, SELL, FEE, INITIAL_CASH
+from src.constants import FEE, INITIAL_CASH
 from src.dao.evaluation_dao import EvaluationDAO
 from src.dao.forward_dao import ForwardDAO
 from src.dao.intraday_dao import IntradayDAO
@@ -40,10 +41,10 @@ class Forward:
         for row in rows:
             entry: Inventory = inventory.get(row.ticker, Inventory(0, float(row.price)))
             total_price: float = float(row.price) * int(row.number)
-            if row.action == BUY:
+            if row.action == Action.BUY:
                 entry.number += int(row.number)
                 cash = cash + total_price - FEE
-            elif row.action == SELL:
+            elif row.action == Action.SELL:
                 entry.number -= int(row.number)
                 cash = cash - total_price - FEE
             inventory[row.ticker] = entry

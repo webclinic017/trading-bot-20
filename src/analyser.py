@@ -2,9 +2,9 @@ from typing import Dict
 
 from pandas import DataFrame
 
+from src.action import Action
 from src.attempt import Attempt
 from src.broker import Broker
-from src.constants import BUY, SELL
 from src.statistic import Statistic
 
 
@@ -22,9 +22,9 @@ class Analyser:
                 action, number = strategy(frame, i, j, attempt)
                 buy: bool = False
                 sell: bool = False
-                if action == BUY:
+                if action == Action.BUY:
                     buy = broker.buy(ticker, price, number)
-                elif action == SELL:
+                elif action == Action.SELL:
                     sell = broker.sell(ticker, price, number)
                 else:
                     broker.update(ticker, price)

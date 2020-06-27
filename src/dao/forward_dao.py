@@ -1,7 +1,7 @@
 import datetime
 from typing import List
 
-from src.constants import SELL, BUY
+from src.action import Action
 from src.dao.broker_dao import BrokerDAO
 from src.dao.dao import DAO
 from src.entity.forward_entity import ForwardEntity
@@ -10,12 +10,12 @@ from src.entity.forward_entity import ForwardEntity
 class ForwardDAO(BrokerDAO):
     @staticmethod
     def create_buy(ticker: str, price: float, number: int, cash: float) -> None:
-        forward: ForwardEntity = ForwardDAO.init(BUY, ticker, price, number, cash)
+        forward: ForwardEntity = ForwardDAO.init(Action.BUY, ticker, price, number, cash)
         DAO.persist(forward)
 
     @staticmethod
     def create_sell(ticker: str, price: float, number: int, cash: float) -> None:
-        forward: ForwardEntity = ForwardDAO.init(SELL, ticker, price, number, cash)
+        forward: ForwardEntity = ForwardDAO.init(Action.SELL, ticker, price, number, cash)
         DAO.persist(forward)
 
     @staticmethod
@@ -27,7 +27,7 @@ class ForwardDAO(BrokerDAO):
         return ForwardEntity.query.all()
 
     @staticmethod
-    def init(action: str, ticker: str, price: float, number: int, cash: float) -> ForwardEntity:
+    def init(action: Action, ticker: str, price: float, number: int, cash: float) -> ForwardEntity:
         forward: ForwardEntity = ForwardEntity()
         forward.date = datetime.datetime.now()
         forward.ticker = ticker

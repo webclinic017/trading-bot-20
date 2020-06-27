@@ -2,6 +2,7 @@ import unittest
 
 import pandas as pd
 
+from src.action import Action
 from src.attempt import Attempt
 from src.strategy import Strategy
 
@@ -13,7 +14,7 @@ class StrategyTestCase(unittest.TestCase):
         attempt = Attempt(amount_buy=1000, distance_buy=1, delta_buy=1.5,
                           amount_sell=1000, distance_sell=1, delta_sell=1.5)
         action, number = Strategy.counter_cyclical(frame, 1, 0, attempt)
-        self.assertEqual(action, 'buy')
+        self.assertEqual(action, Action.BUY)
         self.assertEqual(number, 1000)
 
     def test_sell(self):
@@ -22,7 +23,7 @@ class StrategyTestCase(unittest.TestCase):
         attempt = Attempt(amount_buy=1000, distance_buy=1, delta_buy=1.5,
                           amount_sell=1000, distance_sell=1, delta_sell=1.5)
         action, number = Strategy.counter_cyclical(frame, 1, 0, attempt)
-        self.assertEqual(action, 'sell')
+        self.assertEqual(action, Action.SELL)
         self.assertEqual(number, 100)
 
     def test_none(self):
@@ -31,7 +32,7 @@ class StrategyTestCase(unittest.TestCase):
         attempt = Attempt(amount_buy=1000, distance_buy=1, delta_buy=1.5,
                           amount_sell=1000, distance_sell=1, delta_sell=1.5)
         action, number = Strategy.counter_cyclical(frame, 1, 0, attempt)
-        self.assertEqual(action, 'none')
+        self.assertEqual(action, Action.NONE)
         self.assertEqual(number, 0)
 
 
