@@ -1,5 +1,3 @@
-from sqlalchemy import ForeignKey
-
 from src import db
 
 
@@ -11,4 +9,4 @@ class IntradayEntity(db.Model):
     low = db.Column(db.Float)
     close = db.Column(db.Float)
     volume = db.Column(db.Float)
-    ticker = db.Column(db.String(10), ForeignKey('stock.ticker'), index=True, primary_key=True)
+    ticker = db.Column(db.String(10), db.ForeignKey('stock.ticker'), index=True, primary_key=True)
