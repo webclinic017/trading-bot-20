@@ -30,6 +30,12 @@ class MyTestCase(unittest.TestCase):
         group = Utils.group(2, iterable)
         self.assertTupleEqual(group, ((1, 2), (3, 4), (5, 6), (7, 8)))
 
+    def test_number(self):
+        number = Utils.number(6.3, 2.4)
+        self.assertEqual(number, 2)
+        number = Utils.number(9.2, 2.9)
+        self.assertEqual(number, 3)
+
 
 if __name__ == '__main__':
     unittest.main()

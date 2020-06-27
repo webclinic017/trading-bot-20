@@ -1,3 +1,4 @@
+import math
 import random
 from typing import Iterable, List, Iterator, Tuple
 
@@ -19,3 +20,7 @@ class Utils:
     def group(number: int, iterable: List[any]) -> Tuple[Tuple[str]]:
         args: Iterable[Iterator] = [iter(iterable)] * number
         return tuple(zip(*args))
+
+    @staticmethod
+    def number(amount: float, end_close: float) -> float:
+        return math.floor(amount / end_close)
