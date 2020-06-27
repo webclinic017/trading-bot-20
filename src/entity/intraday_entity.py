@@ -3,7 +3,7 @@ from src import db
 
 class IntradayEntity(db.Model):
     __tablename__ = 'intraday'
-    date = db.Column(db.String(20), primary_key=True)
+    date = db.Column(db.DateTime, primary_key=True)
     open = db.Column(db.Float)
     high = db.Column(db.Float)
     low = db.Column(db.Float)

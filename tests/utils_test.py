@@ -35,6 +35,8 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(number, 2)
         number = Utils.number(9.2, 2.9)
         self.assertEqual(number, 3)
+        number = Utils.number(0, 0)
+        self.assertEqual(number, 0)
 
 
 if __name__ == '__main__':

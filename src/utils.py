@@ -22,5 +22,5 @@ class Utils:
         return tuple(zip(*args))
 
     @staticmethod
-    def number(amount: float, end_close: float) -> float:
-        return math.floor(amount / end_close)
+    def number(numerator: float, denominator: float) -> float:
+        return 0 if denominator == 0 else math.floor(numerator / denominator)

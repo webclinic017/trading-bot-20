@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import time
+from datetime import datetime
 from typing import List, Tuple
 
 import pandas as pd
@@ -42,8 +43,13 @@ class IntradayDAO:
         rows = json.loads(file.read())
         for row in rows:
             intraday: IntradayEntity = IntradayEntity()
-            for key, value in row.items():
-                setattr(intraday, key, str(value))
+            intraday.date = datetime.fromisoformat(row['date'])
+            intraday.open = float(row['open'])
+            intraday.high = float(row['high'])
+            intraday.low = float(row['low'])
+            intraday.close = float(row['close'])
+            intraday.volume = float(row['volume'])
+            intraday.ticker = row['ticker']
             DAO.persist(intraday)
 
     @staticmethod
@@ -93,8 +99,12 @@ class IntradayDAO:
     @staticmethod
     def init(row: Series, ticker: str) -> IntradayEntity:
         intraday: IntradayEntity = IntradayEntity()
-        for key, value in row.items():
-            setattr(intraday, key.split()[-1], str(value))
+        intraday.date = datetime.fromisoformat(str(row['date']))
+        intraday.open = float(row['1. open'])
+        intraday.high = float(row['2. high'])
+        intraday.low = float(row['3. low'])
+        intraday.close = float(row['4. close'])
+        intraday.volume = float(row['5. volume'])
         intraday.ticker = ticker
         return intraday
 

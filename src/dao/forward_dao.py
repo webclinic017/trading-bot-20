@@ -29,10 +29,10 @@ class ForwardDAO(BrokerDAO):
     @staticmethod
     def init(action: str, ticker: str, price: float, number: int, cash: float) -> ForwardEntity:
         forward: ForwardEntity = ForwardEntity()
-        forward.date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        forward.date = datetime.datetime.now()
         forward.ticker = ticker
         forward.action = action
-        forward.price = str(price)
-        forward.number = str(number)
-        forward.cash = str(cash)
+        forward.price = price
+        forward.number = number
+        forward.cash = cash
         return forward
