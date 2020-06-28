@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Dict
 
 from pandas import DataFrame
@@ -15,11 +16,11 @@ class Analyser:
         for i in range(frame.shape[0]):
             for j in range(frame.shape[1]):
                 ticker: str = frame.columns[j]
-                date: str = frame.index.values[i]
+                date: datetime = frame.index.values[i]
                 if latest_date_dict is not None and latest_date_dict[ticker] != date:
                     continue
                 price: float = frame.iloc[i][j]
-                action, number = strategy(frame, i, j, attempt)
+                action, number = strategy(frame, ticker, date, attempt)
                 buy: bool = False
                 sell: bool = False
                 if action == Action.BUY:

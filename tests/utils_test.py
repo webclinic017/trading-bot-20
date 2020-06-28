@@ -1,6 +1,8 @@
 import math
 import unittest
 
+import pandas as pd
+
 from src.utils import Utils
 
 
@@ -37,6 +39,32 @@ class UtilsTestCase(unittest.TestCase):
         self.assertEqual(number, 3)
         number = Utils.number(0, 0)
         self.assertEqual(number, 0)
+
+    def test_day_delta_value(self):
+        dates = pd.date_range('1/1/2000', periods=15, freq='8h')
+        tickers = ['AAA', 'BBB']
+        frame = pd.DataFrame(index=dates, columns=tickers)
+        for i in range(frame.shape[0]):
+            for j in range(frame.shape[1]):
+                frame.iloc[i][j] = i + j
+        frame.sort_index(inplace=True, ascending=False)
+        date = frame.index.max()
+        value_aaa = Utils.day_delta_value(frame, 'AAA', date, 1)
+        value_bbb = Utils.day_delta_value(frame, 'BBB', date, 1)
+        self.assertEqual(value_aaa, 11)
+        self.assertEqual(value_bbb, 12)
+        value_aaa = Utils.day_delta_value(frame, 'AAA', date, 2)
+        value_bbb = Utils.day_delta_value(frame, 'BBB', date, 2)
+        self.assertEqual(value_aaa, 8)
+        self.assertEqual(value_bbb, 9)
+        value_aaa = Utils.day_delta_value(frame, 'AAA', date, 3)
+        value_bbb = Utils.day_delta_value(frame, 'BBB', date, 3)
+        self.assertEqual(value_aaa, 5)
+        self.assertEqual(value_bbb, 6)
+        value_aaa = Utils.day_delta_value(frame, 'AAA', date, 10)
+        value_bbb = Utils.day_delta_value(frame, 'BBB', date, 10)
+        self.assertTrue(math.isnan(value_aaa))
+        self.assertTrue(math.isnan(value_bbb))
 
 
 if __name__ == '__main__':

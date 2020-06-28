@@ -8,10 +8,10 @@ class AttemptTestCase(unittest.TestCase):
     def test_init(self):
         attempt = Attempt()
         self.assertEqual(attempt.amount_buy, 1000)
-        self.assertEqual(attempt.distance_buy, 500)
+        self.assertEqual(attempt.distance_buy, 30)
         self.assertEqual(attempt.delta_buy, 1.5)
         self.assertEqual(attempt.amount_sell, 1000)
-        self.assertEqual(attempt.distance_sell, 500)
+        self.assertEqual(attempt.distance_sell, 30)
         self.assertEqual(attempt.delta_sell, 1.5)
 
     def test_init_with_arguments(self):

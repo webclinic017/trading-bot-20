@@ -1,6 +1,10 @@
 import math
 import random
+from datetime import timedelta, datetime
 from typing import Iterable, List, Iterator, Tuple
+
+import pandas as pd
+from pandas import DataFrame
 
 
 class Utils:
@@ -24,3 +28,13 @@ class Utils:
     @staticmethod
     def number(numerator: float, denominator: float) -> float:
         return 0 if denominator == 0 else math.floor(numerator / denominator)
+
+    @staticmethod
+    def day_delta_value(frame: DataFrame, column: str, date: datetime, delta: int) -> float:
+        converted = pd.to_datetime(date)
+        interval_end = converted - timedelta(days=delta + 7)
+        interval_start = converted - timedelta(days=delta)
+        interval_date = frame.loc[interval_start:interval_end, column].index.max()
+        if pd.isnull(interval_date):
+            return math.nan
+        return frame.at[interval_date, column]

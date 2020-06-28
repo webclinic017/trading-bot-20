@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Dict
 
 from src.broker import Broker
@@ -10,7 +11,7 @@ class Statistic:
         self.name: str = name
         self.test_data: List[Dict[str, any]] = []
 
-    def plot(self, date: str, ticker: str, price: float, buy: bool, sell: bool) -> None:
+    def plot(self, date: datetime, ticker: str, price: float, buy: bool, sell: bool) -> None:
         pass
 
     def test(self, action: str, number: int, ticker: str, broker: Broker) -> None:
@@ -23,5 +24,5 @@ class Statistic:
                 'action': action}
         self.test_data.append(data)
 
-    def log(self, action: str, date: str, ticker: str, price: float, buy: bool, sell: bool) -> None:
+    def log(self, action: str, date: datetime, ticker: str, price: float, buy: bool, sell: bool) -> None:
         pass

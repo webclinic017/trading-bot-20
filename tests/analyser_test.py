@@ -23,7 +23,7 @@ class AnalyserTestCase(unittest.TestCase):
         tickers = ['AAA', 'BBB']
         prices = np.hstack((prices_aaa, prices_bbb))
         frame = pd.DataFrame(prices, index=dates, columns=tickers)
-
+        frame.sort_index(inplace=True, ascending=False)
         broker = Broker()
         initial_cash = broker.cash
         cash = broker.cash
