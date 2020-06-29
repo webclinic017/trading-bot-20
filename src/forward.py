@@ -23,6 +23,8 @@ class Forward:
     @staticmethod
     def start() -> None:
         evaluation: EvaluationEntity = EvaluationDAO.read_order_by_sum()
+        if evaluation is None:
+            return
         read_latest_date: List[IntradayEntity] = IntradayDAO.read_latest_date()
         latest_date_dict: Dict[str, str] = {r.ticker: r[0] for r in read_latest_date}
         rows: List[IntradayEntity] = IntradayDAO.read_order_by_date_asc()
