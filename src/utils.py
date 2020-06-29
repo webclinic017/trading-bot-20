@@ -41,7 +41,7 @@ class Utils:
 
     @staticmethod
     def is_today(today: datetime) -> bool:
-        return Utils.now().date() == today.date()
+        return False if today is None else Utils.now().date() == today.date()
 
     @staticmethod
     def now() -> datetime:

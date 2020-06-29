@@ -18,6 +18,9 @@ class ForwardDAOTestCase(unittest.TestCase):
 
     @patch('src.utils.Utils.now')
     def test_read_latest_date(self, now):
+        latest_date = ForwardDAO.read_latest_date()
+        self.assertEqual(latest_date, (None,))
+        self.assertEqual(latest_date[0], None)
         now.return_value = datetime.fromisoformat('2011-11-05T00:00:00')
         ForwardDAO.create_buy('AAA', 100, 4, 10)
         now.return_value = datetime.fromisoformat('2011-11-04T00:00:00')
