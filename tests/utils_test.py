@@ -81,6 +81,7 @@ class UtilsTestCase(unittest.TestCase):
         self.assertFalse(Utils.is_today(today + timedelta(hours=24)))
         self.assertFalse(Utils.is_today(today + timedelta(days=1)))
         self.assertFalse(Utils.is_today(today + timedelta(weeks=52)))
+        self.assertFalse(Utils.is_today(None))
 
 
 if __name__ == '__main__':
