@@ -1,10 +1,14 @@
-import datetime
+from datetime import datetime
 from typing import List
 
+from sqlalchemy import func
+
+from src import db
 from src.action import Action
 from src.dao.broker_dao import BrokerDAO
 from src.dao.dao import DAO
 from src.entity.forward_entity import ForwardEntity
+from src.utils import Utils
 
 
 class ForwardDAO(BrokerDAO):
@@ -27,9 +31,13 @@ class ForwardDAO(BrokerDAO):
         return ForwardEntity.query.all()
 
     @staticmethod
+    def read_latest_date() -> List[datetime]:
+        return db.session.query(func.max(ForwardEntity.date)).first()
+
+    @staticmethod
     def init(action: Action, ticker: str, price: float, number: int, cash: float) -> ForwardEntity:
         forward: ForwardEntity = ForwardEntity()
-        forward.date = datetime.datetime.now()
+        forward.date = Utils.now()
         forward.ticker = ticker
         forward.action = action
         forward.price = price

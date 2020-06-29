@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Dict, List, Tuple
 
 from pandas import DataFrame
@@ -16,14 +17,16 @@ from src.entity.intraday_entity import IntradayEntity
 from src.inventory import Inventory
 from src.statistic import Statistic
 from src.strategy import Strategy
+from src.utils import Utils
 
 
 class Forward:
 
     @staticmethod
     def start() -> None:
+        latest_date: List[datetime] = ForwardDAO.read_latest_date()
         evaluation: EvaluationEntity = EvaluationDAO.read_order_by_sum()
-        if evaluation is None:
+        if evaluation is None or Utils.is_today(latest_date[0]):
             return
         read_latest_date: List[IntradayEntity] = IntradayDAO.read_latest_date()
         latest_date_dict: Dict[str, str] = {r.ticker: r[0] for r in read_latest_date}

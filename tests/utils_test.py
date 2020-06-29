@@ -1,5 +1,7 @@
 import math
 import unittest
+from datetime import datetime, timedelta
+from unittest.mock import patch
 
 import pandas as pd
 
@@ -65,6 +67,20 @@ class UtilsTestCase(unittest.TestCase):
         value_bbb = Utils.day_delta_value(frame, 'BBB', date, 10)
         self.assertTrue(math.isnan(value_aaa))
         self.assertTrue(math.isnan(value_bbb))
+
+    @patch('src.utils.Utils.now')
+    def test_is_today(self, now):
+        today = datetime.fromisoformat('2011-11-04T00:00:00')
+        now.return_value = today
+        self.assertTrue(Utils.is_today(today))
+        self.assertTrue(Utils.is_today(today + timedelta(microseconds=23)))
+        self.assertTrue(Utils.is_today(today + timedelta(milliseconds=23)))
+        self.assertTrue(Utils.is_today(today + timedelta(seconds=23)))
+        self.assertTrue(Utils.is_today(today + timedelta(minutes=23)))
+        self.assertTrue(Utils.is_today(today + timedelta(hours=23)))
+        self.assertFalse(Utils.is_today(today + timedelta(hours=24)))
+        self.assertFalse(Utils.is_today(today + timedelta(days=1)))
+        self.assertFalse(Utils.is_today(today + timedelta(weeks=52)))
 
 
 if __name__ == '__main__':

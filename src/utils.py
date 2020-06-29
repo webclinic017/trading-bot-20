@@ -38,3 +38,11 @@ class Utils:
         if pd.isnull(interval_date):
             return math.nan
         return frame.at[interval_date, column]
+
+    @staticmethod
+    def is_today(today: datetime) -> bool:
+        return Utils.now().date() == today.date()
+
+    @staticmethod
+    def now() -> datetime:
+        return datetime.now()
