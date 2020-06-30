@@ -26,7 +26,7 @@ class Forward:
     def start() -> None:
         latest_date: List[datetime] = ForwardDAO.read_latest_date()
         evaluation: EvaluationEntity = EvaluationDAO.read_order_by_sum()
-        if evaluation is None or Utils.is_today(latest_date[0]):
+        if evaluation is None or Utils.is_today(latest_date[0]) or not Utils.is_working_day_ny():
             return
         read_latest_date: List[IntradayEntity] = IntradayDAO.read_latest_date()
         latest_date_dict: Dict[str, str] = {r.ticker: r[0] for r in read_latest_date}

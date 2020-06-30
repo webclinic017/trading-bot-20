@@ -1,3 +1,5 @@
+pytz==2020.1
+workalendar==10.2.0
 schedule==0.6.0
 werkzeug==1.0.1
 numpy==1.19.0

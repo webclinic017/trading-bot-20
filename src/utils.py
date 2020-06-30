@@ -5,6 +5,8 @@ from typing import Iterable, List, Iterator, Tuple
 
 import pandas as pd
 from pandas import DataFrame
+from pytz import timezone
+from workalendar.usa import NewYork
 
 
 class Utils:
@@ -41,8 +43,12 @@ class Utils:
 
     @staticmethod
     def is_today(today: datetime) -> bool:
-        return False if today is None else Utils.now().date() == today.date()
+        return False if not isinstance(today, datetime) else Utils.now().date() == today.date()
 
     @staticmethod
     def now() -> datetime:
         return datetime.now()
+
+    @staticmethod
+    def is_working_day_ny() -> datetime:
+        return NewYork().is_working_day(Utils.now().astimezone(timezone('US/Eastern')))
