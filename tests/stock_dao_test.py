@@ -31,6 +31,13 @@ class StockDAOTestCase(unittest.TestCase):
         result = StockDAO.read_ticker()
         self.assertEqual(result[0].ticker, 'AAPL')
 
+    @patch('src.isin.Isin.isin')
+    def test_exception(self, isin):
+        isin.return_value = 'isin'
+        StockDAO.update(None)
+        result = StockDAO.read_all()
+        self.assertListEqual(result, [])
+
 
 if __name__ == '__main__':
     unittest.main()
