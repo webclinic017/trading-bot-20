@@ -1,7 +1,7 @@
 import math
 import random
 from datetime import timedelta, datetime
-from typing import Iterable, List, Iterator, Tuple
+from typing import Iterable, List, Iterator, Tuple, Optional
 
 import pandas as pd
 from pandas import DataFrame
@@ -42,7 +42,7 @@ class Utils:
         return frame.at[interval_date, column]
 
     @staticmethod
-    def is_today(today: datetime) -> bool:
+    def is_today(today: Optional[datetime]) -> bool:
         return False if not isinstance(today, datetime) else Utils.now().date() == today.date()
 
     @staticmethod

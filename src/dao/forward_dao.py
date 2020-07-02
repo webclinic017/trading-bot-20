@@ -14,12 +14,12 @@ from src.utils import Utils
 class ForwardDAO(BrokerDAO):
     @staticmethod
     def create_buy(ticker: str, price: float, number: int, cash: float) -> None:
-        forward: ForwardEntity = ForwardDAO.init(Action.BUY, ticker, price, number, cash)
+        forward: ForwardEntity = ForwardDAO.__init(Action.BUY, ticker, price, number, cash)
         DAO.persist(forward)
 
     @staticmethod
     def create_sell(ticker: str, price: float, number: int, cash: float) -> None:
-        forward: ForwardEntity = ForwardDAO.init(Action.SELL, ticker, price, number, cash)
+        forward: ForwardEntity = ForwardDAO.__init(Action.SELL, ticker, price, number, cash)
         DAO.persist(forward)
 
     @staticmethod
@@ -35,7 +35,7 @@ class ForwardDAO(BrokerDAO):
         return db.session.query(func.max(ForwardEntity.date)).first()
 
     @staticmethod
-    def init(action: Action, ticker: str, price: float, number: int, cash: float) -> ForwardEntity:
+    def __init(action: Action, ticker: str, price: float, number: int, cash: float) -> ForwardEntity:
         forward: ForwardEntity = ForwardEntity()
         forward.date = Utils.now()
         forward.ticker = ticker

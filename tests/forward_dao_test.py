@@ -13,17 +13,23 @@ class ForwardDAOTestCase(unittest.TestCase):
     def setUpClass(cls):
         db.create_all()
 
-    def setUp(self):
-        StockEntity.query.delete()
-
     @patch('src.utils.Utils.now')
-    def test_read_latest_date(self, now):
-        latest_date = ForwardDAO.read_latest_date()
-        self.assertEqual(latest_date, (None,))
-        self.assertEqual(latest_date[0], None)
+    def setUp(self, now):
+        StockEntity.query.delete()
         now.return_value = datetime.fromisoformat('2011-11-05T00:00:00')
         ForwardDAO.create_buy('AAA', 100, 4, 10)
         now.return_value = datetime.fromisoformat('2011-11-04T00:00:00')
-        ForwardDAO.create_buy('AAA', 100, 4, 10)
+        ForwardDAO.create_sell('AAA', 100, 4, 10)
+
+    def test_read(self):
+        rows = ForwardDAO.read()
+        self.assertEqual(rows[0].date, datetime.fromisoformat('2011-11-04T00:00:00'))
+        self.assertEqual(rows[1].date, datetime.fromisoformat('2011-11-05T00:00:00'))
+
+    def test_read_all(self):
+        rows = ForwardDAO.read_all()
+        self.assertEqual(len(rows), 2)
+
+    def test_read_latest_date(self):
         latest_date = ForwardDAO.read_latest_date()
         self.assertEqual(latest_date[0], datetime.fromisoformat('2011-11-05T00:00:00'))

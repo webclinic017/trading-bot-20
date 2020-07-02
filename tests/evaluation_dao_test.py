@@ -26,13 +26,13 @@ class EvaluationDAOTestCase(unittest.TestCase):
 
     def test_read_order_by_sum(self):
         evaluation = EvaluationDAO.read_order_by_sum()
-        EvaluationDAOTestCase._assert(self, evaluation, 2000, 'second', 11, 22, 33, 44, 55, 66)
+        EvaluationDAOTestCase.__assert(self, evaluation, 2000, 'second', 11, 22, 33, 44, 55, 66)
 
     def test_read_attempt(self):
         evaluation = EvaluationDAO.read_attempt(self.attempt)
-        EvaluationDAOTestCase._assert(self, evaluation, 1000, 'first', 1, 2, 3, 4, 5, 6)
+        EvaluationDAOTestCase.__assert(self, evaluation, 1000, 'first', 1, 2, 3, 4, 5, 6)
 
-    def _assert(self, evaluation, *args):
+    def __assert(self, evaluation, *args):
         self.assertEqual(evaluation.sum, args[0])
         self.assertEqual(evaluation.funds, args[1])
         self.assertEqual(evaluation.amountbuy, args[2])

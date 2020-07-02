@@ -7,9 +7,22 @@
 <body>
 <a href="/">Main</a>
 <br>
-<p>Cash: {{ cash }}</p>
-<p>Value: {{ total_value }}</p>
-<p>Total: {{ total }}</p>
+<table>
+    <thead>
+    <tr>
+        <th>Cash</th>
+        <th>Value</th>
+        <th>Total</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>{{ cash }}</td>
+        <td>{{ total_value }}</td>
+        <td>{{ total }}</td>
+    </tr>
+    </tbody>
+</table>
 <br>
 <table>
     <thead>

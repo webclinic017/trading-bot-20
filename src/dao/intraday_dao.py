@@ -1,7 +1,6 @@
 import json
 import logging
 import os
-import time
 from datetime import datetime
 from typing import List, Tuple
 
@@ -20,12 +19,6 @@ from src.portfolio import Portfolio
 
 
 class IntradayDAO:
-    @staticmethod
-    def create_portfolio(*portfolio: str) -> None:
-        for ticker in portfolio:
-            time.sleep(20)
-            IntradayDAO.create_ticker(ticker)
-
     @staticmethod
     def create_ticker(*ticker: str) -> None:
         try:

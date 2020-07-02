@@ -34,7 +34,7 @@ class StockDAOTestCase(unittest.TestCase):
     @patch('src.isin.Isin.isin')
     def test_exception(self, isin):
         isin.return_value = 'isin'
-        StockDAO.update([None, 'AAA'][0])
+        StockDAO.update(None)
         result = StockDAO.read_all()
         self.assertListEqual(result, [])
 

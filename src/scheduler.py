@@ -25,7 +25,7 @@ class Scheduler:
     @staticmethod
     def start() -> None:
         logging.warning('Scheduler start')
-        schedule.every(30).seconds.do(Scheduler.update_table_intraday)
+        schedule.every(20).seconds.do(Scheduler.update_table_intraday)
         schedule.every(10).minutes.do(Scheduler.optimize)
         schedule.every(10).minutes.do(Scheduler.forward)
         while True:

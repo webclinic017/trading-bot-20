@@ -1,4 +1,4 @@
-from typing import Tuple, List
+from typing import Tuple, List, Optional
 
 from src.dao.dao import DAO
 from src.entity.stock_entity import StockEntity
@@ -22,7 +22,7 @@ class StockDAO:
         return StockEntity.query.with_entities(StockEntity.ticker).all()
 
     @staticmethod
-    def update(*portfolio: str) -> None:
+    def update(*portfolio: Optional[str]) -> None:
         for ticker in portfolio:
             stock: StockEntity = StockEntity()
             stock.ticker = ticker
