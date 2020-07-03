@@ -12,7 +12,7 @@ class Statistic:
         self.test_data: List[Dict[str, any]] = []
 
     def plot(self, date: datetime, ticker: str, price: float, buy: bool, sell: bool) -> None:
-        pass
+        pass  # Do nothing
 
     def test(self, action: str, number: int, ticker: str, broker: Broker) -> None:
         entry: Inventory = broker.inventory.get(ticker)
@@ -25,4 +25,4 @@ class Statistic:
         self.test_data.append(data)
 
     def log(self, action: str, date: datetime, ticker: str, price: float, buy: bool, sell: bool) -> None:
-        pass
+        pass  # Do nothing
