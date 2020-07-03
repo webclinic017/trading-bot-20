@@ -1,44 +1,18 @@
 import logging
-from typing import Dict, List, Tuple, Any
+from typing import Dict, List, Tuple
 
 from flask import render_template, jsonify, make_response, request
 
 from src import app, db
-from src.constants import TARGET, ARGS
 from src.dao.evaluation_dao import EvaluationDAO
 from src.dao.forward_dao import ForwardDAO
 from src.dao.intraday_dao import IntradayDAO
 from src.dao.stock_dao import StockDAO
 from src.entity.intraday_entity import IntradayEntity
 from src.forward import Forward
-from src.optimizer import Optimizer
-from src.portfolio import Portfolio
 from src.process_manager import ProcessManager
-from src.scheduler import Scheduler
 
 process_manager: ProcessManager = ProcessManager()
-processes: Dict[str, Dict[str, Tuple[Any, ...]]] = {
-    'update-table-stock': {
-        TARGET: StockDAO.update,
-        ARGS: Portfolio.test_prod_portfolio()
-    },
-    'update-table-intraday': {
-        TARGET: IntradayDAO.update,
-        ARGS: Portfolio.test_prod_portfolio()
-    },
-    'schedule': {
-        TARGET: Scheduler.start,
-        ARGS: []
-    },
-    'optimize': {
-        TARGET: Optimizer.start,
-        ARGS: (Portfolio.test_portfolio(), 100, 4)
-    },
-    'forward': {
-        TARGET: Forward.start,
-        ARGS: []
-    }
-}
 
 
 @app.before_first_request
@@ -82,24 +56,21 @@ def stock_intraday_view(ticker: str) -> str:
 
 @app.route('/process')
 def process_view() -> str:
-    active_processes: List[str] = list(map(lambda j: j.name, process_manager.get_processes()))
-    inactive_processes: List[str] = list(filter(lambda j: j not in active_processes, processes.keys()))
-    return render_template('process.html', running=process_manager.running(), active_processes=active_processes,
-                           inactive_processes=inactive_processes)
+    return render_template('process.html', running=process_manager.running(),
+                           active_processes=process_manager.get_active_names(),
+                           inactive_processes=process_manager.get_inactive_names())
 
 
 @app.route('/process/start/<process_name>')
 def process_start_view(process_name: str) -> str:
-    process: Dict[str, Tuple[Any, ...]] = processes.get(process_name)
-    if process is not None and not process_manager.contains(process_name):
-        process_manager.start(process_name, process.get(TARGET), process.get(ARGS))
-    return render_template('process-start.html', process_name=process_name)
+    successful: bool = process_manager.start(process_name)
+    return render_template('process-start.html', successful=successful, process_name=process_name)
 
 
 @app.route('/process/stop/<process_name>')
 def process_stop_view(process_name: str) -> str:
-    process_manager.stop(process_name)
-    return render_template('process-stop.html', process_name=process_name)
+    successful: bool = process_manager.stop(process_name)
+    return render_template('process-stop.html', successful=successful, process_name=process_name)
 
 
 @app.route('/import', defaults={'data': ''})

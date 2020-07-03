@@ -1,31 +1,75 @@
 import multiprocessing
 from multiprocessing.context import Process
-from typing import List, Optional, Tuple, Any
+from typing import Dict, List, Tuple, Any
+
+from src.dao.intraday_dao import IntradayDAO
+from src.dao.stock_dao import StockDAO
+from src.forward import Forward
+from src.optimizer import Optimizer
+from src.portfolio import Portfolio
+from src.scheduler import Scheduler
 
 
 class ProcessManager:
+    TARGET: str = 'target'
+    ARGS: str = 'args'
+
+    CONFIGURATION: Dict[str, Dict[str, Tuple[Any, ...]]] = {
+        'update-table-stock': {
+            TARGET: StockDAO.update,
+            ARGS: Portfolio.test_prod_portfolio()
+        },
+        'update-table-intraday': {
+            TARGET: IntradayDAO.update,
+            ARGS: Portfolio.test_prod_portfolio()
+        },
+        'schedule': {
+            TARGET: Scheduler.start,
+            ARGS: []
+        },
+        'optimize': {
+            TARGET: Optimizer.start,
+            ARGS: (Portfolio.test_portfolio(), 100, 4)
+        },
+        'forward': {
+            TARGET: Forward.start,
+            ARGS: []
+        }
+    }
 
     def __init__(self) -> None:
-        self._processes: List[object] = []
+        self.__processes: Dict[str, Process] = dict()
 
-    def start(self, name: str, target: callable, args: Optional[Tuple[Any, ...]]) -> None:
-        process: Process = multiprocessing.Process(name=name, target=target, args=args)
-        process.start()
-        self._processes.append(process)
+    @property
+    def get_processes(self):
+        return self.__processes
 
-    def stop(self, process_name: str) -> None:
-        processes: List[Process] = list(filter(lambda p: p.name == process_name, self.get_processes()))
-        for process in processes:
-            self._processes.remove(process)
-            process.join()
+    def start(self, name: str) -> bool:
+        if name in ProcessManager.CONFIGURATION.keys():
+            configuration: Dict[str, Tuple[Any, ...]] = ProcessManager.CONFIGURATION.get(name)
+            process: Process = self.__processes.get(name)
+            if process is None or not process.is_alive():
+                process = multiprocessing.Process(name=name, target=configuration.get(ProcessManager.TARGET),
+                                                  args=configuration.get(ProcessManager.ARGS))
+                process.start()
+                self.__processes[name] = process
+                return True
+        return False
+
+    def stop(self, name: str) -> bool:
+        if name in ProcessManager.CONFIGURATION.keys():
+            process: Process = self.__processes.get(name)
             process.terminate()
+            process.join()
+            del self.__processes[name]
+            return True
+        return False
 
     def running(self) -> bool:
-        return any(process.is_alive() for process in self.get_processes())
+        return len(self.__processes) > 0
 
-    def contains(self, process_name: str) -> bool:
-        return any(process.name == process_name for process in self.get_processes())
+    def get_active_names(self) -> List[str]:
+        return list(self.__processes)
 
-    def get_processes(self) -> List[Process]:
-        self._processes = list(filter(lambda process: process.is_alive(), self._processes))
-        return self._processes
+    def get_inactive_names(self) -> List[str]:
+        return list(filter(lambda j: j not in list(self.__processes), ProcessManager.CONFIGURATION.keys()))
