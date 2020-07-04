@@ -1,6 +1,6 @@
 import multiprocessing
 from multiprocessing.context import Process
-from typing import Dict, List, Tuple, Any
+from typing import Dict, List, Tuple, Any, Optional
 
 from src.dao.intraday_dao import IntradayDAO
 from src.dao.stock_dao import StockDAO
@@ -37,39 +37,41 @@ class ProcessManager:
         }
     }
 
-    def __init__(self) -> None:
-        self.__processes: Dict[str, Process] = dict()
-
-    @property
-    def get_processes(self):
-        return self.__processes
-
-    def start(self, name: str) -> bool:
+    @staticmethod
+    def start(name: str) -> bool:
         if name in ProcessManager.CONFIGURATION.keys():
             configuration: Dict[str, Tuple[Any, ...]] = ProcessManager.CONFIGURATION.get(name)
-            process: Process = self.__processes.get(name)
+            process: Process = ProcessManager.__find(name)
             if process is None or not process.is_alive():
                 process = multiprocessing.Process(name=name, target=configuration.get(ProcessManager.TARGET),
                                                   args=configuration.get(ProcessManager.ARGS))
                 process.start()
-                self.__processes[name] = process
                 return True
         return False
 
-    def stop(self, name: str) -> bool:
+    @staticmethod
+    def stop(name: str) -> bool:
         if name in ProcessManager.CONFIGURATION.keys():
-            process: Process = self.__processes.get(name)
-            process.terminate()
-            process.join()
-            del self.__processes[name]
-            return True
+            process: Process = ProcessManager.__find(name)
+            if process is not None:
+                process.terminate()
+                process.join()
+                return True
         return False
 
-    def running(self) -> bool:
-        return len(self.__processes) > 0
+    @staticmethod
+    def running() -> bool:
+        return len(multiprocessing.active_children()) > 0
 
-    def get_active_names(self) -> List[str]:
-        return list(self.__processes)
+    @staticmethod
+    def get_active_names() -> List[str]:
+        return sorted(list(map(lambda p: p.name, list(multiprocessing.active_children()))))
 
-    def get_inactive_names(self) -> List[str]:
-        return list(filter(lambda j: j not in list(self.__processes), ProcessManager.CONFIGURATION.keys()))
+    @staticmethod
+    def get_inactive_names() -> List[str]:
+        return sorted(list(filter(lambda p: p not in ProcessManager.get_active_names(),
+                                  ProcessManager.CONFIGURATION.keys())))
+
+    @staticmethod
+    def __find(name) -> Optional[Process]:
+        return next(iter(filter(lambda p: p.name == name, multiprocessing.active_children())), None)
