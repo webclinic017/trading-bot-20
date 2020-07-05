@@ -26,8 +26,8 @@ class Scheduler:
     def start() -> None:
         logging.warning('Scheduler start')
         schedule.every(20).seconds.do(Scheduler.update_table_intraday)
-        schedule.every(10).minutes.do(Scheduler.optimize)
-        schedule.every(10).minutes.do(Scheduler.forward)
+        schedule.every(5).minutes.do(Scheduler.optimize)
+        schedule.every(5).minutes.do(Scheduler.forward)
         while True:
             schedule.run_pending()
             time.sleep(1)
