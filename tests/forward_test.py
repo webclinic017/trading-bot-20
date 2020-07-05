@@ -48,17 +48,12 @@ class ForwardTestCase(unittest.TestCase):
         self.assertEqual(True, True)
         rows = ForwardDAO.read_all()
         self.assertEqual(len(rows), 3)
-        self.__assert_forward(rows[0], Action.BUY, 8996.1, ForwardTestCase.OLD_DATE, 10, 100.0, 'AAA')
-        self.__assert_forward(rows[1], Action.BUY, 7992.200000000001, ForwardTestCase.OLD_DATE, 10, 100.0, 'BBB')
-        self.__assert_forward(rows[2], Action.SELL, 12988.300000000001, ForwardTestCase.YOUNG_DATE, 2, 500.0, 'AAA')
-
-    def __assert_forward(self, forward, action, cash, date, number, price, ticker):
-        self.assertEqual(forward.action, action)
-        self.assertEqual(forward.cash, cash)
-        self.assertEqual(forward.date, date)
-        self.assertEqual(forward.number, number)
-        self.assertEqual(forward.price, price)
-        self.assertEqual(forward.ticker, ticker)
+        Utils.assert_attributes(rows[0], action=Action.BUY, cash=8996.1, date=ForwardTestCase.OLD_DATE, number=10,
+                                price=100.0, ticker='AAA')
+        Utils.assert_attributes(rows[1], action=Action.BUY, cash=7992.200000000001, date=ForwardTestCase.OLD_DATE,
+                                number=10, price=100.0, ticker='BBB')
+        Utils.assert_attributes(rows[2], action=Action.SELL, cash=12988.300000000001, date=ForwardTestCase.YOUNG_DATE,
+                                number=2, price=500.0, ticker='AAA')
 
     @staticmethod
     def __create_intraday():

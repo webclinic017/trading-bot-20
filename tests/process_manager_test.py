@@ -73,7 +73,7 @@ class ProcessManagerTestCase(unittest.TestCase):
     def test_successful_wait(self):
         self.__start('test1', True, True, ['test1'], ['test2'])
         while len(multiprocessing.active_children()) > 0:
-            pass
+            pass  # Do nothing
         self.assertEqual(ProcessManager.running(), False)
         self.assertListEqual(ProcessManager.get_active_names(), [])
         self.assertListEqual(ProcessManager.get_inactive_names(), ['test1', 'test2'])

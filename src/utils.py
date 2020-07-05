@@ -34,9 +34,9 @@ class Utils:
     @staticmethod
     def day_delta_value(frame: DataFrame, column: str, date: datetime, delta: int) -> float:
         converted = pd.to_datetime(date)
-        interval_end = converted - timedelta(days=delta + 7)
-        interval_start = converted - timedelta(days=delta)
-        interval_date = frame.loc[interval_end:interval_start, column].index.max()
+        interval_end = converted - timedelta(days=delta)
+        interval_start = converted - timedelta(days=delta + 7)
+        interval_date = frame.loc[interval_start:interval_end, column].index.max()
         if pd.isnull(interval_date):
             return math.nan
         return frame.at[interval_date, column]

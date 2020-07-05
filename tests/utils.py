@@ -1,5 +1,6 @@
 import copy
 import math
+from unittest import TestCase
 
 import numpy as np
 import pandas as pd
@@ -19,3 +20,8 @@ class Utils:
         frame = DataFrame(prices, index=dates, columns=tickers)
         frame.sort_index(inplace=True, ascending=True)
         return frame
+
+    @staticmethod
+    def assert_attributes(assertable, **kwargs):
+        for key, value in kwargs.items():
+            TestCase().assertEqual(getattr(assertable, key), value)
