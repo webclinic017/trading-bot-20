@@ -8,6 +8,7 @@ from tests.evaluation_dao_test import EvaluationDAOTestCase
 from tests.forward_dao_test import ForwardDAOTestCase
 from tests.intraday_dao_test import IntraDayDAOTestCase
 from tests.inventory_test import InventoryTestCase
+from tests.isin_test import IsinTestCase
 from tests.optimizer_test import OptimizerTestCase
 from tests.process_manager_test import ProcessManagerTestCase
 from tests.stock_dao_test import StockDAOTestCase
@@ -24,6 +25,7 @@ tests = [AnalyserTestCase,
          ForwardDAOTestCase,
          IntraDayDAOTestCase,
          InventoryTestCase,
+         IsinTestCase,
          OptimizerTestCase,
          ProcessManagerTestCase,
          StockDAOTestCase,
