@@ -13,6 +13,7 @@ from src.dao.evaluation_dao import EvaluationDAO
 from src.dao.forward_dao import ForwardDAO
 from src.dao.intraday_dao import IntradayDAO
 from src.entity.evaluation_entity import EvaluationEntity
+from src.entity.forward_entity import ForwardEntity
 from src.entity.intraday_entity import IntradayEntity
 from src.forward import Forward
 from tests.utils import Utils
@@ -29,6 +30,7 @@ class ForwardTestCase(unittest.TestCase):
     def setUp(self):
         EvaluationEntity.query.delete()
         IntradayEntity.query.delete()
+        ForwardEntity.query.delete()
 
     @patch('src.utils.Utils.is_today')
     @patch('src.utils.Utils.is_working_day_ny')
