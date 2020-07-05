@@ -36,7 +36,7 @@ class Utils:
         converted = pd.to_datetime(date)
         interval_end = converted - timedelta(days=delta + 7)
         interval_start = converted - timedelta(days=delta)
-        interval_date = frame.loc[interval_start:interval_end, column].index.max()
+        interval_date = frame.loc[interval_end:interval_start, column].index.max()
         if pd.isnull(interval_date):
             return math.nan
         return frame.at[interval_date, column]

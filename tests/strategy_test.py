@@ -38,7 +38,7 @@ class StrategyTestCase(unittest.TestCase):
     def create_frame(data: Dict[str, List[int]]) -> DataFrame:
         dates = pd.date_range('1/1/2000', periods=2, freq='1d')
         frame = pd.DataFrame(data, index=dates)
-        frame.sort_index(inplace=True, ascending=False)
+        frame.sort_index(inplace=True, ascending=True)
         return frame
 
 

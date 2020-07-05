@@ -49,7 +49,7 @@ class UtilsTestCase(unittest.TestCase):
         for i in range(frame.shape[0]):
             for j in range(frame.shape[1]):
                 frame.iloc[i][j] = i + j
-        frame.sort_index(inplace=True, ascending=False)
+        frame.sort_index(inplace=True, ascending=True)
         date = frame.index.max()
         value_aaa = Utils.day_delta_value(frame, 'AAA', date, 1)
         value_bbb = Utils.day_delta_value(frame, 'BBB', date, 1)
