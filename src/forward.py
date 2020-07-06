@@ -41,19 +41,13 @@ class Forward:
     @staticmethod
     def init() -> Tuple[Dict[str, Inventory], float]:
         rows: List[ForwardEntity] = ForwardDAO.read()
-        inventory: Dict[str, Inventory] = dict()
-        cash: float = INITIAL_CASH
+        broker = Broker(INITIAL_CASH, FEE)
         for row in rows:
-            entry: Inventory = inventory.get(row.ticker, Inventory(0, float(row.price)))
-            total_price: float = float(row.price) * int(row.number)
             if row.action == Action.BUY:
-                entry.number += int(row.number)
-                cash = cash + total_price - FEE
+                broker.buy(row.ticker, row.price, row.number)
             elif row.action == Action.SELL:
-                entry.number -= int(row.number)
-                cash = cash - total_price - FEE
-            inventory[row.ticker] = entry
-        return inventory, cash
+                broker.sell(row.ticker, row.price, row.number)
+        return broker.inventory, broker.cash
 
     @staticmethod
     def update(inventory: Dict[str, Inventory], cash: float) -> Tuple[Dict[str, Inventory], float, float]:
@@ -61,6 +55,8 @@ class Forward:
         total_value: float = 0
         for ticker, entry in inventory.items():
             intraday: IntradayEntity = IntradayDAO.read_filter_by_ticker_first(ticker)
+            if intraday is None:
+                continue
             entry.price = float(intraday.close)
             total_value += entry.value()
         total += cash + total_value
