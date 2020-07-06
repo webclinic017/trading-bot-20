@@ -99,8 +99,8 @@ class ForwardTestCase(unittest.TestCase):
         Utils.assert_attributes(inventory['BBB'], price=20, number=80)
         Utils.assert_attributes(inventory['CCC'], price=30, number=90)
         estimated = inventory['AAA'].value() + inventory['BBB'].value() + inventory['CCC'].value()
-        self.assertEqual(total, estimated)
-        self.assertEqual(total_value, estimated + INITIAL_CASH)
+        self.assertEqual(total_value, estimated)
+        self.assertEqual(total, estimated + INITIAL_CASH)
 
     @staticmethod
     def __to_intraday(frame):
