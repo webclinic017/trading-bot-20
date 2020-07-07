@@ -26,14 +26,8 @@ class OptimizerTestCase(unittest.TestCase):
         self.assertEqual(len(rows), 0)
         Optimizer.optimise([Utils.create_frame()])
         evaluation = EvaluationDAO.read_order_by_sum()
-        self.assertEqual(evaluation.sum, 165613.89999999997)
-        self.assertEqual(evaluation.funds, '165613.89999999997')
-        self.assertEqual(evaluation.amountbuy, 1000)
-        self.assertEqual(evaluation.amountsell, 1000)
-        self.assertEqual(evaluation.deltabuy, 1.5)
-        self.assertEqual(evaluation.deltasell, 1.5)
-        self.assertEqual(evaluation.distancebuy, 30)
-        self.assertEqual(evaluation.distancesell, 30)
+        Utils.assert_attributes(evaluation, sum=185266.8, funds='185266.8', amountbuy=1000, amountsell=1000,
+                                deltabuy=1.5, deltasell=1.5, distancebuy=30, distancesell=30)
 
 
 if __name__ == '__main__':

@@ -16,25 +16,28 @@ class AnalyserTestCase(unittest.TestCase):
         broker = Broker()
         initial_cash = broker.cash
         cash = broker.cash
-        number = 0
         attempt = Attempt(1000, 30, 2, 1000, 30, 2)
         statistic = Analyser.analyse(frame, Strategy.counter_cyclical, broker, Statistic(), attempt)
-
-        for i in range(len(statistic.test_data)):
-            action = statistic.test_data[i]['action']
-            price = statistic.test_data[i]['inventory.price']
-            total_price = price * 10
+        inventory = {'AAA': {'price': 0, 'number': 0}, 'CCC': {'price': 0, 'number': 0}}
+        for test_data in statistic.test_data:
+            action = test_data['action']
+            number = test_data['number']
+            ticker = test_data['ticker']
+            price = test_data['price']
+            total_price = price * number
             if action is Action.BUY and cash >= total_price:
                 cash = cash - total_price - 3.9
-                number = number + 10
-                value = number * price
-            elif action is Action.SELL and number >= 2:
-                cash = cash + price * 2 - 3.9
-                number = number - 2
-                value = number * price
+                inventory[ticker]['number'] = inventory[ticker]['number'] + number
+                inventory[ticker]['price'] = price
+            elif action is Action.SELL and inventory[ticker]['number'] >= number:
+                cash = cash + total_price - 3.9
+                inventory[ticker]['number'] = inventory[ticker]['number'] - number
+                inventory[ticker]['price'] = price
             else:
                 continue
-            self.assertEqual(cash, statistic.test_data[i]['cash'])
-            self.assertEqual(value, statistic.test_data[i]['inventory.value'])
-            self.assertEqual(number, statistic.test_data[i]['inventory.number'])
+        self.assertEqual(broker.inventory['AAA'].number, inventory['AAA']['number'])
+        self.assertEqual(broker.inventory['AAA'].price, inventory['AAA']['price'])
+        self.assertEqual(broker.inventory['CCC'].number, inventory['CCC']['number'])
+        self.assertEqual(broker.inventory['CCC'].price, inventory['CCC']['price'])
+        self.assertEqual(broker.cash, cash)
         self.assertGreater(broker.funds(), initial_cash)

@@ -34,6 +34,6 @@ class Analyser:
                     broker.update(ticker, price)
                 if statistic is not None:
                     statistic.plot(current_date, ticker, price, buy, sell)
-                    statistic.test(action, number, ticker, broker)
+                    statistic.test(action, number, ticker, price)
                     statistic.log(action, current_date, ticker, price, buy, sell)
         return statistic

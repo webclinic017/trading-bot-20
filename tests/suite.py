@@ -6,6 +6,7 @@ from tests.attempt_test import AttemptTestCase
 from tests.broker_test import BrokerTestCase
 from tests.evaluation_dao_test import EvaluationDAOTestCase
 from tests.forward_dao_test import ForwardDAOTestCase
+from tests.forward_test import ForwardTestCase
 from tests.intraday_dao_test import IntraDayDAOTestCase
 from tests.inventory_test import InventoryTestCase
 from tests.isin_test import IsinTestCase
@@ -23,6 +24,7 @@ tests = [AnalyserTestCase,
          BrokerTestCase,
          EvaluationDAOTestCase,
          ForwardDAOTestCase,
+         ForwardTestCase,
          IntraDayDAOTestCase,
          InventoryTestCase,
          IsinTestCase,

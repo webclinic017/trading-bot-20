@@ -43,18 +43,20 @@ class ForwardTestCase(unittest.TestCase):
         now.return_value = ForwardTestCase.OLD_DATE
         ForwardDAO.create_buy('AAA', 100.0, 10, 8996.1)
         ForwardDAO.create_buy('BBB', 100.0, 10, 7992.200000000001)
-        now.return_value = datetime.fromisoformat('2011-11-04T00:00:00')
+        now.return_value = ForwardTestCase.YOUNG_DATE
         EvaluationDAO.create(40000, '', Attempt())
         ForwardTestCase.__to_intraday(Utils.create_frame())
         Forward.start()
         rows = ForwardDAO.read_all()
-        self.assertEqual(len(rows), 3)
+        self.assertEqual(len(rows), 4)
         Utils.assert_attributes(rows[0], action=Action.BUY, cash=8996.1, date=ForwardTestCase.OLD_DATE, number=10,
                                 price=100.0, ticker='AAA')
         Utils.assert_attributes(rows[1], action=Action.BUY, cash=7992.200000000001, date=ForwardTestCase.OLD_DATE,
                                 number=10, price=100.0, ticker='BBB')
         Utils.assert_attributes(rows[2], action=Action.SELL, cash=8988.300000000001, date=ForwardTestCase.YOUNG_DATE,
                                 number=2, price=500.0, ticker='AAA')
+        Utils.assert_attributes(rows[3], action=Action.BUY, cash=7984.4000000000015, date=ForwardTestCase.YOUNG_DATE,
+                                number=10, price=100.0, ticker='CCC')
 
     @patch('src.utils.Utils.now')
     def test_init(self, now):
