@@ -92,13 +92,13 @@ def export_view(data: str) -> str:
     return render_template('export.html')
 
 
-@app.errorhandler(500)
+@app.errorhandler(404)
 def server_error(e: exec) -> Tuple[str, int]:
     logging.exception('An error occurred during a request.')
     return '''
     An internal error occurred: <pre>{}</pre>
     See logs for full stacktrace.
-    '''.format(e), 500
+    '''.format(e), 404
 
 
 if __name__ == '__main__':

@@ -10,6 +10,7 @@ from tests.forward_test import ForwardTestCase
 from tests.intraday_dao_test import IntraDayDAOTestCase
 from tests.inventory_test import InventoryTestCase
 from tests.isin_test import IsinTestCase
+from tests.main_test import MainTestCase
 from tests.optimizer_test import OptimizerTestCase
 from tests.process_manager_test import ProcessManagerTestCase
 from tests.stock_dao_test import StockDAOTestCase
@@ -28,6 +29,7 @@ tests = [AnalyserTestCase,
          IntraDayDAOTestCase,
          InventoryTestCase,
          IsinTestCase,
+         MainTestCase,
          OptimizerTestCase,
          ProcessManagerTestCase,
          StockDAOTestCase,
