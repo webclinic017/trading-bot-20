@@ -3,24 +3,24 @@ from typing import Dict, List, Tuple
 
 from pandas import DataFrame
 
-from src.action import Action
-from src.analyser import Analyser
-from src.attempt import Attempt
-from src.broker import Broker
+from src.bo.analyser_bo import AnalyserBO
+from src.bo.broker_bo import BrokerBO
+from src.bo.inventory_bo import Inventory
+from src.bo.statistic_bo import StatisticBO
+from src.bo.strategy_bo import StrategyBO
 from src.constants import FEE, INITIAL_CASH
 from src.dao.evaluation_dao import EvaluationDAO
 from src.dao.forward_dao import ForwardDAO
 from src.dao.intraday_dao import IntradayDAO
+from src.dto.attempt_dto import AttemptDTO
 from src.entity.evaluation_entity import EvaluationEntity
 from src.entity.forward_entity import ForwardEntity
 from src.entity.intraday_entity import IntradayEntity
-from src.inventory import Inventory
-from src.statistic import Statistic
-from src.strategy import Strategy
-from src.utils import Utils
+from src.enums.action_enum import ActionEnum
+from src.utils.utils import Utils
 
 
-class Forward:
+class ForwardBO:
 
     @staticmethod
     def start() -> None:
@@ -32,20 +32,20 @@ class Forward:
         latest_date_dict: Dict[str, str] = {r.ticker: r[0] for r in read_latest_date}
         rows: List[IntradayEntity] = IntradayDAO.read_order_by_date_asc()
         frame: DataFrame = IntradayDAO.dataframe(rows)
-        inventory, cash = Forward.init()
-        broker: Broker = Broker(cash, FEE, ForwardDAO, inventory)
-        statistic: Statistic = Statistic('forward')
-        attempt: Attempt = Attempt.from_evaluation(evaluation)
-        Analyser.analyse(frame, Strategy.counter_cyclical, broker, statistic, attempt, latest_date_dict)
+        inventory, cash = ForwardBO.init()
+        broker: BrokerBO = BrokerBO(cash, FEE, ForwardDAO, inventory)
+        statistic: StatisticBO = StatisticBO('forward')
+        attempt: AttemptDTO = AttemptDTO.from_evaluation(evaluation)
+        AnalyserBO.analyse(frame, StrategyBO.counter_cyclical, broker, statistic, attempt, latest_date_dict)
 
     @staticmethod
     def init() -> Tuple[Dict[str, Inventory], float]:
         rows: List[ForwardEntity] = ForwardDAO.read()
-        broker = Broker(INITIAL_CASH, FEE)
+        broker = BrokerBO(INITIAL_CASH, FEE)
         for row in rows:
-            if row.action == Action.BUY:
+            if row.action == ActionEnum.BUY:
                 broker.buy(row.ticker, row.price, row.number)
-            elif row.action == Action.SELL:
+            elif row.action == ActionEnum.SELL:
                 broker.sell(row.ticker, row.price, row.number)
         return broker.inventory, broker.cash
 
@@ -64,4 +64,4 @@ class Forward:
 
 
 if __name__ == '__main__':
-    Forward.start()
+    ForwardBO.start()

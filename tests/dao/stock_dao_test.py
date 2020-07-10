@@ -15,7 +15,7 @@ class StockDAOTestCase(unittest.TestCase):
     def setUp(self):
         StockEntity.query.delete()
 
-    @patch('src.isin.Isin.isin')
+    @patch('src.bo.stock_bo.StockBO.isin')
     def test_read_all(self, isin):
         isin.return_value = 'isin'
         StockDAO.update('AAPL')
@@ -23,7 +23,7 @@ class StockDAOTestCase(unittest.TestCase):
         self.assertEqual(result[0].ticker, 'AAPL')
         self.assertEqual(result[0].isin, 'isin')
 
-    @patch('src.isin.Isin.isin')
+    @patch('src.bo.stock_bo.StockBO.isin')
     def test_read_ticker(self, isin):
         isin.return_value = 'isin'
         portfolio = ('AAPL',)
@@ -31,7 +31,7 @@ class StockDAOTestCase(unittest.TestCase):
         result = StockDAO.read_ticker()
         self.assertEqual(result[0].ticker, 'AAPL')
 
-    @patch('src.isin.Isin.isin')
+    @patch('src.bo.stock_bo.StockBO.isin')
     def test_exception(self, isin):
         isin.return_value = 'isin'
         StockDAO.update(None)

@@ -1,12 +1,12 @@
 import math
 from typing import Dict, Type
 
+from src.bo.inventory_bo import Inventory
 from src.constants import INITIAL_CASH, FEE
 from src.dao.broker_dao import BrokerDAO
-from src.inventory import Inventory
 
 
-class Broker:
+class BrokerBO:
 
     def __init__(self, cash: float = INITIAL_CASH, fee: float = FEE, dao: Type[BrokerDAO] = BrokerDAO,
                  inventory: Dict[str, Inventory] = None) -> None:

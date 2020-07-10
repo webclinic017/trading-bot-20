@@ -1,8 +1,8 @@
 from typing import Tuple, List, Optional
 
+from src.bo.stock_bo import StockBO
 from src.dao.dao import DAO
 from src.entity.stock_entity import StockEntity
-from src.isin import Isin
 
 
 class StockDAO:
@@ -26,5 +26,5 @@ class StockDAO:
         for ticker in portfolio:
             stock: StockEntity = StockEntity()
             stock.ticker = ticker
-            stock.isin = Isin.isin(ticker)
+            stock.isin = StockBO.isin(ticker)
             DAO.persist(stock)

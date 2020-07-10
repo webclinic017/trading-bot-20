@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 import pandas as pd
 
-from src.utils import Utils
+from src.utils.utils import Utils
 
 
 class UtilsTestCase(unittest.TestCase):
@@ -68,7 +68,7 @@ class UtilsTestCase(unittest.TestCase):
         self.assertTrue(math.isnan(value_aaa))
         self.assertTrue(math.isnan(value_bbb))
 
-    @patch('src.utils.Utils.now')
+    @patch('src.utils.utils.Utils.now')
     def test_is_today(self, now):
         today = datetime.fromisoformat('2011-11-04T00:00:00')
         now.return_value = today
@@ -83,7 +83,7 @@ class UtilsTestCase(unittest.TestCase):
         self.assertFalse(Utils.is_today(today + timedelta(weeks=52)))
         self.assertFalse(Utils.is_today(None))
 
-    @patch('src.utils.Utils.now')
+    @patch('src.utils.utils.Utils.now')
     def test_is_working_day_ny(self, now):
         now.return_value = datetime.fromisoformat('2019-07-05T12:00:00')
         self.assertTrue(Utils.is_working_day_ny())

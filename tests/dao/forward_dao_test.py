@@ -15,7 +15,7 @@ class ForwardDAOTestCase(unittest.TestCase):
     def setUpClass(cls):
         db.create_all()
 
-    @patch('src.utils.Utils.now')
+    @patch('src.utils.utils.Utils.now')
     def setUp(self, now):
         StockEntity.query.delete()
         now.return_value = ForwardDAOTestCase.YOUNG_DATE

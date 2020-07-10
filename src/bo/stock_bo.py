@@ -3,7 +3,7 @@ import re
 import requests
 
 
-class Isin:
+class StockBO:
     @staticmethod
     def isin(ticker: str) -> str:
         url = 'https://markets.businessinsider.com/ajax/' \

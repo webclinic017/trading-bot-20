@@ -2,10 +2,10 @@ import multiprocessing
 from multiprocessing.context import Process
 from typing import Dict, List, Tuple, Any, Optional
 
+from src.bo.forward_bo import ForwardBO
+from src.bo.optimizer_bo import OptimizerBO
 from src.dao.intraday_dao import IntradayDAO
 from src.dao.stock_dao import StockDAO
-from src.forward import Forward
-from src.optimizer import Optimizer
 from src.portfolio import Portfolio
 from src.scheduler import Scheduler
 
@@ -28,11 +28,11 @@ class ProcessManager:
             ARGS: []
         },
         'optimize': {
-            TARGET: Optimizer.start,
+            TARGET: OptimizerBO.start,
             ARGS: (Portfolio.test_portfolio(), 100, 4)
         },
         'forward': {
-            TARGET: Forward.start,
+            TARGET: ForwardBO.start,
             ARGS: []
         }
     }

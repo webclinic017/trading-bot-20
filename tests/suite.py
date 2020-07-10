@@ -1,39 +1,39 @@
 import unittest
 from unittest.suite import TestSuite
 
-from tests.analyser_test import AnalyserTestCase
-from tests.attempt_test import AttemptTestCase
-from tests.broker_test import BrokerTestCase
-from tests.evaluation_dao_test import EvaluationDAOTestCase
-from tests.forward_dao_test import ForwardDAOTestCase
-from tests.forward_test import ForwardTestCase
-from tests.intraday_dao_test import IntraDayDAOTestCase
-from tests.inventory_test import InventoryTestCase
-from tests.isin_test import IsinTestCase
+from tests.bo.analyser_bo_test import AnalyserBOTestCase
+from tests.bo.broker_bo_test import BrokerBOTestCase
+from tests.bo.forward_bo_test import ForwardBOTestCase
+from tests.bo.inventory_bo_test import InventoryBOTestCase
+from tests.bo.optimizer_bo_test import OptimizerBOTestCase
+from tests.bo.stock_bo_test import StockBOTestCase
+from tests.bo.strategy_bo_test import StrategyBOTestCase
+from tests.dao.evaluation_dao_test import EvaluationDAOTestCase
+from tests.dao.forward_dao_test import ForwardDAOTestCase
+from tests.dao.intraday_dao_test import IntraDayDAOTestCase
+from tests.dao.stock_dao_test import StockDAOTestCase
+from tests.dto.attempt_dto_test import AttemptDTOTestCase
 from tests.main_test import MainTestCase
-from tests.optimizer_test import OptimizerTestCase
 from tests.process_manager_test import ProcessManagerTestCase
-from tests.stock_dao_test import StockDAOTestCase
-from tests.strategy_test import StrategyTestCase
-from tests.utils_test import UtilsTestCase
+from tests.utils.utils_test import UtilsTestCase
 
 loader = unittest.TestLoader()
 suite: TestSuite = unittest.TestSuite()
 
-tests = [AnalyserTestCase,
-         AttemptTestCase,
-         BrokerTestCase,
+tests = [AnalyserBOTestCase,
+         AttemptDTOTestCase,
+         BrokerBOTestCase,
          EvaluationDAOTestCase,
          ForwardDAOTestCase,
-         ForwardTestCase,
+         ForwardBOTestCase,
          IntraDayDAOTestCase,
-         InventoryTestCase,
-         IsinTestCase,
+         InventoryBOTestCase,
+         StockBOTestCase,
          MainTestCase,
-         OptimizerTestCase,
+         OptimizerBOTestCase,
          ProcessManagerTestCase,
          StockDAOTestCase,
-         StrategyTestCase,
+         StrategyBOTestCase,
          UtilsTestCase]
 
 for test in tests:

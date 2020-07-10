@@ -1,9 +1,9 @@
 import unittest
 
-from src.inventory import Inventory
+from src.bo.inventory_bo import Inventory
 
 
-class InventoryTestCase(unittest.TestCase):
+class InventoryBOTestCase(unittest.TestCase):
     def test_init(self):
         inventory = Inventory(1, 2)
         self.assertEqual(inventory.number, 1)

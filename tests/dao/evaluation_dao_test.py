@@ -2,8 +2,8 @@ import time
 import unittest
 
 from src import db
-from src.attempt import Attempt
 from src.dao.evaluation_dao import EvaluationDAO
+from src.dto.attempt_dto import AttemptDTO
 from src.entity.evaluation_entity import EvaluationEntity
 
 
@@ -15,10 +15,10 @@ class EvaluationDAOTestCase(unittest.TestCase):
 
     def setUp(self):
         EvaluationEntity.query.delete()
-        self.attempt = Attempt(1, 2, 3, 4, 5, 6)
+        self.attempt = AttemptDTO(1, 2, 3, 4, 5, 6)
         EvaluationDAO.create(1000, 'first', self.attempt)
         time.sleep(1)
-        EvaluationDAO.create(2000, 'second', Attempt(11, 22, 33, 44, 55, 66))
+        EvaluationDAO.create(2000, 'second', AttemptDTO(11, 22, 33, 44, 55, 66))
 
     def test_read_all(self):
         rows = EvaluationDAO.read_all()

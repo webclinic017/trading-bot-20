@@ -1,13 +1,13 @@
 from typing import List
 
-from src.attempt import Attempt
 from src.dao.dao import DAO
+from src.dto.attempt_dto import AttemptDTO
 from src.entity.evaluation_entity import EvaluationEntity
 
 
 class EvaluationDAO:
     @staticmethod
-    def create(s: float, funds: str, attempt: Attempt) -> None:
+    def create(s: float, funds: str, attempt: AttemptDTO) -> None:
         evaluation: EvaluationEntity = EvaluationEntity()
         evaluation.sum = str(s)
         evaluation.funds = funds
@@ -24,7 +24,7 @@ class EvaluationDAO:
         return EvaluationEntity.query.order_by(EvaluationEntity.sum.desc()).first()
 
     @staticmethod
-    def read_attempt(attempt: Attempt) -> EvaluationEntity:
+    def read_attempt(attempt: AttemptDTO) -> EvaluationEntity:
         return EvaluationEntity.query.filter_by(
             amountbuy=attempt.amount_buy).filter_by(
             distancebuy=attempt.distance_buy).filter_by(

@@ -1,12 +1,12 @@
 import unittest
 
-from src.attempt import Attempt
+from src.dto.attempt_dto import AttemptDTO
 from src.entity.evaluation_entity import EvaluationEntity
 
 
-class AttemptTestCase(unittest.TestCase):
+class AttemptDTOTestCase(unittest.TestCase):
     def test_init(self):
-        attempt = Attempt()
+        attempt = AttemptDTO()
         self.assertEqual(attempt.amount_buy, 1000)
         self.assertEqual(attempt.distance_buy, 30)
         self.assertEqual(attempt.delta_buy, 1.5)
@@ -15,7 +15,7 @@ class AttemptTestCase(unittest.TestCase):
         self.assertEqual(attempt.delta_sell, 1.5)
 
     def test_init_with_arguments(self):
-        attempt = Attempt(1, 2, 3, 4, 5, 6)
+        attempt = AttemptDTO(1, 2, 3, 4, 5, 6)
         self.assertEqual(attempt.amount_buy, 1)
         self.assertEqual(attempt.distance_buy, 2)
         self.assertEqual(attempt.delta_buy, 3)
@@ -31,7 +31,7 @@ class AttemptTestCase(unittest.TestCase):
         evaluation.amountsell = 4
         evaluation.distancesell = 5
         evaluation.deltasell = 6
-        attempt = Attempt.from_evaluation(evaluation)
+        attempt = AttemptDTO.from_evaluation(evaluation)
         self.assertEqual(attempt.amount_buy, evaluation.amountbuy)
         self.assertEqual(attempt.distance_buy, evaluation.distancebuy)
         self.assertEqual(attempt.delta_buy, evaluation.deltabuy)

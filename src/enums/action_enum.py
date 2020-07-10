@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class Action(Enum):
+class ActionEnum(Enum):
     BUY = 'buy'
     SELL = 'sell'
     NONE = 'none'

@@ -4,12 +4,12 @@ from typing import Dict, List, Tuple
 from flask import render_template, jsonify, make_response, request
 
 from src import app, db
+from src.bo.forward_bo import ForwardBO
 from src.dao.evaluation_dao import EvaluationDAO
 from src.dao.forward_dao import ForwardDAO
 from src.dao.intraday_dao import IntradayDAO
 from src.dao.stock_dao import StockDAO
 from src.entity.intraday_entity import IntradayEntity
-from src.forward import Forward
 from src.process_manager import ProcessManager
 
 process_manager: ProcessManager = ProcessManager()
@@ -43,8 +43,8 @@ def evaluation_view() -> str:
 
 @app.route('/forward')
 def forward_view() -> str:
-    inventory, cash = Forward.init()
-    inventory, total_value, total = Forward.update(inventory, cash)
+    inventory, cash = ForwardBO.init()
+    inventory, total_value, total = ForwardBO.update(inventory, cash)
     return render_template('forward.html', forwards=ForwardDAO.read_all(), inventory=inventory, cash=cash,
                            total_value=total_value, total=total)
 

@@ -26,6 +26,6 @@ timeout /t 10
 powershell.exe -noprofile -command "Invoke-WebRequest -Uri http://127.0.0.1:5000/process/start/schedule"
 ```
 ### Web GUI
-Open your web browser and type http:// 127.0.0.1:5000/ in the address bar.
+The web gui can be opened by entering `http://127.0.0.1:5000/` in the address bar of the browser
 
   [cb956311]: https://www.alphavantage.co/support/#api-key "Alpha Vantage API key"

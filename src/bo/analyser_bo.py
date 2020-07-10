@@ -5,16 +5,16 @@ import pandas as pd
 from numpy import datetime64
 from pandas import DataFrame
 
-from src.action import Action
-from src.attempt import Attempt
-from src.broker import Broker
-from src.statistic import Statistic
+from src.bo.broker_bo import BrokerBO
+from src.bo.statistic_bo import StatisticBO
+from src.dto.attempt_dto import AttemptDTO
+from src.enums.action_enum import ActionEnum
 
 
-class Analyser:
+class AnalyserBO:
     @staticmethod
-    def analyse(frame: DataFrame, strategy: callable, broker: Broker, statistic: Statistic = None,
-                attempt: Attempt = None, latest_date_dict: Dict[str, str] = None) -> Statistic:
+    def analyse(frame: DataFrame, strategy: callable, broker: BrokerBO, statistic: StatisticBO = None,
+                attempt: AttemptDTO = None, latest_date_dict: Dict[str, str] = None) -> StatisticBO:
         for i in range(frame.shape[0]):
             for j in range(frame.shape[1]):
                 ticker: str = frame.columns[j]
@@ -26,9 +26,9 @@ class Analyser:
                 action, number = strategy(frame, ticker, date, attempt)
                 buy: bool = False
                 sell: bool = False
-                if action == Action.BUY:
+                if action == ActionEnum.BUY:
                     buy = broker.buy(ticker, price, number)
-                elif action == Action.SELL:
+                elif action == ActionEnum.SELL:
                     sell = broker.sell(ticker, price, number)
                 else:
                     broker.update(ticker, price)

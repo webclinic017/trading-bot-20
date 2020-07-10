@@ -3,10 +3,10 @@ import time
 import unittest
 from unittest.mock import patch
 
+from src.bo.forward_bo import ForwardBO
+from src.bo.optimizer_bo import OptimizerBO
 from src.dao.intraday_dao import IntradayDAO
 from src.dao.stock_dao import StockDAO
-from src.forward import Forward
-from src.optimizer import Optimizer
 from src.portfolio import Portfolio
 from src.process_manager import ProcessManager
 from src.scheduler import Scheduler
@@ -42,10 +42,10 @@ class ProcessManagerTestCase(unittest.TestCase):
         self.assertEqual(schedule[ProcessManager.TARGET], Scheduler.start)
         self.assertEqual(schedule[ProcessManager.ARGS], [])
         optimize = ProcessManager.CONFIGURATION['optimize']
-        self.assertEqual(optimize[ProcessManager.TARGET], Optimizer.start)
+        self.assertEqual(optimize[ProcessManager.TARGET], OptimizerBO.start)
         self.assertEqual(optimize[ProcessManager.ARGS], (Portfolio.test_portfolio(), 100, 4))
         forward = ProcessManager.CONFIGURATION['forward']
-        self.assertEqual(forward[ProcessManager.TARGET], Forward.start)
+        self.assertEqual(forward[ProcessManager.TARGET], ForwardBO.start)
         self.assertEqual(forward[ProcessManager.ARGS], [])
 
     @patch('src.process_manager.ProcessManager.CONFIGURATION', new=configuration)

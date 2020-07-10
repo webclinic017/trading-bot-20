@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List, Dict
 
 
-class Statistic:
+class StatisticBO:
 
     def __init__(self, name: str = 'statistic') -> None:
         self.name: str = name
