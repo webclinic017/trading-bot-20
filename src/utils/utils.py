@@ -10,10 +10,10 @@ from workalendar.usa import NewYork
 
 from src.constants import US_EASTERN
 
+T = TypeVar('T')
+
 
 class Utils:
-    T = TypeVar('T')
-
     @staticmethod
     def valid(start: float, value: float, stop: float) -> bool:
         return start <= value <= stop
@@ -59,3 +59,8 @@ class Utils:
     @staticmethod
     def first(sequence: Sequence[T]) -> T:
         return None if len(sequence) == 0 else sequence[0]
+
+    @staticmethod
+    def set_attributes(assignable, **kwargs):
+        for key, value in kwargs.items():
+            setattr(assignable, key, value)

@@ -21,7 +21,7 @@ class EvaluationDAOTestCase(unittest.TestCase):
 
     @patch('src.utils.utils.Utils.now')
     def setUp(self, now):
-        EvaluationEntity.query.delete()
+        Utils.truncate_tables()
         self.attempt = AttemptDTO(1, 2, 3, 4, 5, 6)
         now.return_value = EvaluationDAOTestCase.YOUNG_DATE
         EvaluationDAO.create(1000, 'first', self.attempt)

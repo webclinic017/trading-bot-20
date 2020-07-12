@@ -2,17 +2,12 @@ import unittest
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-import numpy as np
 import pandas as pd
 import pytz
-from pandas import DataFrame
 
 from src import db
 from src.constants import US_EASTERN, UTC
 from src.dao.intraday_dao import IntradayDAO
-from src.entity.evaluation_entity import EvaluationEntity
-from src.entity.forward_entity import ForwardEntity
-from src.entity.intraday_entity import IntradayEntity
 from tests.utils.utils import Utils
 
 
@@ -23,9 +18,7 @@ class IntradayDAOTestCase(unittest.TestCase):
         db.create_all()
 
     def setUp(self):
-        EvaluationEntity.query.delete()
-        IntradayEntity.query.delete()
-        ForwardEntity.query.delete()
+        Utils.truncate_tables()
 
     def test_init(self):
         data = {'date': ['2020-05-01 16:00:00', '2020-05-01 15:55:00'],
@@ -55,20 +48,13 @@ class IntradayDAOTestCase(unittest.TestCase):
 
     @patch('alpha_vantage.timeseries.TimeSeries.get_intraday')
     def test_create_ticker(self, intraday):
-        dates = pd.date_range('1/1/2000', periods=10)
-        table = np.full((10, 5), float(500))
-        columns = ['1. open', '2. high', '3. low', '4. close', '5. volume']
-        frame = DataFrame(table, columns=columns)
-        frame['date'] = dates
-        frame.sort_index(inplace=True, ascending=False)
-        meta_data = {'6. Time Zone': US_EASTERN}
-        intraday.return_value = (frame, meta_data)
+        intraday.return_value = Utils.get_intraday()
         with patch('alpha_vantage.timeseries.TimeSeries.__init__', return_value=None):
-            IntradayDAO.create_ticker('aapl')
+            IntradayDAO.create_ticker('AAA')
         rows = IntradayDAO.read_order_by_date_asc()
         self.assertEqual(len(rows), 10)
         date = pytz.utc.localize(datetime.fromisoformat('2000-01-01T05:00:00'))
-        Utils.assert_attributes(rows[0], date=date, open=500, high=500, low=500, close=500, volume=500, ticker='aapl')
+        Utils.assert_attributes(rows[0], date=date, open=500, high=500, low=500, close=500, volume=500, ticker='AAA')
 
 
 if __name__ == '__main__':

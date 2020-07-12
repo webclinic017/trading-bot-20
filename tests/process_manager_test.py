@@ -4,8 +4,8 @@ import unittest
 from unittest.mock import patch
 
 from src.bo.forward_bo import ForwardBO
+from src.bo.intraday_bo import IntradayBO
 from src.bo.optimizer_bo import OptimizerBO
-from src.dao.intraday_dao import IntradayDAO
 from src.dao.stock_dao import StockDAO
 from src.portfolio import Portfolio
 from src.process_manager import ProcessManager
@@ -36,7 +36,7 @@ class ProcessManagerTestCase(unittest.TestCase):
         self.assertEqual(update_table_stock[ProcessManager.TARGET], StockDAO.update)
         self.assertEqual(update_table_stock[ProcessManager.ARGS], Portfolio.test_prod_portfolio())
         update_table_intraday = ProcessManager.CONFIGURATION['update-table-intraday']
-        self.assertEqual(update_table_intraday[ProcessManager.TARGET], IntradayDAO.update)
+        self.assertEqual(update_table_intraday[ProcessManager.TARGET], IntradayBO.update)
         self.assertEqual(update_table_intraday[ProcessManager.ARGS], Portfolio.test_prod_portfolio())
         schedule = ProcessManager.CONFIGURATION['schedule']
         self.assertEqual(schedule[ProcessManager.TARGET], Scheduler.start)

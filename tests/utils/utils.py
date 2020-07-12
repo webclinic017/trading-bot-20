@@ -6,9 +6,13 @@ import numpy as np
 import pandas as pd
 from pandas import DataFrame
 
-from src.constants import UTC
+from src.constants import UTC, US_EASTERN
 from src.dao.dao import DAO
 from src.dao.intraday_dao import IntradayDAO
+from src.entity.evaluation_entity import EvaluationEntity
+from src.entity.forward_entity import ForwardEntity
+from src.entity.intraday_entity import IntradayEntity
+from src.entity.stock_entity import StockEntity
 
 
 class Utils:
@@ -43,3 +47,21 @@ class Utils:
         series = pd.Series(data, index=index, dtype=object)
         intraday = IntradayDAO.init(series, ticker, UTC)
         DAO.persist(intraday)
+
+    @staticmethod
+    def get_intraday():
+        dates = pd.date_range('1/1/2000', periods=10)
+        table = np.full((10, 5), float(500))
+        columns = ['1. open', '2. high', '3. low', '4. close', '5. volume']
+        frame = DataFrame(table, columns=columns)
+        frame['date'] = dates
+        frame.sort_index(inplace=True, ascending=False)
+        meta_data = {'6. Time Zone': US_EASTERN}
+        return frame, meta_data
+
+    @staticmethod
+    def truncate_tables():
+        EvaluationEntity.query.delete()
+        IntradayEntity.query.delete()
+        ForwardEntity.query.delete()
+        StockEntity.query.delete()

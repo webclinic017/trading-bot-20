@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from src import db
 from src.dao.stock_dao import StockDAO
-from src.entity.stock_entity import StockEntity
+from tests.utils.utils import Utils
 
 
 class StockDAOTestCase(unittest.TestCase):
@@ -13,7 +13,7 @@ class StockDAOTestCase(unittest.TestCase):
         db.create_all()
 
     def setUp(self):
-        StockEntity.query.delete()
+        Utils.truncate_tables()
 
     @patch('src.bo.stock_bo.StockBO.isin')
     def test_read_all(self, isin):

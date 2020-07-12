@@ -13,9 +13,6 @@ from src.constants import INITIAL_CASH, FEE
 from src.dao.evaluation_dao import EvaluationDAO
 from src.dao.forward_dao import ForwardDAO
 from src.dto.attempt_dto import AttemptDTO
-from src.entity.evaluation_entity import EvaluationEntity
-from src.entity.forward_entity import ForwardEntity
-from src.entity.intraday_entity import IntradayEntity
 from src.enums.action_enum import ActionEnum
 from tests.utils.utils import Utils
 
@@ -29,9 +26,7 @@ class ForwardBOTestCase(unittest.TestCase):
         db.create_all()
 
     def setUp(self):
-        EvaluationEntity.query.delete()
-        IntradayEntity.query.delete()
-        ForwardEntity.query.delete()
+        Utils.truncate_tables()
 
     @patch('src.utils.utils.Utils.is_today')
     @patch('src.utils.utils.Utils.is_working_day_ny')

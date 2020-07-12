@@ -3,8 +3,8 @@ from multiprocessing.context import Process
 from typing import Dict, List, Tuple, Any, Optional
 
 from src.bo.forward_bo import ForwardBO
+from src.bo.intraday_bo import IntradayBO
 from src.bo.optimizer_bo import OptimizerBO
-from src.dao.intraday_dao import IntradayDAO
 from src.dao.stock_dao import StockDAO
 from src.portfolio import Portfolio
 from src.scheduler import Scheduler
@@ -20,7 +20,7 @@ class ProcessManager:
             ARGS: Portfolio.test_prod_portfolio()
         },
         'update-table-intraday': {
-            TARGET: IntradayDAO.update,
+            TARGET: IntradayBO.update,
             ARGS: Portfolio.test_prod_portfolio()
         },
         'schedule': {

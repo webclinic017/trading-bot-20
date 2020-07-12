@@ -4,7 +4,6 @@ from unittest.mock import patch
 from src import db
 from src.bo.optimizer_bo import OptimizerBO
 from src.dao.evaluation_dao import EvaluationDAO
-from src.entity.evaluation_entity import EvaluationEntity
 from tests.utils.utils import Utils
 
 
@@ -15,7 +14,7 @@ class OptimizerBOTestCase(unittest.TestCase):
         db.create_all()
 
     def setUp(self):
-        EvaluationEntity.query.delete()
+        Utils.truncate_tables()
 
     @patch('src.utils.utils.Utils.negation')
     @patch('src.utils.utils.Utils.inverse')
