@@ -93,6 +93,11 @@ class UtilsTestCase(unittest.TestCase):
         now.return_value = pytz.utc.localize(datetime.fromisoformat('2019-07-04T12:00:00'))
         self.assertFalse(Utils.is_working_day_ny())
 
+    def test_first(self):
+        self.assertIsNone(Utils.first([]))
+        self.assertEqual(Utils.first([1]), 1)
+        self.assertEqual(Utils.first([1, 2]), 1)
+
 
 if __name__ == '__main__':
     unittest.main()

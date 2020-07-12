@@ -43,4 +43,4 @@ class ForwardDAOTestCase(unittest.TestCase):
 
     def test_read_latest_date(self):
         latest_date = ForwardDAO.read_latest_date()
-        self.assertEqual(latest_date[0], ForwardDAOTestCase.YOUNG_DATE)
+        self.assertEqual(latest_date, ForwardDAOTestCase.YOUNG_DATE)

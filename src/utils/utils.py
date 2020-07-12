@@ -1,7 +1,7 @@
 import math
 import random
 from datetime import timedelta, datetime
-from typing import Iterable, List, Iterator, Tuple, Optional
+from typing import Iterable, List, Iterator, Tuple, Optional, TypeVar, Sequence
 
 import pandas as pd
 import pytz
@@ -12,6 +12,8 @@ from src.constants import US_EASTERN
 
 
 class Utils:
+    T = TypeVar('T')
+
     @staticmethod
     def valid(start: float, value: float, stop: float) -> bool:
         return start <= value <= stop
@@ -53,3 +55,7 @@ class Utils:
     @staticmethod
     def is_working_day_ny() -> datetime:
         return NewYork().is_working_day(Utils.now().astimezone(pytz.timezone(US_EASTERN)))
+
+    @staticmethod
+    def first(sequence: Sequence[T]) -> T:
+        return None if len(sequence) == 0 else sequence[0]

@@ -31,8 +31,8 @@ class ForwardDAO(BrokerDAO):
         return ForwardEntity.query.all()
 
     @staticmethod
-    def read_latest_date() -> List[datetime]:
-        return db.session.query(func.max(ForwardEntity.timestamp)).first()
+    def read_latest_date() -> datetime:
+        return Utils.first(db.session.query(func.max(ForwardEntity.timestamp)).first())
 
     @staticmethod
     def __init(action: ActionEnum, ticker: str, price: float, number: int, cash: float) -> ForwardEntity:

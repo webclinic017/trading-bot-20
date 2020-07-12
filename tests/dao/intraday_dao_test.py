@@ -63,7 +63,8 @@ class IntradayDAOTestCase(unittest.TestCase):
         frame.sort_index(inplace=True, ascending=False)
         meta_data = {'6. Time Zone': US_EASTERN}
         intraday.return_value = (frame, meta_data)
-        IntradayDAO.create_ticker('aapl')
+        with patch('alpha_vantage.timeseries.TimeSeries.__init__', return_value=None):
+            IntradayDAO.create_ticker('aapl')
         rows = IntradayDAO.read_order_by_date_asc()
         self.assertEqual(len(rows), 10)
         date = pytz.utc.localize(datetime.fromisoformat('2000-01-01T05:00:00'))
