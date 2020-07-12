@@ -1,7 +1,7 @@
 import unittest
 
 from src.bo.broker_bo import BrokerBO
-from src.bo.inventory_bo import Inventory
+from src.bo.inventory_bo import InventoryBO
 
 
 class BrokerBOTestCase(unittest.TestCase):
@@ -39,7 +39,7 @@ class BrokerBOTestCase(unittest.TestCase):
 
     def test_sell(self):
         broker = BrokerBO(cash=10000, fee=3.9)
-        broker.inventory['AAA'] = Inventory(20, 0.1)
+        broker.inventory['AAA'] = InventoryBO(20, 0.1)
         sell = broker.sell('AAA', 0.1, 10)
         self.assertEqual(sell, True)
         self.assertEqual(broker.inventory['AAA'].price, 0.1)
@@ -58,8 +58,8 @@ class BrokerBOTestCase(unittest.TestCase):
 
     def test_funds(self):
         broker = BrokerBO(cash=10)
-        broker.inventory['AAA'] = Inventory(10, 0.1)
-        broker.inventory['BBB'] = Inventory(20, 0.2)
+        broker.inventory['AAA'] = InventoryBO(10, 0.1)
+        broker.inventory['BBB'] = InventoryBO(20, 0.2)
         self.assertEqual(broker.funds(), 10 + 10 * 0.1 + 20 * 0.2)
 
 

@@ -4,15 +4,14 @@ from datetime import datetime, timedelta
 from unittest.mock import patch
 
 import pandas as pd
+import pytz
 
 from src import db
 from src.bo.forward_bo import ForwardBO
-from src.bo.inventory_bo import Inventory
+from src.bo.inventory_bo import InventoryBO
 from src.constants import INITIAL_CASH, FEE
-from src.dao.dao import DAO
 from src.dao.evaluation_dao import EvaluationDAO
 from src.dao.forward_dao import ForwardDAO
-from src.dao.intraday_dao import IntradayDAO
 from src.dto.attempt_dto import AttemptDTO
 from src.entity.evaluation_entity import EvaluationEntity
 from src.entity.forward_entity import ForwardEntity
@@ -22,8 +21,8 @@ from tests.utils.utils import Utils
 
 
 class ForwardBOTestCase(unittest.TestCase):
-    YOUNG_DATE = datetime.fromisoformat('2011-11-04T00:00:00')
-    OLD_DATE = datetime.fromisoformat('2011-11-03T00:00:00')
+    YOUNG_DATE = pytz.utc.localize(datetime.fromisoformat('2011-11-04T00:00:00'))
+    OLD_DATE = pytz.utc.localize(datetime.fromisoformat('2011-11-03T00:00:00'))
 
     @classmethod
     def setUpClass(cls):
@@ -49,15 +48,15 @@ class ForwardBOTestCase(unittest.TestCase):
         ForwardBO.start()
         rows = ForwardDAO.read_all()
         self.assertEqual(len(rows), 4)
-        Utils.assert_attributes(rows[0], action=ActionEnum.BUY, cash=8996.1, date=ForwardBOTestCase.OLD_DATE, number=10,
-                                price=100.0, ticker='AAA')
-        Utils.assert_attributes(rows[1], action=ActionEnum.BUY, cash=7992.200000000001, date=ForwardBOTestCase.OLD_DATE,
-                                number=10, price=100.0, ticker='BBB')
+        Utils.assert_attributes(rows[0], action=ActionEnum.BUY, cash=8996.1, timestamp=ForwardBOTestCase.OLD_DATE,
+                                number=10, price=100.0, ticker='AAA')
+        Utils.assert_attributes(rows[1], action=ActionEnum.BUY, cash=7992.200000000001,
+                                timestamp=ForwardBOTestCase.OLD_DATE, number=10, price=100.0, ticker='BBB')
         Utils.assert_attributes(rows[2], action=ActionEnum.SELL, cash=8988.300000000001,
-                                date=ForwardBOTestCase.YOUNG_DATE,
+                                timestamp=ForwardBOTestCase.YOUNG_DATE,
                                 number=2, price=500.0, ticker='AAA')
         Utils.assert_attributes(rows[3], action=ActionEnum.BUY, cash=7984.4000000000015,
-                                date=ForwardBOTestCase.YOUNG_DATE,
+                                timestamp=ForwardBOTestCase.YOUNG_DATE,
                                 number=10, price=100.0, ticker='CCC')
 
     @patch('src.utils.utils.Utils.now')
@@ -87,16 +86,16 @@ class ForwardBOTestCase(unittest.TestCase):
         self.assertEqual(cash, estimated)
 
     def test_update(self):
-        ForwardBOTestCase.__create_intraday('AAA', ForwardBOTestCase.YOUNG_DATE, 10, 10, 10, 10, 10)
-        ForwardBOTestCase.__create_intraday('AAA', ForwardBOTestCase.OLD_DATE, 7, 7, 7, 7, 7)
-        ForwardBOTestCase.__create_intraday('BBB', ForwardBOTestCase.YOUNG_DATE, 20, 20, 20, 20, 20)
-        ForwardBOTestCase.__create_intraday('BBB', ForwardBOTestCase.OLD_DATE, 8, 8, 8, 8, 8)
-        ForwardBOTestCase.__create_intraday('CCC', ForwardBOTestCase.YOUNG_DATE, 30, 30, 30, 30, 30)
-        ForwardBOTestCase.__create_intraday('CCC', ForwardBOTestCase.OLD_DATE, 9, 9, 9, 9, 9)
+        Utils.create_intraday('AAA', ForwardBOTestCase.YOUNG_DATE, 10, 10, 10, 10, 10)
+        Utils.create_intraday('AAA', ForwardBOTestCase.OLD_DATE, 7, 7, 7, 7, 7)
+        Utils.create_intraday('BBB', ForwardBOTestCase.YOUNG_DATE, 20, 20, 20, 20, 20)
+        Utils.create_intraday('BBB', ForwardBOTestCase.OLD_DATE, 8, 8, 8, 8, 8)
+        Utils.create_intraday('CCC', ForwardBOTestCase.YOUNG_DATE, 30, 30, 30, 30, 30)
+        Utils.create_intraday('CCC', ForwardBOTestCase.OLD_DATE, 9, 9, 9, 9, 9)
         inventory = {
-            'AAA': Inventory(70, 1),
-            'BBB': Inventory(80, 2),
-            'CCC': Inventory(90, 3),
+            'AAA': InventoryBO(70, 1),
+            'BBB': InventoryBO(80, 2),
+            'CCC': InventoryBO(90, 3),
         }
         inventory, total_value, total = ForwardBO.update(inventory, INITIAL_CASH)
         Utils.assert_attributes(inventory['AAA'], price=10, number=70)
@@ -115,15 +114,7 @@ class ForwardBOTestCase(unittest.TestCase):
                 price = frame.iloc[i][j]
                 if math.isnan(price):
                     continue
-                ForwardBOTestCase.__create_intraday(ticker, date, price, price, price, price, price)
-
-    @staticmethod
-    def __create_intraday(ticker, date, o, high, low, close, volume):
-        data = [date, o, high, low, close, volume]
-        index = ['date', '1. open', '2. high', '3. low', '4. close', '5. volume']
-        series = pd.Series(data, index=index, dtype=object)
-        intraday = IntradayDAO.init(series, ticker)
-        DAO.persist(intraday)
+                Utils.create_intraday(ticker, date, price, price, price, price, price)
 
 
 if __name__ == '__main__':

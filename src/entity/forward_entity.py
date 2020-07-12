@@ -1,3 +1,5 @@
+from sqlalchemy_utc import UtcDateTime
+
 from src import db
 from src.entity.stock_entity import StockEntity
 from src.enums.action_enum import ActionEnum
@@ -5,7 +7,7 @@ from src.enums.action_enum import ActionEnum
 
 class ForwardEntity(db.Model):
     __tablename__ = 'forward'
-    date = db.Column(db.DateTime, index=True, primary_key=True)
+    timestamp = db.Column(UtcDateTime, index=True, primary_key=True)
     ticker = db.Column(db.String(10), db.ForeignKey(StockEntity.ticker), primary_key=True)
     action = db.Column(db.Enum(ActionEnum))
     price = db.Column(db.Float)

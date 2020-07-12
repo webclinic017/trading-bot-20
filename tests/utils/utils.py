@@ -6,11 +6,15 @@ import numpy as np
 import pandas as pd
 from pandas import DataFrame
 
+from src.constants import UTC
+from src.dao.dao import DAO
+from src.dao.intraday_dao import IntradayDAO
+
 
 class Utils:
     @staticmethod
     def create_frame() -> DataFrame:
-        dates = pd.date_range('1/1/2000', periods=150)
+        dates = pd.date_range('1/1/2000', periods=150, tz=UTC)
         prices_aaa = np.full((150, 1), float(500))
         prices_bbb = copy.copy(prices_aaa)
         prices_ccc = copy.copy(prices_aaa)
@@ -26,3 +30,16 @@ class Utils:
     def assert_attributes(assertable, **kwargs):
         for key, value in kwargs.items():
             TestCase().assertEqual(getattr(assertable, key), value)
+
+    @staticmethod
+    def assert_items(assertable, **kwargs):
+        for key, value in kwargs.items():
+            TestCase().assertEqual(assertable[key], value)
+
+    @staticmethod
+    def create_intraday(ticker, date, o, high, low, close, volume):
+        data = [date.replace(tzinfo=None), o, high, low, close, volume]
+        index = ['date', '1. open', '2. high', '3. low', '4. close', '5. volume']
+        series = pd.Series(data, index=index, dtype=object)
+        intraday = IntradayDAO.init(series, ticker, UTC)
+        DAO.persist(intraday)

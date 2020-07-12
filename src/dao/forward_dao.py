@@ -24,7 +24,7 @@ class ForwardDAO(BrokerDAO):
 
     @staticmethod
     def read() -> List[ForwardEntity]:
-        return ForwardEntity.query.order_by(ForwardEntity.date.asc()).all()
+        return ForwardEntity.query.order_by(ForwardEntity.timestamp.asc()).all()
 
     @staticmethod
     def read_all() -> List[ForwardEntity]:
@@ -32,12 +32,12 @@ class ForwardDAO(BrokerDAO):
 
     @staticmethod
     def read_latest_date() -> List[datetime]:
-        return db.session.query(func.max(ForwardEntity.date)).first()
+        return db.session.query(func.max(ForwardEntity.timestamp)).first()
 
     @staticmethod
     def __init(action: ActionEnum, ticker: str, price: float, number: int, cash: float) -> ForwardEntity:
         forward: ForwardEntity = ForwardEntity()
-        forward.date = Utils.now()
+        forward.timestamp = Utils.now()
         forward.ticker = ticker
         forward.action = action
         forward.price = price

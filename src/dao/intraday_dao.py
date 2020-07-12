@@ -5,35 +5,34 @@ from datetime import datetime
 from typing import List, Tuple
 
 import pandas as pd
+import pytz
 from alpha_vantage.timeseries import TimeSeries
 from pandas import DataFrame, Series
 from sqlalchemy import func
-from werkzeug.datastructures import FileStorage
 
 from src import db
 from src.dao.dao import DAO
 from src.dao.stock_dao import StockDAO
 from src.entity.intraday_entity import IntradayEntity
 from src.entity.stock_entity import StockEntity
-from src.portfolio import Portfolio
 
 
 class IntradayDAO:
     @staticmethod
     def create_ticker(*ticker: str) -> None:
         try:
-            ts = TimeSeries(key=os.environ.get('ALPHA_VANTAGE'), output_format='pandas')
-            data, meta_data = ts.get_intraday(symbol=ticker[0].replace('.', '-'), outputsize='full')
+            time_series = TimeSeries(key=os.environ.get('ALPHA_VANTAGE'), output_format='pandas')
+            data, meta_data = time_series.get_intraday(symbol=ticker[0].replace('.', '-'), outputsize='full')
             data = data.reset_index()
             for index, row in data.iterrows():
-                intraday = IntradayDAO.init(row, ticker[0])
+                intraday = IntradayDAO.init(row, ticker[0], meta_data['6. Time Zone'])
                 DAO.persist(intraday)
         except ValueError as e:
             logging.exception(e)
 
     @staticmethod
-    def create_from_file(file: FileStorage) -> None:
-        rows = json.loads(file.read())
+    def create_from_file(content: str) -> None:
+        rows = json.loads(content)
         for row in rows:
             intraday: IntradayEntity = IntradayEntity()
             intraday.date = datetime.fromisoformat(row['date'])
@@ -90,9 +89,9 @@ class IntradayDAO:
         return frame
 
     @staticmethod
-    def init(row: Series, ticker: str) -> IntradayEntity:
+    def init(row: Series, ticker: str, timezone: str) -> IntradayEntity:
         intraday: IntradayEntity = IntradayEntity()
-        intraday.date = datetime.fromisoformat(str(row['date']))
+        intraday.date = pytz.timezone(timezone).localize(datetime.fromisoformat(str(row['date'])))
         intraday.open = float(row['1. open'])
         intraday.high = float(row['2. high'])
         intraday.low = float(row['3. low'])
@@ -122,4 +121,4 @@ class IntradayDAO:
 
 
 if __name__ == '__main__':
-    IntradayDAO.update(*Portfolio.test_prod_portfolio())
+    IntradayDAO.create_ticker('aapl')

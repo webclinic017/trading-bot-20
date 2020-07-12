@@ -1,7 +1,7 @@
 import math
 from typing import Dict, Type
 
-from src.bo.inventory_bo import Inventory
+from src.bo.inventory_bo import InventoryBO
 from src.constants import INITIAL_CASH, FEE
 from src.dao.broker_dao import BrokerDAO
 
@@ -9,11 +9,11 @@ from src.dao.broker_dao import BrokerDAO
 class BrokerBO:
 
     def __init__(self, cash: float = INITIAL_CASH, fee: float = FEE, dao: Type[BrokerDAO] = BrokerDAO,
-                 inventory: Dict[str, Inventory] = None) -> None:
+                 inventory: Dict[str, InventoryBO] = None) -> None:
         self.__dao: callable = dao
         self.__cash: float = cash
         self.__fee: float = fee
-        self.__inventory: Dict[str, Inventory] = dict() if inventory is None else inventory
+        self.__inventory: Dict[str, InventoryBO] = dict() if inventory is None else inventory
 
     @property
     def cash(self):
@@ -25,14 +25,14 @@ class BrokerBO:
 
     def update(self, ticker: str, price: float) -> None:
         if not math.isnan(price):
-            entry: Inventory = self.__inventory.get(ticker, Inventory(0, price))
+            entry: InventoryBO = self.__inventory.get(ticker, InventoryBO(0, price))
             entry.price = price
             self.__inventory[ticker] = entry
 
     def buy(self, ticker: str, price: float, number: int) -> bool:
         total_price: float = price * number
         if self.__cash >= total_price:
-            entry: Inventory = self.__inventory.get(ticker, Inventory(0, price))
+            entry: InventoryBO = self.__inventory.get(ticker, InventoryBO(0, price))
             entry.number += number
             entry.price = price
             self.__inventory[ticker] = entry
@@ -43,7 +43,7 @@ class BrokerBO:
 
     def sell(self, ticker: str, price: float, number: int) -> bool:
         total_price: float = price * number
-        entry: Inventory = self.__inventory.get(ticker, Inventory(0, price))
+        entry: InventoryBO = self.__inventory.get(ticker, InventoryBO(0, price))
         if entry.number >= number:
             entry.number -= number
             entry.price = price

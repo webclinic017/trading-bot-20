@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Dict
 
 import pandas as pd
-from numpy import datetime64
+import pytz
 from pandas import DataFrame
 
 from src.bo.broker_bo import BrokerBO
@@ -18,9 +18,8 @@ class AnalyserBO:
         for i in range(frame.shape[0]):
             for j in range(frame.shape[1]):
                 ticker: str = frame.columns[j]
-                date: datetime64 = frame.index.values[i]
-                current_date: datetime = pd.to_datetime(date, format='%d%b%Y:%H:%M:%S.%f')
-                if latest_date_dict is not None and latest_date_dict[ticker] != current_date:
+                date: datetime = pytz.utc.localize(pd.to_datetime(frame.index.values[i], format='%d%b%Y:%H:%M:%S.%f'))
+                if latest_date_dict is not None and latest_date_dict[ticker] != date:
                     continue
                 price: float = frame.iloc[i][j]
                 action, number = strategy(frame, ticker, date, attempt)
@@ -33,7 +32,7 @@ class AnalyserBO:
                 else:
                     broker.update(ticker, price)
                 if statistic is not None:
-                    statistic.plot(current_date, ticker, price, buy, sell)
+                    statistic.plot(date, ticker, price, buy, sell)
                     statistic.test(action, number, ticker, price)
-                    statistic.log(action, current_date, ticker, price, buy, sell)
+                    statistic.log(action, date, ticker, price, buy, sell)
         return statistic

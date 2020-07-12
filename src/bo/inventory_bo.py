@@ -1,4 +1,4 @@
-class Inventory:
+class InventoryBO:
 
     def __init__(self, number: int, price: float) -> None:
         self.number = number

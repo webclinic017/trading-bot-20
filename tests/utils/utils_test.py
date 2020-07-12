@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from unittest.mock import patch
 
 import pandas as pd
+import pytz
 
 from src.utils.utils import Utils
 
@@ -70,7 +71,7 @@ class UtilsTestCase(unittest.TestCase):
 
     @patch('src.utils.utils.Utils.now')
     def test_is_today(self, now):
-        today = datetime.fromisoformat('2011-11-04T00:00:00')
+        today = pytz.utc.localize(datetime.fromisoformat('2011-11-04T00:00:00'))
         now.return_value = today
         self.assertTrue(Utils.is_today(today))
         self.assertTrue(Utils.is_today(today + timedelta(microseconds=23)))
@@ -85,11 +86,11 @@ class UtilsTestCase(unittest.TestCase):
 
     @patch('src.utils.utils.Utils.now')
     def test_is_working_day_ny(self, now):
-        now.return_value = datetime.fromisoformat('2019-07-05T12:00:00')
+        now.return_value = pytz.utc.localize(datetime.fromisoformat('2019-07-05T12:00:00'))
         self.assertTrue(Utils.is_working_day_ny())
-        now.return_value = datetime.fromisoformat('2019-07-06T12:00:00')
+        now.return_value = pytz.utc.localize(datetime.fromisoformat('2019-07-06T12:00:00'))
         self.assertFalse(Utils.is_working_day_ny())
-        now.return_value = datetime.fromisoformat('2019-07-04T12:00:00')
+        now.return_value = pytz.utc.localize(datetime.fromisoformat('2019-07-04T12:00:00'))
         self.assertFalse(Utils.is_working_day_ny())
 
 

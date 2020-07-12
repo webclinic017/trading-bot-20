@@ -1,15 +1,15 @@
 import logging
-from typing import Dict, List, Tuple
+from typing import Tuple
 
-from flask import render_template, jsonify, make_response, request
+from flask import render_template, make_response, request, jsonify
 
 from src import app, db
 from src.bo.forward_bo import ForwardBO
+from src.bo.intraday_bo import IntradayBO
 from src.dao.evaluation_dao import EvaluationDAO
 from src.dao.forward_dao import ForwardDAO
 from src.dao.intraday_dao import IntradayDAO
 from src.dao.stock_dao import StockDAO
-from src.entity.intraday_entity import IntradayEntity
 from src.process_manager import ProcessManager
 
 process_manager: ProcessManager = ProcessManager()
@@ -77,7 +77,7 @@ def process_stop_view(process_name: str) -> str:
 @app.route('/import/<path:data>', methods=['GET', 'POST'])
 def import_view(data: str) -> str:
     if data == 'intraday':
-        IntradayDAO.create_from_file(request.files['file'])
+        IntradayBO.from_file(request)
     return render_template('import.html')
 
 
@@ -85,10 +85,8 @@ def import_view(data: str) -> str:
 @app.route('/export/<path:data>')
 def export_view(data: str) -> str:
     if data == 'intraday':
-        rows: List[IntradayEntity] = IntradayDAO.read_order_by_date_asc()
-        rows_dict: List[Dict[str, str]] = list(
-            map(lambda row: dict(filter(lambda e: not e[0].startswith('_'), row.__dict__.items())), rows))
-        return make_response(jsonify(rows_dict), 200)
+        content = IntradayBO.to_file()
+        return make_response(jsonify(content), 200)
     return render_template('export.html')
 
 

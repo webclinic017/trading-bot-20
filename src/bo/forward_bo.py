@@ -5,7 +5,7 @@ from pandas import DataFrame
 
 from src.bo.analyser_bo import AnalyserBO
 from src.bo.broker_bo import BrokerBO
-from src.bo.inventory_bo import Inventory
+from src.bo.inventory_bo import InventoryBO
 from src.bo.statistic_bo import StatisticBO
 from src.bo.strategy_bo import StrategyBO
 from src.constants import FEE, INITIAL_CASH
@@ -39,7 +39,7 @@ class ForwardBO:
         AnalyserBO.analyse(frame, StrategyBO.counter_cyclical, broker, statistic, attempt, latest_date_dict)
 
     @staticmethod
-    def init() -> Tuple[Dict[str, Inventory], float]:
+    def init() -> Tuple[Dict[str, InventoryBO], float]:
         rows: List[ForwardEntity] = ForwardDAO.read()
         broker = BrokerBO(INITIAL_CASH, FEE)
         for row in rows:
@@ -50,7 +50,7 @@ class ForwardBO:
         return broker.inventory, broker.cash
 
     @staticmethod
-    def update(inventory: Dict[str, Inventory], cash: float) -> Tuple[Dict[str, Inventory], float, float]:
+    def update(inventory: Dict[str, InventoryBO], cash: float) -> Tuple[Dict[str, InventoryBO], float, float]:
         total: float = 0
         total_value: float = 0
         for ticker, entry in inventory.items():

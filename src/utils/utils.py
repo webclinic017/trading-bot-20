@@ -4,9 +4,11 @@ from datetime import timedelta, datetime
 from typing import Iterable, List, Iterator, Tuple, Optional
 
 import pandas as pd
+import pytz
 from pandas import DataFrame
-from pytz import timezone
 from workalendar.usa import NewYork
+
+from src.constants import US_EASTERN
 
 
 class Utils:
@@ -33,9 +35,8 @@ class Utils:
 
     @staticmethod
     def day_delta_value(frame: DataFrame, column: str, date: datetime, delta: int) -> float:
-        converted = pd.to_datetime(date)
-        interval_end = converted - timedelta(days=delta)
-        interval_start = converted - timedelta(days=delta + 7)
+        interval_end = date - timedelta(days=delta)
+        interval_start = date - timedelta(days=delta + 7)
         interval_date = frame.loc[interval_start:interval_end, column].index.max()
         if pd.isnull(interval_date):
             return math.nan
@@ -47,8 +48,8 @@ class Utils:
 
     @staticmethod
     def now() -> datetime:
-        return datetime.now()
+        return pytz.utc.localize(datetime.utcnow())
 
     @staticmethod
     def is_working_day_ny() -> datetime:
-        return NewYork().is_working_day(Utils.now().astimezone(timezone('US/Eastern')))
+        return NewYork().is_working_day(Utils.now().astimezone(pytz.timezone(US_EASTERN)))
