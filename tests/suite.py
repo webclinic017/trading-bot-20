@@ -9,6 +9,7 @@ from tests.bo.inventory_bo_test import InventoryBOTestCase
 from tests.bo.optimizer_bo_test import OptimizerBOTestCase
 from tests.bo.stock_bo_test import StockBOTestCase
 from tests.bo.strategy_bo_test import StrategyBOTestCase
+from tests.converter.attempt_dto_converter_test import AttemptDTOConverterTestCase
 from tests.dao.evaluation_dao_test import EvaluationDAOTestCase
 from tests.dao.forward_dao_test import ForwardDAOTestCase
 from tests.dao.intraday_dao_test import IntradayDAOTestCase
@@ -22,6 +23,7 @@ loader = unittest.TestLoader()
 suite: TestSuite = unittest.TestSuite()
 
 tests = [AnalyserBOTestCase,
+         AttemptDTOConverterTestCase,
          AttemptDTOTestCase,
          BrokerBOTestCase,
          EvaluationDAOTestCase,

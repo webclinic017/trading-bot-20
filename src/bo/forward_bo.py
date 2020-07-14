@@ -9,6 +9,7 @@ from src.bo.inventory_bo import InventoryBO
 from src.bo.statistic_bo import StatisticBO
 from src.bo.strategy_bo import StrategyBO
 from src.constants import FEE, INITIAL_CASH
+from src.converter.attempt_dto_converter import AttemptDTOConverter
 from src.dao.evaluation_dao import EvaluationDAO
 from src.dao.forward_dao import ForwardDAO
 from src.dao.intraday_dao import IntradayDAO
@@ -35,7 +36,7 @@ class ForwardBO:
         inventory, cash = ForwardBO.init()
         broker: BrokerBO = BrokerBO(cash, FEE, ForwardDAO, inventory)
         statistic: StatisticBO = StatisticBO('forward')
-        attempt: AttemptDTO = AttemptDTO.from_evaluation(evaluation)
+        attempt: AttemptDTO = AttemptDTOConverter.from_evaluation(evaluation)
         AnalyserBO.analyse(frame, StrategyBO.counter_cyclical, broker, statistic, attempt, latest_date_dict)
 
     @staticmethod

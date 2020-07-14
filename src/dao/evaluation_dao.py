@@ -13,12 +13,9 @@ class EvaluationDAO:
         evaluation.timestamp = Utils.now()
         evaluation.sum = str(s)
         evaluation.funds = funds
-        evaluation.amountbuy = str(attempt.amount_buy)
-        evaluation.distancebuy = str(attempt.distance_buy)
-        evaluation.deltabuy = str(attempt.delta_buy)
-        evaluation.amountsell = str(attempt.amount_sell)
-        evaluation.distancesell = str(attempt.distance_sell)
-        evaluation.deltasell = str(attempt.delta_sell)
+        Utils.set_attributes(evaluation, amountbuy=str(attempt.amount_buy), distancebuy=str(attempt.distance_buy),
+                             deltabuy=str(attempt.delta_buy), amountsell=str(attempt.amount_sell),
+                             distancesell=str(attempt.distance_sell), deltasell=str(attempt.delta_sell))
         DAO.persist(evaluation)
 
     @staticmethod

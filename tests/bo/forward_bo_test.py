@@ -1,9 +1,7 @@
-import math
 import unittest
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-import pandas as pd
 import pytz
 
 from src import db
@@ -39,7 +37,7 @@ class ForwardBOTestCase(unittest.TestCase):
         ForwardDAO.create_buy('BBB', 100.0, 10, 7992.200000000001)
         now.return_value = ForwardBOTestCase.YOUNG_DATE
         EvaluationDAO.create(40000, '', AttemptDTO())
-        ForwardBOTestCase.__to_intraday(Utils.create_frame())
+        Utils.persist_intraday_frame()
         ForwardBO.start()
         rows = ForwardDAO.read_all()
         self.assertEqual(len(rows), 4)
@@ -81,12 +79,12 @@ class ForwardBOTestCase(unittest.TestCase):
         self.assertEqual(cash, estimated)
 
     def test_update(self):
-        Utils.create_intraday('AAA', ForwardBOTestCase.YOUNG_DATE, 10, 10, 10, 10, 10)
-        Utils.create_intraday('AAA', ForwardBOTestCase.OLD_DATE, 7, 7, 7, 7, 7)
-        Utils.create_intraday('BBB', ForwardBOTestCase.YOUNG_DATE, 20, 20, 20, 20, 20)
-        Utils.create_intraday('BBB', ForwardBOTestCase.OLD_DATE, 8, 8, 8, 8, 8)
-        Utils.create_intraday('CCC', ForwardBOTestCase.YOUNG_DATE, 30, 30, 30, 30, 30)
-        Utils.create_intraday('CCC', ForwardBOTestCase.OLD_DATE, 9, 9, 9, 9, 9)
+        Utils.persist_intraday('AAA', ForwardBOTestCase.YOUNG_DATE, 10, 10, 10, 10, 10)
+        Utils.persist_intraday('AAA', ForwardBOTestCase.OLD_DATE, 7, 7, 7, 7, 7)
+        Utils.persist_intraday('BBB', ForwardBOTestCase.YOUNG_DATE, 20, 20, 20, 20, 20)
+        Utils.persist_intraday('BBB', ForwardBOTestCase.OLD_DATE, 8, 8, 8, 8, 8)
+        Utils.persist_intraday('CCC', ForwardBOTestCase.YOUNG_DATE, 30, 30, 30, 30, 30)
+        Utils.persist_intraday('CCC', ForwardBOTestCase.OLD_DATE, 9, 9, 9, 9, 9)
         inventory = {
             'AAA': InventoryBO(70, 1),
             'BBB': InventoryBO(80, 2),
@@ -99,17 +97,6 @@ class ForwardBOTestCase(unittest.TestCase):
         estimated = inventory['AAA'].value() + inventory['BBB'].value() + inventory['CCC'].value()
         self.assertEqual(total_value, estimated)
         self.assertEqual(total, estimated + INITIAL_CASH)
-
-    @staticmethod
-    def __to_intraday(frame):
-        for i in range(frame.shape[0]):
-            for j in range(frame.shape[1]):
-                ticker = frame.columns[j]
-                date = pd.to_datetime(frame.index.values[i], format='%d%b%Y:%H:%M:%S.%f')
-                price = frame.iloc[i][j]
-                if math.isnan(price):
-                    continue
-                Utils.create_intraday(ticker, date, price, price, price, price, price)
 
 
 if __name__ == '__main__':

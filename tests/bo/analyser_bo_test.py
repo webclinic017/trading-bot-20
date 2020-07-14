@@ -12,7 +12,7 @@ from tests.utils.utils import Utils
 class AnalyserBOTestCase(unittest.TestCase):
 
     def test_analyser(self):
-        frame = Utils.create_frame()
+        frame = Utils.create_table_frame()
         broker = BrokerBO()
         initial_cash = broker.cash
         cash = broker.cash

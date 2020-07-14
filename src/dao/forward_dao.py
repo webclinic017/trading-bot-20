@@ -37,10 +37,6 @@ class ForwardDAO(BrokerDAO):
     @staticmethod
     def __init(action: ActionEnum, ticker: str, price: float, number: int, cash: float) -> ForwardEntity:
         forward: ForwardEntity = ForwardEntity()
-        forward.timestamp = Utils.now()
-        forward.ticker = ticker
-        forward.action = action
-        forward.price = price
-        forward.number = number
-        forward.cash = cash
+        Utils.set_attributes(forward, timestamp=Utils.now(), ticker=ticker, action=action, price=price, number=number,
+                             cash=cash)
         return forward

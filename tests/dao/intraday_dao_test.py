@@ -7,7 +7,10 @@ import pytz
 
 from src import db
 from src.constants import US_EASTERN, UTC
+from src.dao.dao import DAO
 from src.dao.intraday_dao import IntradayDAO
+from src.entity.intraday_entity import IntradayEntity
+from src.utils.utils import Utils as Utilities
 from tests.utils.utils import Utils
 
 
@@ -31,20 +34,32 @@ class IntradayDAOTestCase(unittest.TestCase):
         frame = pd.DataFrame(data)
         for index, row in frame.iterrows():
             intraday = IntradayDAO.init(row, 'IBM', UTC)
-            self.assertEqual(intraday.date, pytz.utc.localize(datetime.fromisoformat(row['date'])))
-            self.assertEqual(intraday.open, float(row['1. open']))
-            self.assertEqual(intraday.high, float(row['2. high']))
-            self.assertEqual(intraday.low, float(row['3. low']))
-            self.assertEqual(intraday.close, float(row['4. close']))
-            self.assertEqual(intraday.volume, float(row['5. volume']))
-            self.assertEqual(intraday.ticker, 'IBM')
+            self.assertIsInstance(intraday, IntradayEntity)
+            Utils.assert_attributes(intraday, date=pytz.utc.localize(datetime.fromisoformat(row['date'])),
+                                    open=float(row['1. open']), high=float(row['2. high']), low=float(row['3. low']),
+                                    close=float(row['4. close']), volume=float(row['5. volume']), ticker='IBM')
 
     def test_localize(self):
-        eastern_date = datetime.fromisoformat('2011-11-04T00:00:00')
-        utc_date = eastern_date + timedelta(hours=4)
-        eastern = pytz.timezone(US_EASTERN).localize(eastern_date)
-        utc = pytz.utc.localize(utc_date)
-        self.assertEqual(utc, eastern.astimezone(pytz.utc))
+        date = datetime.fromisoformat('2011-11-04T00:00:00')
+        eastern = pytz.timezone(US_EASTERN).localize(date)
+        intraday = IntradayEntity()
+        Utilities.set_attributes(intraday, date=eastern, open=1, high=1, low=1, close=1, volume=1, ticker='AAA')
+        DAO.persist(intraday)
+        intraday = IntradayDAO.read_filter_by_ticker_first('AAA')
+        self.__assert_date(eastern, intraday, date)
+
+    def test_eastern_utc(self):
+        date = datetime.fromisoformat('2011-11-04T00:00:00')
+        Utils.persist_intraday('AAA', date, 1, 1, 1, 1, 1)
+        intraday = IntradayDAO.read_filter_by_ticker_first('AAA')
+        eastern = pytz.timezone(US_EASTERN).localize(date)
+        self.__assert_date(eastern, intraday, date)
+
+    def __assert_date(self, eastern, intraday, date):
+        utc = eastern.astimezone(pytz.utc)
+        self.assertEqual(intraday.date, pytz.utc.localize(date + timedelta(hours=4)))
+        self.assertEqual(intraday.date, utc)
+        self.assertEqual(intraday.date.astimezone(pytz.timezone(US_EASTERN)), eastern)
 
     @patch('alpha_vantage.timeseries.TimeSeries.get_intraday')
     def test_create_ticker(self, intraday):

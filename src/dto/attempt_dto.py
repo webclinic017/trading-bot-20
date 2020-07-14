@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from src.entity.evaluation_entity import EvaluationEntity
-
 
 class AttemptDTO:
     def __init__(self, amount_buy: int = 1000, distance_buy: int = 30, delta_buy: float = 1.5,
@@ -12,8 +10,3 @@ class AttemptDTO:
         self.amount_sell: int = amount_sell
         self.distance_sell: int = distance_sell
         self.delta_sell: float = delta_sell
-
-    @classmethod
-    def from_evaluation(cls, evaluation: EvaluationEntity) -> AttemptDTO:
-        return cls(evaluation.amountbuy, evaluation.distancebuy, evaluation.deltabuy,
-                   evaluation.amountsell, evaluation.distancesell, evaluation.deltasell)

@@ -15,6 +15,7 @@ from src.dao.dao import DAO
 from src.dao.stock_dao import StockDAO
 from src.entity.intraday_entity import IntradayEntity
 from src.entity.stock_entity import StockEntity
+from src.utils.utils import Utils
 
 
 class IntradayDAO:
@@ -22,9 +23,9 @@ class IntradayDAO:
     def create_ticker(*ticker: str) -> None:
         try:
             time_series = TimeSeries(key=os.environ.get('ALPHA_VANTAGE'), output_format='pandas')
-            data, meta_data = time_series.get_intraday(symbol=ticker[0].replace('.', '-'), outputsize='full')
-            data = data.reset_index()
-            for index, row in data.iterrows():
+            frame, meta_data = time_series.get_intraday(symbol=ticker[0].replace('.', '-'), outputsize='full')
+            frame = frame.reset_index()
+            for index, row in frame.iterrows():
                 intraday = IntradayDAO.init(row, ticker[0], meta_data['6. Time Zone'])
                 DAO.persist(intraday)
         except ValueError as e:
@@ -35,13 +36,9 @@ class IntradayDAO:
         rows = json.loads(content)
         for row in rows:
             intraday: IntradayEntity = IntradayEntity()
-            intraday.date = datetime.fromisoformat(row['date'])
-            intraday.open = float(row['open'])
-            intraday.high = float(row['high'])
-            intraday.low = float(row['low'])
-            intraday.close = float(row['close'])
-            intraday.volume = float(row['volume'])
-            intraday.ticker = row['ticker']
+            Utils.set_attributes(intraday, date=datetime.fromisoformat(row['date']), open=float(row['open']),
+                                 high=float(row['high']), low=float(row['low']), close=float(row['close']),
+                                 volume=float(row['volume']), ticker=row['ticker'])
             DAO.persist(intraday)
 
     @staticmethod
@@ -91,13 +88,9 @@ class IntradayDAO:
     @staticmethod
     def init(row: Series, ticker: str, timezone: str) -> IntradayEntity:
         intraday: IntradayEntity = IntradayEntity()
-        intraday.date = pytz.timezone(timezone).localize(datetime.fromisoformat(str(row['date'])))
-        intraday.open = float(row['1. open'])
-        intraday.high = float(row['2. high'])
-        intraday.low = float(row['3. low'])
-        intraday.close = float(row['4. close'])
-        intraday.volume = float(row['5. volume'])
-        intraday.ticker = ticker
+        Utils.set_attributes(intraday, date=pytz.timezone(timezone).localize(datetime.fromisoformat(str(row['date']))),
+                             open=float(row['1. open']), high=float(row['2. high']), low=float(row['3. low']),
+                             close=float(row['4. close']), volume=float(row['5. volume']), ticker=ticker)
         return intraday
 
 

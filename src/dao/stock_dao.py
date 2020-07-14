@@ -3,6 +3,7 @@ from typing import Tuple, List, Optional
 from src.bo.stock_bo import StockBO
 from src.dao.dao import DAO
 from src.entity.stock_entity import StockEntity
+from src.utils.utils import Utils
 
 
 class StockDAO:
@@ -25,6 +26,5 @@ class StockDAO:
     def update(*portfolio: Optional[str]) -> None:
         for ticker in portfolio:
             stock: StockEntity = StockEntity()
-            stock.ticker = ticker
-            stock.isin = StockBO.isin(ticker)
+            Utils.set_attributes(stock, ticker=ticker, isin=StockBO.isin(ticker))
             DAO.persist(stock)

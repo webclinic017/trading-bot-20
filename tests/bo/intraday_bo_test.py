@@ -14,8 +14,8 @@ from tests.utils.utils import Utils
 
 
 class IntradayBOTestCase(unittest.TestCase):
-    YOUNG_DATE = pytz.utc.localize(datetime.fromisoformat('2011-11-04T00:00:00'))
-    OLD_DATE = pytz.utc.localize(datetime.fromisoformat('2011-11-03T00:00:00'))
+    YOUNG_DATE = pytz.timezone(US_EASTERN).localize(datetime.fromisoformat('2011-11-04T00:00:00'))
+    OLD_DATE = pytz.timezone(US_EASTERN).localize(datetime.fromisoformat('2011-11-03T00:00:00'))
 
     @classmethod
     def setUpClass(cls):
@@ -50,14 +50,14 @@ class IntradayBOTestCase(unittest.TestCase):
         IntradayBO.from_file(request)
         rows = IntradayDAO.read_order_by_date_asc()
         self.assertEqual(len(rows), 2)
-        Utils.assert_attributes(rows[1], date=IntradayBOTestCase.YOUNG_DATE, open=1, high=2, low=3, close=4, volume=5,
-                                ticker='AAA')
-        Utils.assert_attributes(rows[0], date=IntradayBOTestCase.OLD_DATE, open=6, high=7, low=8, close=9, volume=0,
-                                ticker='BBB')
+        Utils.assert_attributes(rows[1], date=pytz.utc.localize(IntradayBOTestCase.YOUNG_DATE.replace(tzinfo=None)),
+                                open=1, high=2, low=3, close=4, volume=5, ticker='AAA')
+        Utils.assert_attributes(rows[0], date=pytz.utc.localize(IntradayBOTestCase.OLD_DATE.replace(tzinfo=None)),
+                                open=6, high=7, low=8, close=9, volume=0, ticker='BBB')
 
     def test_to_file(self):
-        Utils.create_intraday('AAA', IntradayBOTestCase.YOUNG_DATE, 1, 2, 3, 4, 5)
-        Utils.create_intraday('BBB', IntradayBOTestCase.OLD_DATE, 6, 7, 8, 9, 0)
+        Utils.persist_intraday('AAA', IntradayBOTestCase.YOUNG_DATE, 1, 2, 3, 4, 5)
+        Utils.persist_intraday('BBB', IntradayBOTestCase.OLD_DATE, 6, 7, 8, 9, 0)
         content = IntradayBO.to_file()
         self.assertEqual(len(content), 2)
         Utils.assert_items(content[1], date=IntradayBOTestCase.YOUNG_DATE, open=1, high=2, low=3, close=4, volume=5,
@@ -71,7 +71,7 @@ class IntradayBOTestCase(unittest.TestCase):
         isin.return_value = 'isin'
         intraday.return_value = Utils.get_intraday()
         StockDAO.create_if_not_exists(('AAA',))
-        Utils.create_intraday('AAA', IntradayBOTestCase.OLD_DATE, 500, 500, 500, 500, 500)
+        Utils.persist_intraday('AAA', IntradayBOTestCase.OLD_DATE, 500, 500, 500, 500, 500)
         with patch('alpha_vantage.timeseries.TimeSeries.__init__', return_value=None):
             IntradayBO.update('AAA', 'BBB')
         rows = IntradayDAO.read_order_by_date_asc()
@@ -90,9 +90,9 @@ class IntradayBOTestCase(unittest.TestCase):
         isin.return_value = 'isin'
         intraday.return_value = Utils.get_intraday()
         StockDAO.create_if_not_exists(('AAA',))
-        Utils.create_intraday('AAA', IntradayBOTestCase.YOUNG_DATE, 500, 500, 500, 500, 500)
+        Utils.persist_intraday('AAA', IntradayBOTestCase.YOUNG_DATE, 500, 500, 500, 500, 500)
         StockDAO.create_if_not_exists(('BBB',))
-        Utils.create_intraday('BBB', IntradayBOTestCase.OLD_DATE, 500, 500, 500, 500, 500)
+        Utils.persist_intraday('BBB', IntradayBOTestCase.OLD_DATE, 500, 500, 500, 500, 500)
         with patch('alpha_vantage.timeseries.TimeSeries.__init__', return_value=None):
             IntradayBO.update('AAA', 'BBB')
         rows = IntradayDAO.read_order_by_date_asc()

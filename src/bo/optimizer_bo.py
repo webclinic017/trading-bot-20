@@ -9,6 +9,7 @@ from src.bo.broker_bo import BrokerBO
 from src.bo.statistic_bo import StatisticBO
 from src.bo.strategy_bo import StrategyBO
 from src.constants import INITIAL_CASH
+from src.converter.attempt_dto_converter import AttemptDTOConverter
 from src.dao.evaluation_dao import EvaluationDAO
 from src.dao.intraday_dao import IntradayDAO
 from src.dto.attempt_dto import AttemptDTO
@@ -29,7 +30,7 @@ class OptimizerBO:
             attempt: AttemptDTO = AttemptDTO()
             optimise_sum: float = initial_cash * len(tables)
         else:
-            attempt: AttemptDTO = AttemptDTO.from_evaluation(evaluation)
+            attempt: AttemptDTO = AttemptDTOConverter.from_evaluation(evaluation)
             optimise_sum: float = float(evaluation.sum)
 
         while True:
@@ -69,16 +70,6 @@ class OptimizerBO:
                 EvaluationDAO.create(evaluation_sum, ','.join(map(str, analysis_funds)), evaluation_attempt)
 
     @staticmethod
-    def main() -> None:
-        portfolio: List[str] = Portfolio.test_portfolio()
-        number: int = 100
-        group_number: int = 4
-        group_size: int = int(number / group_number)
-        groups: Tuple[Tuple[str]] = Utils.group(group_size, portfolio[:number])
-        while True:
-            OptimizerBO.optimise(IntradayDAO.dataframe_group(groups))
-
-    @staticmethod
     def start(portfolio: List[str], number: int, group_number: int) -> None:
         group_size: int = int(number / group_number)
         groups: Tuple[Tuple[str]] = Utils.group(group_size, portfolio[:number])
@@ -86,4 +77,4 @@ class OptimizerBO:
 
 
 if __name__ == '__main__':
-    OptimizerBO.main()
+    OptimizerBO.start(Portfolio.test_portfolio(), 100, 4)

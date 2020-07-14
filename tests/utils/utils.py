@@ -17,7 +17,7 @@ from src.entity.stock_entity import StockEntity
 
 class Utils:
     @staticmethod
-    def create_frame() -> DataFrame:
+    def create_table_frame() -> DataFrame:
         dates = pd.date_range('1/1/2000', periods=150, tz=UTC)
         prices_aaa = np.full((150, 1), float(500))
         prices_bbb = copy.copy(prices_aaa)
@@ -41,19 +41,33 @@ class Utils:
             TestCase().assertEqual(assertable[key], value)
 
     @staticmethod
-    def create_intraday(ticker, date, o, high, low, close, volume):
-        data = [date.replace(tzinfo=None), o, high, low, close, volume]
-        index = ['date', '1. open', '2. high', '3. low', '4. close', '5. volume']
-        series = pd.Series(data, index=index, dtype=object)
-        intraday = IntradayDAO.init(series, ticker, UTC)
-        DAO.persist(intraday)
+    def persist_intraday(ticker, date, o, high, low, close, volume):
+        Utils.__persist_get_intraday(date.replace(tzinfo=None), np.full((1, 5), [o, high, low, close, volume]), ticker)
 
     @staticmethod
-    def get_intraday():
-        dates = pd.date_range('1/1/2000', periods=10)
-        table = np.full((10, 5), float(500))
+    def persist_intraday_frame():
+        table_aaa = np.full((150, 5), float(500))
+        table_ccc = copy.copy(table_aaa)
+        table_aaa[30:60] = table_aaa[90:120] = table_ccc[0:30] = table_ccc[60:90] = table_ccc[120:150] = float(100)
+        data = {'AAA': {'start': '1/1/2000', 'data': table_aaa},
+                'BBB': {'start': '31/1/2000', 'data': np.full((120, 5), float(500))},
+                'CCC': {'start': '1/1/2000', 'data': table_ccc}}
+        for key, value in data.items():
+            Utils.__persist_get_intraday(value['start'], value['data'], key)
+
+    @staticmethod
+    def __persist_get_intraday(start, data, ticker):
+        frame, meta_data = Utils.get_intraday(start, data)
+        frame = frame.reset_index()
+        for index, row in frame.iterrows():
+            intraday = IntradayDAO.init(row, ticker, US_EASTERN)
+            DAO.persist(intraday)
+
+    @staticmethod
+    def get_intraday(start='1/1/2000', data=np.full((10, 5), float(500))):
+        dates = pd.date_range(start, periods=len(data))
         columns = ['1. open', '2. high', '3. low', '4. close', '5. volume']
-        frame = DataFrame(table, columns=columns)
+        frame = DataFrame(data, columns=columns)
         frame['date'] = dates
         frame.sort_index(inplace=True, ascending=False)
         meta_data = {'6. Time Zone': US_EASTERN}
