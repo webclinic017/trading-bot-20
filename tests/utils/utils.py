@@ -60,7 +60,7 @@ class Utils:
         frame, meta_data = Utils.get_intraday(start, data)
         frame = frame.reset_index()
         for index, row in frame.iterrows():
-            intraday = IntradayDAO.init(row, ticker, US_EASTERN)
+            intraday = IntradayDAO.init(row, ticker, meta_data['6. Time Zone'])
             DAO.persist(intraday)
 
     @staticmethod

@@ -4,14 +4,13 @@ from typing import List
 from sqlalchemy import func
 
 from src import db
-from src.dao.broker_dao import BrokerDAO
 from src.dao.dao import DAO
 from src.entity.forward_entity import ForwardEntity
 from src.enums.action_enum import ActionEnum
 from src.utils.utils import Utils
 
 
-class ForwardDAO(BrokerDAO):
+class ForwardDAO:
     @staticmethod
     def create_buy(ticker: str, price: float, number: int, cash: float) -> None:
         forward: ForwardEntity = ForwardDAO.__init(ActionEnum.BUY, ticker, price, number, cash)

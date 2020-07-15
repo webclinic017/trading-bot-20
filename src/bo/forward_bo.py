@@ -5,6 +5,7 @@ from pandas import DataFrame
 
 from src.bo.analyser_bo import AnalyserBO
 from src.bo.broker_bo import BrokerBO
+from src.bo.forward_broker_bo import ForwardBrokerBO
 from src.bo.inventory_bo import InventoryBO
 from src.bo.statistic_bo import StatisticBO
 from src.bo.strategy_bo import StrategyBO
@@ -34,7 +35,7 @@ class ForwardBO:
         rows: List[IntradayEntity] = IntradayDAO.read_order_by_date_asc()
         frame: DataFrame = IntradayDAO.dataframe(rows)
         inventory, cash = ForwardBO.init()
-        broker: BrokerBO = BrokerBO(cash, FEE, ForwardDAO, inventory)
+        broker: BrokerBO = ForwardBrokerBO(cash, FEE, inventory)
         statistic: StatisticBO = StatisticBO('forward')
         attempt: AttemptDTO = AttemptDTOConverter.from_evaluation(evaluation)
         AnalyserBO.analyse(frame, StrategyBO.counter_cyclical, broker, statistic, attempt, latest_date_dict)
