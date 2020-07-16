@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Tuple
 
 from flask import Request
 
@@ -22,7 +22,7 @@ class IntradayBO:
         return rows_dict
 
     @staticmethod
-    def update(*portfolio: str) -> None:
+    def update(portfolio: Tuple[str, ...]) -> None:
         StockDAO.create_if_not_exists(portfolio)
         rows: List[IntradayEntity] = IntradayEntity.query.with_entities(IntradayEntity.ticker).filter(
             IntradayEntity.ticker.in_(portfolio)).distinct(IntradayEntity.ticker).all()

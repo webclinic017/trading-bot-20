@@ -17,11 +17,11 @@ class ProcessManager:
     CONFIGURATION: Dict[str, Dict[str, Tuple[Any, ...]]] = {
         'update-table-stock': {
             TARGET: StockDAO.update,
-            ARGS: Portfolio.test_prod_portfolio()
+            ARGS: (Portfolio.test_prod_portfolio(),)
         },
         'update-table-intraday': {
             TARGET: IntradayBO.update,
-            ARGS: Portfolio.test_prod_portfolio()
+            ARGS: (Portfolio.test_prod_portfolio(),)
         },
         'schedule': {
             TARGET: Scheduler.start,

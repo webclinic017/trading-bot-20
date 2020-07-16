@@ -12,7 +12,7 @@ class StockDAO:
         rows: List[StockEntity] = StockEntity.query.with_entities(StockEntity.ticker).filter(
             StockEntity.ticker.in_(portfolio)).all()
         if len(rows) < len(portfolio):
-            StockDAO.update(*portfolio)
+            StockDAO.update(portfolio)
 
     @staticmethod
     def read_all() -> List[StockEntity]:
@@ -23,7 +23,7 @@ class StockDAO:
         return StockEntity.query.with_entities(StockEntity.ticker).all()
 
     @staticmethod
-    def update(*portfolio: Optional[str]) -> None:
+    def update(portfolio: Tuple[Optional[str]]) -> None:
         for ticker in portfolio:
             stock: StockEntity = StockEntity()
             Utils.set_attributes(stock, ticker=ticker, isin=StockBO.isin(ticker))

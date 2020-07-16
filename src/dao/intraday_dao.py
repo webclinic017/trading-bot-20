@@ -20,13 +20,13 @@ from src.utils.utils import Utils
 
 class IntradayDAO:
     @staticmethod
-    def create_ticker(*ticker: str) -> None:
+    def create_ticker(ticker: str) -> None:
         try:
             time_series = TimeSeries(key=os.environ.get('ALPHA_VANTAGE'), output_format='pandas')
-            frame, meta_data = time_series.get_intraday(symbol=ticker[0].replace('.', '-'), outputsize='full')
+            frame, meta_data = time_series.get_intraday(symbol=ticker.replace('.', '-'), outputsize='full')
             frame = frame.reset_index()
             for index, row in frame.iterrows():
-                intraday = IntradayDAO.init(row, ticker[0], meta_data['6. Time Zone'])
+                intraday = IntradayDAO.init(row, ticker, meta_data['6. Time Zone'])
                 DAO.persist(intraday)
         except ValueError as e:
             logging.exception(e)
@@ -42,7 +42,7 @@ class IntradayDAO:
             DAO.persist(intraday)
 
     @staticmethod
-    def read(*portfolio: str) -> List[IntradayEntity]:
+    def read(portfolio: List[str]) -> List[IntradayEntity]:
         return IntradayEntity.query.filter(IntradayEntity.ticker.in_(portfolio)).order_by(
             IntradayEntity.date.asc()).all()
 
@@ -67,16 +67,16 @@ class IntradayDAO:
     def dataframe_ticker() -> DataFrame:
         rows: List[StockEntity] = StockDAO.read_ticker()
         tickers: List[str] = list(map(lambda r: r.ticker, rows))
-        return IntradayDAO.dataframe_portfolio(*tickers)
+        return IntradayDAO.dataframe_portfolio(tickers)
 
     @staticmethod
-    def dataframe_portfolio(*portfolio: str) -> DataFrame:
-        rows: List[IntradayEntity] = IntradayDAO.read(*portfolio)
+    def dataframe_portfolio(portfolio: List[str]) -> DataFrame:
+        rows: List[IntradayEntity] = IntradayDAO.read(portfolio)
         return IntradayDAO.dataframe(rows)
 
     @staticmethod
-    def dataframe_group(*group: Tuple[Tuple[str]]) -> List[DataFrame]:
-        return list(map(lambda g: IntradayDAO.dataframe_portfolio(*g), group[0]))
+    def dataframe_group(group: Tuple[Tuple[str]]) -> List[DataFrame]:
+        return list(map(lambda g: IntradayDAO.dataframe_portfolio(g), group))
 
     @staticmethod
     def dataframe(rows: List[IntradayEntity]) -> DataFrame:

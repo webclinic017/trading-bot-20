@@ -34,10 +34,10 @@ class ProcessManagerTestCase(unittest.TestCase):
         self.assertListEqual(list(ProcessManager.CONFIGURATION.keys()), names)
         update_table_stock = ProcessManager.CONFIGURATION['update-table-stock']
         self.assertEqual(update_table_stock[ProcessManager.TARGET], StockDAO.update)
-        self.assertEqual(update_table_stock[ProcessManager.ARGS], Portfolio.test_prod_portfolio())
+        self.assertEqual(update_table_stock[ProcessManager.ARGS], (Portfolio.test_prod_portfolio(),))
         update_table_intraday = ProcessManager.CONFIGURATION['update-table-intraday']
         self.assertEqual(update_table_intraday[ProcessManager.TARGET], IntradayBO.update)
-        self.assertEqual(update_table_intraday[ProcessManager.ARGS], Portfolio.test_prod_portfolio())
+        self.assertEqual(update_table_intraday[ProcessManager.ARGS], (Portfolio.test_prod_portfolio(),))
         schedule = ProcessManager.CONFIGURATION['schedule']
         self.assertEqual(schedule[ProcessManager.TARGET], Scheduler.start)
         self.assertEqual(schedule[ProcessManager.ARGS], [])

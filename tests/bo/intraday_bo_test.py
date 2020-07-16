@@ -73,7 +73,7 @@ class IntradayBOTestCase(unittest.TestCase):
         StockDAO.create_if_not_exists(('AAA',))
         Utils.persist_intraday('AAA', IntradayBOTestCase.OLD_DATE, 500, 500, 500, 500, 500)
         with patch('alpha_vantage.timeseries.TimeSeries.__init__', return_value=None):
-            IntradayBO.update('AAA', 'BBB')
+            IntradayBO.update(('AAA', 'BBB',))
         rows = IntradayDAO.read_order_by_date_asc()
         self.assertEqual(len(rows), 11)
         dates = pd.date_range('1/1/2000', periods=10)
@@ -94,7 +94,7 @@ class IntradayBOTestCase(unittest.TestCase):
         StockDAO.create_if_not_exists(('BBB',))
         Utils.persist_intraday('BBB', IntradayBOTestCase.OLD_DATE, 500, 500, 500, 500, 500)
         with patch('alpha_vantage.timeseries.TimeSeries.__init__', return_value=None):
-            IntradayBO.update('AAA', 'BBB')
+            IntradayBO.update(('AAA', 'BBB',))
         rows = IntradayDAO.read_order_by_date_asc()
         self.assertEqual(len(rows), 12)
         dates = pd.date_range('1/1/2000', periods=10)
