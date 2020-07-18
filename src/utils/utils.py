@@ -61,6 +61,6 @@ class Utils:
         return None if len(sequence) == 0 else sequence[0]
 
     @staticmethod
-    def set_attributes(assignable, **kwargs):
+    def set_attributes(assignable: object, **kwargs: any) -> None:
         for key, value in kwargs.items():
             setattr(assignable, key, value)

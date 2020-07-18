@@ -73,5 +73,5 @@ class ProcessManager:
                                   ProcessManager.CONFIGURATION.keys())))
 
     @staticmethod
-    def __find(name) -> Optional[Process]:
+    def __find(name: str) -> Optional[Process]:
         return next(iter(filter(lambda p: p.name == name, multiprocessing.active_children())), None)

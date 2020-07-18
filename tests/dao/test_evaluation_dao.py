@@ -36,13 +36,14 @@ class EvaluationDAOTestCase(unittest.TestCase):
         evaluation = EvaluationDAO.read_order_by_sum()
         self.assertIsInstance(evaluation, EvaluationEntity)
         Utils.assert_attributes(evaluation, timestamp=EvaluationDAOTestCase.OLD_DATE, sum=2000, funds='second',
-                                amountbuy=11, distancebuy=22, deltabuy=33, amountsell=44, distancesell=55, deltasell=66)
+                                amount_buy=11, distance_buy=22, delta_buy=33, amount_sell=44, distance_sell=55,
+                                delta_sell=66)
 
     def test_read_attempt(self):
         evaluation = EvaluationDAO.read_attempt(self.attempt)
         self.assertIsInstance(evaluation, EvaluationEntity)
         Utils.assert_attributes(evaluation, timestamp=EvaluationDAOTestCase.YOUNG_DATE, sum=1000, funds='first',
-                                amountbuy=1, distancebuy=2, deltabuy=3, amountsell=4, distancesell=5, deltasell=6)
+                                amount_buy=1, distance_buy=2, delta_buy=3, amount_sell=4, distance_sell=5, delta_sell=6)
 
 
 if __name__ == '__main__':

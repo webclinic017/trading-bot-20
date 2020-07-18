@@ -6,5 +6,5 @@ class AttemptDTOConverter:
 
     @staticmethod
     def from_evaluation(evaluation: EvaluationEntity) -> AttemptDTO:
-        return AttemptDTO(evaluation.amountbuy, evaluation.distancebuy, evaluation.deltabuy,
-                          evaluation.amountsell, evaluation.distancesell, evaluation.deltasell)
+        return AttemptDTO(evaluation.amount_buy, evaluation.distance_buy, evaluation.delta_buy,
+                          evaluation.amount_sell, evaluation.distance_sell, evaluation.delta_sell)

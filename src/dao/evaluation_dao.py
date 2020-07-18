@@ -13,9 +13,9 @@ class EvaluationDAO:
         evaluation.timestamp = Utils.now()
         evaluation.sum = str(s)
         evaluation.funds = funds
-        Utils.set_attributes(evaluation, amountbuy=str(attempt.amount_buy), distancebuy=str(attempt.distance_buy),
-                             deltabuy=str(attempt.delta_buy), amountsell=str(attempt.amount_sell),
-                             distancesell=str(attempt.distance_sell), deltasell=str(attempt.delta_sell))
+        Utils.set_attributes(evaluation, amount_buy=str(attempt.amount_buy), distance_buy=str(attempt.distance_buy),
+                             delta_buy=str(attempt.delta_buy), amount_sell=str(attempt.amount_sell),
+                             distance_sell=str(attempt.distance_sell), delta_sell=str(attempt.delta_sell))
         DAO.persist(evaluation)
 
     @staticmethod
@@ -25,12 +25,12 @@ class EvaluationDAO:
     @staticmethod
     def read_attempt(attempt: AttemptDTO) -> EvaluationEntity:
         return EvaluationEntity.query.filter_by(
-            amountbuy=attempt.amount_buy).filter_by(
-            distancebuy=attempt.distance_buy).filter_by(
-            deltabuy=attempt.delta_buy).filter_by(
-            amountsell=attempt.amount_sell).filter_by(
-            distancesell=attempt.distance_sell).filter_by(
-            deltasell=attempt.delta_sell).first()
+            amount_buy=attempt.amount_buy).filter_by(
+            distance_buy=attempt.distance_buy).filter_by(
+            delta_buy=attempt.delta_buy).filter_by(
+            amount_sell=attempt.amount_sell).filter_by(
+            distance_sell=attempt.distance_sell).filter_by(
+            delta_sell=attempt.delta_sell).first()
 
     @staticmethod
     def read_all() -> List[EvaluationEntity]:
