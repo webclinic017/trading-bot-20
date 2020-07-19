@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import patch
 
 from src import db
+from src.bo.configuration_bo import ConfigurationBO
 from src.bo.optimizer_bo import OptimizerBO
 from src.dao.evaluation_dao import EvaluationDAO
 from src.dto.attempt_dto import AttemptDTO
@@ -17,6 +18,7 @@ class OptimizerBOTestCase(unittest.TestCase):
 
     def setUp(self):
         Utils.truncate_tables()
+        ConfigurationBO.create()
 
     @patch('src.utils.utils.Utils.negation')
     @patch('src.utils.utils.Utils.inverse')

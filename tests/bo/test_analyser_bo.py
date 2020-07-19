@@ -13,7 +13,7 @@ class AnalyserBOTestCase(unittest.TestCase):
 
     def test_analyser(self):
         frame = Utils.create_table_frame()
-        broker = BrokerBO()
+        broker = BrokerBO(cash=10000, fee=3.9)
         initial_cash = broker.cash
         cash = broker.cash
         attempt = AttemptDTO(1000, 30, 2, 1000, 30, 2)

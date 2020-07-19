@@ -8,8 +8,12 @@ from src import db
 class DAO:
     @staticmethod
     def persist(entity: db.Model) -> None:
+        db.session.add(entity)
+        DAO.commit()
+
+    @staticmethod
+    def commit() -> None:
         try:
-            db.session.add(entity)
             db.session.commit()
         except SQLAlchemyError as e:
             db.session.rollback()

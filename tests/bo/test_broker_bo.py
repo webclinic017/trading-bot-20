@@ -6,7 +6,7 @@ from src.bo.inventory_bo import InventoryBO
 
 class BrokerBOTestCase(unittest.TestCase):
     def test_update(self):
-        broker = BrokerBO()
+        broker = BrokerBO(cash=10000, fee=3.9)
         broker.update('AAA', 0.1)
         self.assertEqual(broker.inventory['AAA'].price, 0.1)
         broker.update('BBB', 0.2)
@@ -33,7 +33,7 @@ class BrokerBOTestCase(unittest.TestCase):
         self.assertEqual(broker.cash, 10000 - 1 - 3.9 - 2 - 3.9)
 
     def test_buy_insufficient_funds(self):
-        broker = BrokerBO(cash=10)
+        broker = BrokerBO(cash=10, fee=3.9)
         buy = broker.buy('AAA', 10, 10)
         self.assertEqual(buy, False)
 
@@ -52,12 +52,12 @@ class BrokerBOTestCase(unittest.TestCase):
         self.assertEqual(broker.cash, 10000 + 1 - 3.9 + 2 - 3.9)
 
     def test_sell_insufficient_inventory(self):
-        broker = BrokerBO(cash=10)
+        broker = BrokerBO(cash=10, fee=3.9)
         sell = broker.sell('AAA', 10, 10)
         self.assertEqual(sell, False)
 
     def test_funds(self):
-        broker = BrokerBO(cash=10)
+        broker = BrokerBO(cash=10, fee=3.9)
         broker.inventory['AAA'] = InventoryBO(10, 0.1)
         broker.inventory['BBB'] = InventoryBO(20, 0.2)
         self.assertEqual(broker.funds(), 10 + 10 * 0.1 + 20 * 0.2)

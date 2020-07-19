@@ -2,12 +2,11 @@ import math
 from typing import Dict
 
 from src.bo.inventory_bo import InventoryBO
-from src.constants import INITIAL_CASH, FEE
 
 
 class BrokerBO:
 
-    def __init__(self, cash: float = INITIAL_CASH, fee: float = FEE, inventory: Dict[str, InventoryBO] = None) -> None:
+    def __init__(self, cash: float, fee: float, inventory: Dict[str, InventoryBO] = None) -> None:
         self._cash: float = cash
         self.__fee: float = fee
         self.__inventory: Dict[str, InventoryBO] = dict() if inventory is None else inventory

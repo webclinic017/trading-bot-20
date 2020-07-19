@@ -9,8 +9,8 @@ from src.bo.forward_broker_bo import ForwardBrokerBO
 from src.bo.inventory_bo import InventoryBO
 from src.bo.statistic_bo import StatisticBO
 from src.bo.strategy_bo import StrategyBO
-from src.constants import FEE, INITIAL_CASH
 from src.converter.attempt_dto_converter import AttemptDTOConverter
+from src.dao.configuration_dao import ConfigurationDAO
 from src.dao.evaluation_dao import EvaluationDAO
 from src.dao.forward_dao import ForwardDAO
 from src.dao.intraday_dao import IntradayDAO
@@ -19,6 +19,7 @@ from src.entity.evaluation_entity import EvaluationEntity
 from src.entity.forward_entity import ForwardEntity
 from src.entity.intraday_entity import IntradayEntity
 from src.enums.action_enum import ActionEnum
+from src.enums.configuration_enum import ConfigurationEnum
 from src.utils.utils import Utils
 
 
@@ -34,22 +35,24 @@ class ForwardBO:
         latest_date_dict: Dict[str, str] = {r.ticker: r[0] for r in read_latest_date}
         rows: List[IntradayEntity] = IntradayDAO.read_order_by_date_asc()
         frame: DataFrame = IntradayDAO.dataframe(rows)
-        inventory, cash = ForwardBO.init()
-        broker: BrokerBO = ForwardBrokerBO(cash, FEE, inventory)
+        inventory, cash, fee = ForwardBO.init()
+        broker: BrokerBO = ForwardBrokerBO(cash, fee, inventory)
         statistic: StatisticBO = StatisticBO('forward')
         attempt: AttemptDTO = AttemptDTOConverter.from_evaluation(evaluation)
         AnalyserBO.analyse(frame, StrategyBO.counter_cyclical, broker, statistic, attempt, latest_date_dict)
 
     @staticmethod
-    def init() -> Tuple[Dict[str, InventoryBO], float]:
+    def init() -> Tuple[Dict[str, InventoryBO], float, float]:
+        cash: float = ConfigurationDAO.read_filter_by_identifier(ConfigurationEnum.FORWARD_CASH.identifier).value
+        fee: float = ConfigurationDAO.read_filter_by_identifier(ConfigurationEnum.OPTIMIZE_FEE.identifier).value
         rows: List[ForwardEntity] = ForwardDAO.read()
-        broker = BrokerBO(INITIAL_CASH, FEE)
+        broker = BrokerBO(cash, fee)
         for row in rows:
             if row.action == ActionEnum.BUY:
                 broker.buy(row.ticker, row.price, row.number)
             elif row.action == ActionEnum.SELL:
                 broker.sell(row.ticker, row.price, row.number)
-        return broker.inventory, broker.cash
+        return broker.inventory, broker.cash, fee
 
     @staticmethod
     def update(inventory: Dict[str, InventoryBO], cash: float) -> Tuple[Dict[str, InventoryBO], float, float]:

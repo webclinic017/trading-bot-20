@@ -9,6 +9,7 @@ from pandas import DataFrame
 from src.constants import UTC, US_EASTERN
 from src.dao.dao import DAO
 from src.dao.intraday_dao import IntradayDAO
+from src.entity.configuration_entity import ConfigurationEntity
 from src.entity.evaluation_entity import EvaluationEntity
 from src.entity.forward_entity import ForwardEntity
 from src.entity.intraday_entity import IntradayEntity
@@ -79,3 +80,4 @@ class Utils:
         IntradayEntity.query.delete()
         ForwardEntity.query.delete()
         StockEntity.query.delete()
+        ConfigurationEntity.query.delete()

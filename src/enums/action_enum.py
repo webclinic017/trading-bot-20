@@ -2,6 +2,6 @@ from enum import Enum
 
 
 class ActionEnum(Enum):
-    BUY = 'buy'
-    SELL = 'sell'
-    NONE = 'none'
+    BUY = 'BUY'
+    SELL = 'SELL'
+    NONE = 'NONE'

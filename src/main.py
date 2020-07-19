@@ -4,20 +4,27 @@ from typing import Tuple
 from flask import render_template, make_response, request, jsonify
 
 from src import app, db
+from src.bo.configuration_bo import ConfigurationBO
 from src.bo.forward_bo import ForwardBO
 from src.bo.intraday_bo import IntradayBO
+from src.dao.configuration_dao import ConfigurationDAO
 from src.dao.evaluation_dao import EvaluationDAO
 from src.dao.forward_dao import ForwardDAO
 from src.dao.intraday_dao import IntradayDAO
 from src.dao.stock_dao import StockDAO
+from src.form.configuration_field_form import ConfigurationFieldForm
+from src.form.configuration_form import ConfigurationForm
 from src.process_manager import ProcessManager
 
 process_manager: ProcessManager = ProcessManager()
+GET = 'GET'
+POST = 'POST'
 
 
 @app.before_first_request
 def create_all() -> None:
     db.create_all()
+    ConfigurationBO.create()
 
 
 @app.route('/')
@@ -28,6 +35,11 @@ def main_view() -> str:
 @app.route('/stock')
 def stock_view() -> str:
     return render_template('stock.html', stocks=StockDAO.read_all())
+
+
+@app.route('/stock/intraday/<ticker>')
+def stock_intraday_view(ticker: str) -> str:
+    return render_template('stock-intraday.html', intradays=IntradayDAO.read_filter_by_ticker(ticker))
 
 
 @app.route('/intraday')
@@ -43,15 +55,10 @@ def evaluation_view() -> str:
 
 @app.route('/forward')
 def forward_view() -> str:
-    inventory, cash = ForwardBO.init()
+    inventory, cash, fee = ForwardBO.init()
     inventory, total_value, total = ForwardBO.update(inventory, cash)
     return render_template('forward.html', forwards=ForwardDAO.read_all(), inventory=inventory, cash=cash,
                            total_value=total_value, total=total)
-
-
-@app.route('/stock/intraday/<ticker>')
-def stock_intraday_view(ticker: str) -> str:
-    return render_template('stock-intraday.html', intradays=IntradayDAO.read_filter_by_ticker(ticker))
 
 
 @app.route('/process')
@@ -74,7 +81,7 @@ def process_stop_view(process_name: str) -> str:
 
 
 @app.route('/import', defaults={'data': ''})
-@app.route('/import/<path:data>', methods=['GET', 'POST'])
+@app.route('/import/<path:data>', methods=[GET, POST])
 def import_view(data: str) -> str:
     if data == 'intraday':
         IntradayBO.from_file(request)
@@ -88,6 +95,22 @@ def export_view(data: str) -> str:
         content = IntradayBO.to_file()
         return make_response(jsonify(content), 200)
     return render_template('export.html')
+
+
+@app.route('/configuration', methods=[GET, POST])
+def configuration_view() -> str:
+    form: ConfigurationForm = ConfigurationForm(request.form)
+    if request.method == POST and form.validate():
+        for entry in form.form_list.entries:
+            ConfigurationDAO.update(entry.form.identifier.data, entry.form.value.data)
+    if request.method == GET:
+        for configuration in ConfigurationDAO.read_all():
+            field_form: ConfigurationFieldForm = ConfigurationFieldForm(request.form)
+            field_form.identifier = configuration.identifier
+            field_form.value = configuration.value
+            field_form.description = configuration.description
+            form.form_list.append_entry(field_form)
+    return render_template('configuration.html', form=form)
 
 
 @app.errorhandler(404)

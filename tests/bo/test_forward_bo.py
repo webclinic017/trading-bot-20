@@ -5,13 +5,14 @@ from unittest.mock import patch
 import pytz
 
 from src import db
+from src.bo.configuration_bo import ConfigurationBO
 from src.bo.forward_bo import ForwardBO
 from src.bo.inventory_bo import InventoryBO
-from src.constants import INITIAL_CASH, FEE
 from src.dao.evaluation_dao import EvaluationDAO
 from src.dao.forward_dao import ForwardDAO
 from src.dto.attempt_dto import AttemptDTO
 from src.enums.action_enum import ActionEnum
+from src.enums.configuration_enum import ConfigurationEnum
 from tests.utils.utils import Utils
 
 
@@ -25,6 +26,7 @@ class ForwardBOTestCase(unittest.TestCase):
 
     def setUp(self):
         Utils.truncate_tables()
+        ConfigurationBO.create()
 
     @patch('src.utils.utils.Utils.is_today')
     @patch('src.utils.utils.Utils.is_working_day_ny')
@@ -69,10 +71,10 @@ class ForwardBOTestCase(unittest.TestCase):
         ForwardDAO.create_buy('CCC', prices[4], numbers[4], 6500)
         now.return_value = ForwardBOTestCase.YOUNG_DATE + timedelta(seconds=6)
         ForwardDAO.create_sell('CCC', prices[5], numbers[5], 7500)
-        inventory, cash = ForwardBO.init()
-        estimated = INITIAL_CASH
+        inventory, cash, fee = ForwardBO.init()
+        estimated = ConfigurationEnum.FORWARD_CASH.v
         for i in range(len(prices)):
-            estimated += prices[i] * numbers[i] * multipliers[i] - FEE
+            estimated += prices[i] * numbers[i] * multipliers[i] - ConfigurationEnum.FORWARD_FEE.v
         Utils.assert_attributes(inventory['AAA'], price=30.0, number=20)
         Utils.assert_attributes(inventory['BBB'], price=50.0, number=5)
         Utils.assert_attributes(inventory['CCC'], price=70.0, number=0)
@@ -90,13 +92,13 @@ class ForwardBOTestCase(unittest.TestCase):
             'BBB': InventoryBO(80, 2),
             'CCC': InventoryBO(90, 3),
         }
-        inventory, total_value, total = ForwardBO.update(inventory, INITIAL_CASH)
+        inventory, total_value, total = ForwardBO.update(inventory, ConfigurationEnum.FORWARD_CASH.v)
         Utils.assert_attributes(inventory['AAA'], price=10, number=70)
         Utils.assert_attributes(inventory['BBB'], price=20, number=80)
         Utils.assert_attributes(inventory['CCC'], price=30, number=90)
         estimated = inventory['AAA'].value() + inventory['BBB'].value() + inventory['CCC'].value()
         self.assertEqual(total_value, estimated)
-        self.assertEqual(total, estimated + INITIAL_CASH)
+        self.assertEqual(total, estimated + ConfigurationEnum.FORWARD_CASH.v)
 
 
 if __name__ == '__main__':
