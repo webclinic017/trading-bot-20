@@ -1,5 +1,6 @@
 import unittest
 from datetime import datetime, timedelta
+from decimal import Decimal
 from unittest.mock import patch
 
 import pandas as pd
@@ -36,21 +37,23 @@ class IntradayDAOTestCase(unittest.TestCase):
             intraday = IntradayDAO.init(row, 'IBM', UTC)
             self.assertIsInstance(intraday, IntradayEntity)
             Utils.assert_attributes(intraday, date=pytz.utc.localize(datetime.fromisoformat(row['date'])),
-                                    open=float(row['1. open']), high=float(row['2. high']), low=float(row['3. low']),
-                                    close=float(row['4. close']), volume=float(row['5. volume']), ticker='IBM')
+                                    open=Decimal(row['1. open']), high=Decimal(row['2. high']),
+                                    low=Decimal(row['3. low']), close=Decimal(row['4. close']),
+                                    volume=Decimal(row['5. volume']), ticker='IBM')
 
     def test_localize(self):
         date = datetime.fromisoformat('2011-11-04T00:00:00')
         eastern = pytz.timezone(US_EASTERN).localize(date)
         intraday = IntradayEntity()
-        Utilities.set_attributes(intraday, date=eastern, open=1, high=1, low=1, close=1, volume=1, ticker='AAA')
+        Utilities.set_attributes(intraday, date=eastern, open=Decimal('1'), high=Decimal('1'), low=Decimal('1'),
+                                 close=Decimal('1'), volume=1, ticker='AAA')
         DAO.persist(intraday)
         intraday = IntradayDAO.read_filter_by_ticker_first('AAA')
         self.__assert_date(eastern, intraday, date)
 
     def test_eastern_utc(self):
         date = datetime.fromisoformat('2011-11-04T00:00:00')
-        Utils.persist_intraday('AAA', date, 1, 1, 1, 1, 1)
+        Utils.persist_intraday('AAA', date, Decimal('1'), Decimal('1'), Decimal('1'), Decimal('1'), Decimal('1'))
         intraday = IntradayDAO.read_filter_by_ticker_first('AAA')
         eastern = pytz.timezone(US_EASTERN).localize(date)
         self.__assert_date(eastern, intraday, date)
@@ -69,7 +72,8 @@ class IntradayDAOTestCase(unittest.TestCase):
         rows = IntradayDAO.read_order_by_date_asc()
         self.assertEqual(len(rows), 10)
         date = pytz.utc.localize(datetime.fromisoformat('2000-01-01T05:00:00'))
-        Utils.assert_attributes(rows[0], date=date, open=500, high=500, low=500, close=500, volume=500, ticker='AAA')
+        Utils.assert_attributes(rows[0], date=date, open=Decimal('500'), high=Decimal('500'), low=Decimal('500'),
+                                close=Decimal('500'), volume=Decimal('500'), ticker='AAA')
 
 
 if __name__ == '__main__':

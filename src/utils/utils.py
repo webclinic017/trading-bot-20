@@ -1,6 +1,6 @@
-import math
 import random
 from datetime import timedelta, datetime
+from decimal import Decimal, ROUND_DOWN, ExtendedContext
 from typing import Iterable, List, Iterator, Tuple, Optional, TypeVar, Sequence
 
 import pandas as pd
@@ -15,33 +15,33 @@ T = TypeVar('T')
 
 class Utils:
     @staticmethod
-    def valid(start: float, value: float, stop: float) -> bool:
+    def valid(start: Decimal, value: Decimal, stop: Decimal) -> bool:
         return start <= value <= stop
 
     @staticmethod
-    def negation() -> int:
-        return 1 if random.random() < 0.5 else -1
+    def negation() -> Decimal:
+        return Decimal('1') if random.random() < 0.5 else Decimal('-1')
 
     @staticmethod
-    def inverse() -> float:
+    def inverse() -> Decimal:
         return random.random() if random.random() < 0.5 else 1 / (1 - random.random())
 
     @staticmethod
-    def group(number: int, iterable: List[any]) -> Tuple[Tuple[str]]:
+    def group(number: int, iterable: List[T]) -> Tuple[Tuple[T]]:
         args: Iterable[Iterator] = [iter(iterable)] * number
         return tuple(zip(*args))
 
     @staticmethod
-    def number(numerator: float, denominator: float) -> float:
-        return 0 if denominator == 0 else math.floor(numerator / denominator)
+    def number(numerator: Decimal, denominator: Decimal) -> Decimal:
+        return Decimal('0') if denominator == Decimal('0') else ExtendedContext.divide_int(numerator, denominator)
 
     @staticmethod
-    def day_delta_value(frame: DataFrame, column: str, date: datetime, delta: int) -> float:
-        interval_end = date - timedelta(days=delta)
-        interval_start = date - timedelta(days=delta + 7)
+    def day_delta_value(frame: DataFrame, column: str, date: datetime, delta: Decimal) -> Decimal:
+        interval_end = date - timedelta(days=float(delta))
+        interval_start = date - timedelta(days=float(delta) + 7)
         interval_date = frame.loc[interval_start:interval_end, column].index.max()
         if pd.isnull(interval_date):
-            return math.nan
+            return Decimal('NaN')
         return frame.at[interval_date, column]
 
     @staticmethod
@@ -64,3 +64,7 @@ class Utils:
     def set_attributes(assignable: object, **kwargs: any) -> None:
         for key, value in kwargs.items():
             setattr(assignable, key, value)
+
+    @staticmethod
+    def truncate(number: Decimal) -> None:
+        return Decimal(number).quantize(Decimal('1'), rounding=ROUND_DOWN)

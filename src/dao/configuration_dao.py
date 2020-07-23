@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import List
 
 from src.dao.dao import DAO
@@ -22,7 +23,7 @@ class ConfigurationDAO:
         return ConfigurationEntity.query.filter_by(identifier=identifier).first()
 
     @staticmethod
-    def update(identifier: str, value: float) -> None:
+    def update(identifier: str, value: Decimal) -> None:
         configuration = ConfigurationDAO.read_filter_by_identifier(identifier)
         configuration.value = value
         DAO.commit()

@@ -1,4 +1,5 @@
 import unittest
+from decimal import Decimal
 
 from src.bo.broker_bo import BrokerBO
 from src.bo.inventory_bo import InventoryBO
@@ -6,61 +7,62 @@ from src.bo.inventory_bo import InventoryBO
 
 class BrokerBOTestCase(unittest.TestCase):
     def test_update(self):
-        broker = BrokerBO(cash=10000, fee=3.9)
-        broker.update('AAA', 0.1)
-        self.assertEqual(broker.inventory['AAA'].price, 0.1)
-        broker.update('BBB', 0.2)
-        self.assertEqual(broker.inventory['AAA'].price, 0.1)
-        self.assertEqual(broker.inventory['BBB'].price, 0.2)
-        broker.update('AAA', 0.3)
-        self.assertEqual(broker.inventory['AAA'].price, 0.3)
-        self.assertEqual(broker.inventory['BBB'].price, 0.2)
-        broker.update('BBB', 0.4)
-        self.assertEqual(broker.inventory['AAA'].price, 0.3)
-        self.assertEqual(broker.inventory['BBB'].price, 0.4)
+        broker = BrokerBO(cash=Decimal('10000'), fee=Decimal('3.9'))
+        broker.update('AAA', Decimal('0.1'))
+        self.assertEqual(broker.inventory['AAA'].price, Decimal('0.1'))
+        broker.update('BBB', Decimal('0.2'))
+        self.assertEqual(broker.inventory['AAA'].price, Decimal('0.1'))
+        self.assertEqual(broker.inventory['BBB'].price, Decimal('0.2'))
+        broker.update('AAA', Decimal('0.3'))
+        self.assertEqual(broker.inventory['AAA'].price, Decimal('0.3'))
+        self.assertEqual(broker.inventory['BBB'].price, Decimal('0.2'))
+        broker.update('BBB', Decimal('0.4'))
+        self.assertEqual(broker.inventory['AAA'].price, Decimal('0.3'))
+        self.assertEqual(broker.inventory['BBB'].price, Decimal('0.4'))
 
     def test_buy(self):
-        broker = BrokerBO(cash=10000, fee=3.9)
-        buy = broker.buy('AAA', 0.1, 10)
+        broker = BrokerBO(cash=Decimal('10000'), fee=Decimal('3.9'))
+        buy = broker.buy('AAA', Decimal('0.1'), Decimal('10'))
         self.assertEqual(buy, True)
-        self.assertEqual(broker.inventory['AAA'].price, 0.1)
-        self.assertEqual(broker.inventory['AAA'].number, 10)
-        self.assertEqual(broker.cash, 10000 - 1 - 3.9)
-        buy = broker.buy('AAA', 0.2, 10)
+        self.assertEqual(broker.inventory['AAA'].price, Decimal('0.1'))
+        self.assertEqual(broker.inventory['AAA'].number, Decimal('10'))
+        self.assertEqual(broker.cash, Decimal('10000') - Decimal('1') - Decimal('3.9'))
+        buy = broker.buy('AAA', Decimal('0.2'), Decimal('10'))
         self.assertEqual(buy, True)
-        self.assertEqual(broker.inventory['AAA'].price, 0.2)
-        self.assertEqual(broker.inventory['AAA'].number, 20)
-        self.assertEqual(broker.cash, 10000 - 1 - 3.9 - 2 - 3.9)
+        self.assertEqual(broker.inventory['AAA'].price, Decimal('0.2'))
+        self.assertEqual(broker.inventory['AAA'].number, Decimal('20'))
+        self.assertEqual(broker.cash, Decimal('10000') - Decimal('1') - Decimal('3.9') - Decimal('2') - Decimal('3.9'))
 
     def test_buy_insufficient_funds(self):
-        broker = BrokerBO(cash=10, fee=3.9)
-        buy = broker.buy('AAA', 10, 10)
+        broker = BrokerBO(cash=Decimal('10'), fee=Decimal('3.9'))
+        buy = broker.buy('AAA', Decimal('10'), Decimal('10'))
         self.assertEqual(buy, False)
 
     def test_sell(self):
-        broker = BrokerBO(cash=10000, fee=3.9)
-        broker.inventory['AAA'] = InventoryBO(20, 0.1)
-        sell = broker.sell('AAA', 0.1, 10)
+        broker = BrokerBO(cash=Decimal('10000'), fee=Decimal('3.9'))
+        broker.inventory['AAA'] = InventoryBO(Decimal('20'), Decimal('0.1'))
+        sell = broker.sell('AAA', Decimal('0.1'), Decimal('10'))
         self.assertEqual(sell, True)
-        self.assertEqual(broker.inventory['AAA'].price, 0.1)
-        self.assertEqual(broker.inventory['AAA'].number, 10)
-        self.assertEqual(broker.cash, 10000 + 1 - 3.9)
-        sell = broker.sell('AAA', 0.2, 10)
+        self.assertEqual(broker.inventory['AAA'].price, Decimal('0.1'))
+        self.assertEqual(broker.inventory['AAA'].number, Decimal('10'))
+        self.assertEqual(broker.cash, Decimal('10000') + Decimal('1') - Decimal('3.9'))
+        sell = broker.sell('AAA', Decimal('0.2'), Decimal('10'))
         self.assertEqual(sell, True)
-        self.assertEqual(broker.inventory['AAA'].price, 0.2)
-        self.assertEqual(broker.inventory['AAA'].number, 0)
-        self.assertEqual(broker.cash, 10000 + 1 - 3.9 + 2 - 3.9)
+        self.assertEqual(broker.inventory['AAA'].price, Decimal('0.2'))
+        self.assertEqual(broker.inventory['AAA'].number, Decimal('0'))
+        self.assertEqual(broker.cash, Decimal('10000') + Decimal('1') - Decimal('3.9') + Decimal('2') - Decimal('3.9'))
 
     def test_sell_insufficient_inventory(self):
-        broker = BrokerBO(cash=10, fee=3.9)
-        sell = broker.sell('AAA', 10, 10)
+        broker = BrokerBO(cash=Decimal('10'), fee=Decimal('3.9'))
+        sell = broker.sell('AAA', Decimal('10'), Decimal('10'))
         self.assertEqual(sell, False)
 
     def test_funds(self):
-        broker = BrokerBO(cash=10, fee=3.9)
-        broker.inventory['AAA'] = InventoryBO(10, 0.1)
-        broker.inventory['BBB'] = InventoryBO(20, 0.2)
-        self.assertEqual(broker.funds(), 10 + 10 * 0.1 + 20 * 0.2)
+        broker = BrokerBO(cash=Decimal('10'), fee=Decimal('3.9'))
+        broker.inventory['AAA'] = InventoryBO(Decimal('10'), Decimal('0.1'))
+        broker.inventory['BBB'] = InventoryBO(Decimal('20'), Decimal('0.2'))
+        self.assertEqual(broker.funds(), Decimal('10') + Decimal('10') * Decimal('0.1') + Decimal('20') *
+                         Decimal('0.2'))
 
 
 if __name__ == '__main__':

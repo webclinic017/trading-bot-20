@@ -1,4 +1,5 @@
 import unittest
+from decimal import Decimal
 from typing import Dict, List
 
 import pandas as pd
@@ -10,27 +11,27 @@ from src.enums.action_enum import ActionEnum
 
 
 class StrategyBOTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.attempt = AttemptDTO(amount_buy=Decimal('1000'), distance_buy=Decimal('1'), delta_buy=Decimal('1.5'),
+                                  amount_sell=Decimal('1000'), distance_sell=Decimal('1'), delta_sell=Decimal('1.5'))
+
     def test_buy(self):
-        frame = StrategyBOTestCase.create_frame({'IBM': [10, 1]})
-        attempt = AttemptDTO(amount_buy=1000, distance_buy=1, delta_buy=1.5,
-                             amount_sell=1000, distance_sell=1, delta_sell=1.5)
-        action, number = StrategyBO.counter_cyclical(frame, 'IBM', frame.index.max(), attempt)
+        frame = StrategyBOTestCase.create_frame({'IBM': [Decimal('10'), Decimal('1')]})
+
+        action, number = StrategyBO.counter_cyclical(frame, 'IBM', frame.index.max(), self.attempt)
         self.assertEqual(action, ActionEnum.BUY)
         self.assertEqual(number, 1000)
 
     def test_sell(self):
-        frame = StrategyBOTestCase.create_frame({'IBM': [1, 10]})
-        attempt = AttemptDTO(amount_buy=1000, distance_buy=1, delta_buy=1.5,
-                             amount_sell=1000, distance_sell=1, delta_sell=1.5)
-        action, number = StrategyBO.counter_cyclical(frame, 'IBM', frame.index.max(), attempt)
+        frame = StrategyBOTestCase.create_frame({'IBM': [Decimal('1'), Decimal('10')]})
+        action, number = StrategyBO.counter_cyclical(frame, 'IBM', frame.index.max(), self.attempt)
         self.assertEqual(action, ActionEnum.SELL)
         self.assertEqual(number, 100)
 
     def test_none(self):
-        frame = StrategyBOTestCase.create_frame({'IBM': [1, 1]})
-        attempt = AttemptDTO(amount_buy=1000, distance_buy=1, delta_buy=1.5,
-                             amount_sell=1000, distance_sell=1, delta_sell=1.5)
-        action, number = StrategyBO.counter_cyclical(frame, 'IBM', frame.index.max(), attempt)
+        frame = StrategyBOTestCase.create_frame({'IBM': [Decimal('1'), Decimal('1')]})
+        action, number = StrategyBO.counter_cyclical(frame, 'IBM', frame.index.max(), self.attempt)
         self.assertEqual(action, ActionEnum.NONE)
         self.assertEqual(number, 0)
 

@@ -1,4 +1,5 @@
 import unittest
+from decimal import Decimal
 
 from src.bo.analyser_bo import AnalyserBO
 from src.bo.broker_bo import BrokerBO
@@ -13,12 +14,13 @@ class AnalyserBOTestCase(unittest.TestCase):
 
     def test_analyser(self):
         frame = Utils.create_table_frame()
-        broker = BrokerBO(cash=10000, fee=3.9)
+        broker = BrokerBO(cash=Decimal('10000'), fee=Decimal('3.9'))
         initial_cash = broker.cash
         cash = broker.cash
-        attempt = AttemptDTO(1000, 30, 2, 1000, 30, 2)
+        attempt = AttemptDTO(Decimal('1000'), Decimal('30'), Decimal('2'), Decimal('1000'), Decimal('30'), Decimal('2'))
         statistic = AnalyserBO.analyse(frame, StrategyBO.counter_cyclical, broker, StatisticBO(), attempt)
-        inventory = {'AAA': {'price': 0, 'number': 0}, 'CCC': {'price': 0, 'number': 0}}
+        inventory = {'AAA': {'price': Decimal('0'), 'number': Decimal('0')},
+                     'CCC': {'price': Decimal('0'), 'number': Decimal('0')}}
         for test_data in statistic.test_data:
             action = test_data['action']
             number = test_data['number']
@@ -26,11 +28,11 @@ class AnalyserBOTestCase(unittest.TestCase):
             price = test_data['price']
             total_price = price * number
             if action is ActionEnum.BUY and cash >= total_price:
-                cash = cash - total_price - 3.9
+                cash = cash - total_price - Decimal('3.9')
                 inventory[ticker]['number'] = inventory[ticker]['number'] + number
                 inventory[ticker]['price'] = price
             elif action is ActionEnum.SELL and inventory[ticker]['number'] >= number:
-                cash = cash + total_price - 3.9
+                cash = cash + total_price - Decimal('3.9')
                 inventory[ticker]['number'] = inventory[ticker]['number'] - number
                 inventory[ticker]['price'] = price
             else:

@@ -1,4 +1,5 @@
 import unittest
+from decimal import Decimal
 
 from src import db
 from src.bo.configuration_bo import ConfigurationBO
@@ -26,7 +27,7 @@ class ConfigurationDAOTestCase(unittest.TestCase):
                                 description=ConfigurationEnum.FORWARD_CASH.description)
 
     def test_update(self):
-        ConfigurationDAO.update(ConfigurationEnum.FORWARD_CASH.identifier, 10001)
+        ConfigurationDAO.update(ConfigurationEnum.FORWARD_CASH.identifier, Decimal('10001'))
         configuration = ConfigurationDAO.read_filter_by_identifier(ConfigurationEnum.FORWARD_CASH.identifier)
         self.assertIsInstance(configuration, ConfigurationEntity)
         Utils.assert_attributes(configuration, identifier=ConfigurationEnum.FORWARD_CASH.identifier,

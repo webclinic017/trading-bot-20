@@ -4,7 +4,7 @@ pytz==2020.1
 workalendar==10.3.0
 schedule==0.6.0
 werkzeug==1.0.1
-numpy==1.19.0
+numpy==1.19.1
 Flask==1.1.2
 Flask-SQLAlchemy==2.4.4
 gunicorn==20.0.4

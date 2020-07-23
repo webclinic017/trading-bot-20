@@ -1,5 +1,5 @@
 import copy
-import math
+from decimal import Decimal
 from unittest import TestCase
 
 import numpy as np
@@ -20,11 +20,12 @@ class Utils:
     @staticmethod
     def create_table_frame() -> DataFrame:
         dates = pd.date_range('1/1/2000', periods=150, tz=UTC)
-        prices_aaa = np.full((150, 1), float(500))
+        prices_aaa = np.full((150, 1), Decimal(500))
         prices_bbb = copy.copy(prices_aaa)
         prices_ccc = copy.copy(prices_aaa)
-        prices_aaa[30:60] = prices_aaa[90:120] = prices_ccc[0:30] = prices_ccc[60:90] = prices_ccc[120:150] = float(100)
-        prices_bbb[0:30] = math.nan
+        prices_aaa[30:60] = prices_aaa[90:120] = prices_ccc[0:30] = prices_ccc[60:90] = prices_ccc[120:150] = Decimal(
+            100)
+        prices_bbb[0:30] = Decimal('NaN')
         tickers = ['AAA', 'BBB', 'CCC']
         prices = np.hstack((prices_aaa, prices_bbb, prices_ccc))
         frame = DataFrame(prices, index=dates, columns=tickers)
@@ -47,11 +48,11 @@ class Utils:
 
     @staticmethod
     def persist_intraday_frame():
-        table_aaa = np.full((150, 5), float(500))
+        table_aaa = np.full((150, 5), Decimal(500))
         table_ccc = copy.copy(table_aaa)
-        table_aaa[30:60] = table_aaa[90:120] = table_ccc[0:30] = table_ccc[60:90] = table_ccc[120:150] = float(100)
+        table_aaa[30:60] = table_aaa[90:120] = table_ccc[0:30] = table_ccc[60:90] = table_ccc[120:150] = Decimal(100)
         data = {'AAA': {'start': '1/1/2000', 'data': table_aaa},
-                'BBB': {'start': '31/1/2000', 'data': np.full((120, 5), float(500))},
+                'BBB': {'start': '31/1/2000', 'data': np.full((120, 5), Decimal(500))},
                 'CCC': {'start': '1/1/2000', 'data': table_ccc}}
         for key, value in data.items():
             Utils.__persist_get_intraday(value['start'], value['data'], key)
@@ -65,7 +66,7 @@ class Utils:
             DAO.persist(intraday)
 
     @staticmethod
-    def get_intraday(start='1/1/2000', data=np.full((10, 5), float(500))):
+    def get_intraday(start='1/1/2000', data=np.full((10, 5), Decimal(500))):
         dates = pd.date_range(start, periods=len(data))
         columns = ['1. open', '2. high', '3. low', '4. close', '5. volume']
         frame = DataFrame(data, columns=columns)

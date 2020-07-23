@@ -7,9 +7,9 @@ from src.entity.stock_entity import StockEntity
 class IntradayEntity(db.Model):
     __tablename__ = 'intraday'
     date = db.Column(UtcDateTime, nullable=False, primary_key=True)
-    open = db.Column(db.Float)
-    high = db.Column(db.Float)
-    low = db.Column(db.Float)
-    close = db.Column(db.Float)
-    volume = db.Column(db.Float)
+    open = db.Column(db.DECIMAL)
+    high = db.Column(db.DECIMAL)
+    low = db.Column(db.DECIMAL)
+    close = db.Column(db.DECIMAL)
+    volume = db.Column(db.DECIMAL)
     ticker = db.Column(db.String(10), db.ForeignKey(StockEntity.ticker), nullable=False, index=True, primary_key=True)

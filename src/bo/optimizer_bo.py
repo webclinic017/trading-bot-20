@@ -1,5 +1,5 @@
 import copy
-import math
+from decimal import Decimal
 from typing import Tuple, List
 
 from pandas import DataFrame
@@ -24,39 +24,41 @@ class OptimizerBO:
 
     @staticmethod
     def optimise(tables: List[DataFrame]) -> None:
-        cash: float = ConfigurationDAO.read_filter_by_identifier(ConfigurationEnum.OPTIMIZE_CASH.identifier).value
-        fee: float = ConfigurationDAO.read_filter_by_identifier(ConfigurationEnum.OPTIMIZE_FEE.identifier).value
+        cash: Decimal = ConfigurationDAO.read_filter_by_identifier(ConfigurationEnum.OPTIMIZE_CASH.identifier).value
+        fee: Decimal = ConfigurationDAO.read_filter_by_identifier(ConfigurationEnum.OPTIMIZE_FEE.identifier).value
         evaluation: EvaluationEntity = EvaluationDAO.read_order_by_sum()
         if evaluation is None:
             attempt: AttemptDTO = AttemptDTO()
-            optimise_sum: float = cash * len(tables)
+            optimise_sum: Decimal = cash * len(tables)
         else:
             attempt: AttemptDTO = AttemptDTOConverter.from_evaluation(evaluation)
-            optimise_sum: float = float(evaluation.sum)
+            optimise_sum: Decimal = Decimal(evaluation.sum)
         while True:
             evaluation_attempt: AttemptDTO = copy.copy(attempt)
-            evaluation_attempt.amount_buy += int(attempt.amount_buy * Utils.inverse()) * Utils.negation()
-            evaluation_attempt.distance_buy += int(attempt.distance_buy * Utils.inverse()) * Utils.negation()
+            evaluation_attempt.amount_buy += Utils.truncate(attempt.amount_buy * Utils.inverse()) * Utils.negation()
+            evaluation_attempt.distance_buy += Utils.truncate(
+                attempt.distance_buy * Utils.inverse()) * Utils.negation()
             evaluation_attempt.delta_buy += attempt.delta_buy * Utils.inverse() * Utils.negation()
 
-            evaluation_attempt.amount_sell += int(attempt.amount_sell * Utils.inverse()) * Utils.negation()
-            evaluation_attempt.distance_sell += int(attempt.distance_sell * Utils.inverse()) * Utils.negation()
+            evaluation_attempt.amount_sell += Utils.truncate(attempt.amount_sell * Utils.inverse()) * Utils.negation()
+            evaluation_attempt.distance_sell += Utils.truncate(
+                attempt.distance_sell * Utils.inverse()) * Utils.negation()
             evaluation_attempt.delta_sell += attempt.delta_sell * Utils.inverse() * Utils.negation()
 
-            if not Utils.valid(0, evaluation_attempt.amount_buy, math.inf) \
-                    or not Utils.valid(0, evaluation_attempt.distance_buy, math.inf) \
-                    or not Utils.valid(0, evaluation_attempt.delta_buy, math.inf) \
-                    or not Utils.valid(0, evaluation_attempt.amount_sell, math.inf) \
-                    or not Utils.valid(0, evaluation_attempt.distance_sell, math.inf) \
-                    or not Utils.valid(0, evaluation_attempt.delta_sell, math.inf):
+            if not Utils.valid(Decimal('0'), evaluation_attempt.amount_buy, Decimal('Infinity')) \
+                    or not Utils.valid(Decimal('0'), evaluation_attempt.distance_buy, Decimal('Infinity')) \
+                    or not Utils.valid(Decimal('0'), evaluation_attempt.delta_buy, Decimal('Infinity')) \
+                    or not Utils.valid(Decimal('0'), evaluation_attempt.amount_sell, Decimal('Infinity')) \
+                    or not Utils.valid(Decimal('0'), evaluation_attempt.distance_sell, Decimal('Infinity')) \
+                    or not Utils.valid(Decimal('0'), evaluation_attempt.delta_sell, Decimal('Infinity')):
                 continue
 
             evaluation: EvaluationEntity = EvaluationDAO.read_attempt(evaluation_attempt)
             if evaluation is None:
                 break
 
-        evaluation_sum: float = 0
-        analysis_funds: List[float] = []
+        evaluation_sum: Decimal = Decimal('0')
+        analysis_funds: List[Decimal] = []
         table_number: int = len(tables)
         for i in range(table_number):
             analysis_number: int = i + 1
@@ -65,7 +67,7 @@ class OptimizerBO:
             broker: BrokerBO = BrokerBO(cash, fee)
             AnalyserBO.analyse(tables[i], StrategyBO.counter_cyclical, broker, statistic, evaluation_attempt)
             evaluation_sum += broker.funds()
-            analysis_funds.append(broker.funds())
+            analysis_funds.append(broker.funds().normalize())
             if analysis_number == table_number and evaluation_sum > optimise_sum:
                 EvaluationDAO.create(evaluation_sum, ','.join(map(str, analysis_funds)), evaluation_attempt)
 

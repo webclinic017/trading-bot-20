@@ -1,6 +1,7 @@
 import math
 import unittest
 from datetime import datetime, timedelta
+from decimal import Decimal
 from unittest.mock import patch
 
 import pandas as pd
@@ -13,21 +14,21 @@ from tests.utils.utils import Utils
 
 class UtilsTestCase(unittest.TestCase):
     def test_valid(self):
-        valid = Utilities.valid(1, 2, 3)
+        valid = Utilities.valid(Decimal('1'), Decimal('2'), Decimal('3'))
         self.assertEqual(valid, True)
-        valid = Utilities.valid(3, 2, 3)
+        valid = Utilities.valid(Decimal('3'), Decimal('2'), Decimal('3'))
         self.assertEqual(valid, False)
-        valid = Utilities.valid(1, 2, 1)
+        valid = Utilities.valid(Decimal('1'), Decimal('2'), Decimal('1'))
         self.assertEqual(valid, False)
 
     def test_negation(self):
         negation = Utilities.negation()
-        self.assertGreaterEqual(negation, -1)
-        self.assertLessEqual(negation, 1)
+        self.assertGreaterEqual(negation, Decimal('-1'))
+        self.assertLessEqual(negation, Decimal('1'))
 
     def test_inverse(self):
         inverse = Utilities.inverse()
-        self.assertGreaterEqual(inverse, 0)
+        self.assertGreaterEqual(inverse, Decimal('0'))
         self.assertLessEqual(inverse, math.inf)
 
     def test_group(self):
@@ -38,12 +39,12 @@ class UtilsTestCase(unittest.TestCase):
         self.assertTupleEqual(group, ((1, 2), (3, 4), (5, 6), (7, 8)))
 
     def test_number(self):
-        number = Utilities.number(6.3, 2.4)
-        self.assertEqual(number, 2)
-        number = Utilities.number(9.2, 2.9)
-        self.assertEqual(number, 3)
-        number = Utilities.number(0, 0)
-        self.assertEqual(number, 0)
+        number = Utilities.number(Decimal('6.3'), Decimal('2.4'))
+        self.assertEqual(number, Decimal('2'))
+        number = Utilities.number(Decimal('9.2'), Decimal('2.9'))
+        self.assertEqual(number, Decimal('3'))
+        number = Utilities.number(Decimal('0'), Decimal('0'))
+        self.assertEqual(number, Decimal('0'))
 
     def test_day_delta_value(self):
         dates = pd.date_range('1/1/2000', periods=15, freq='8h')
@@ -54,20 +55,20 @@ class UtilsTestCase(unittest.TestCase):
                 frame.iloc[i][j] = i + j
         frame.sort_index(inplace=True, ascending=True)
         date = frame.index.max()
-        value_aaa = Utilities.day_delta_value(frame, 'AAA', date, 1)
-        value_bbb = Utilities.day_delta_value(frame, 'BBB', date, 1)
-        self.assertEqual(value_aaa, 11)
-        self.assertEqual(value_bbb, 12)
-        value_aaa = Utilities.day_delta_value(frame, 'AAA', date, 2)
-        value_bbb = Utilities.day_delta_value(frame, 'BBB', date, 2)
-        self.assertEqual(value_aaa, 8)
-        self.assertEqual(value_bbb, 9)
-        value_aaa = Utilities.day_delta_value(frame, 'AAA', date, 3)
-        value_bbb = Utilities.day_delta_value(frame, 'BBB', date, 3)
-        self.assertEqual(value_aaa, 5)
-        self.assertEqual(value_bbb, 6)
-        value_aaa = Utilities.day_delta_value(frame, 'AAA', date, 10)
-        value_bbb = Utilities.day_delta_value(frame, 'BBB', date, 10)
+        value_aaa = Utilities.day_delta_value(frame, 'AAA', date, Decimal('1'))
+        value_bbb = Utilities.day_delta_value(frame, 'BBB', date, Decimal('1'))
+        self.assertEqual(value_aaa, Decimal('11'))
+        self.assertEqual(value_bbb, Decimal('12'))
+        value_aaa = Utilities.day_delta_value(frame, 'AAA', date, Decimal('2'))
+        value_bbb = Utilities.day_delta_value(frame, 'BBB', date, Decimal('2'))
+        self.assertEqual(value_aaa, Decimal('8'))
+        self.assertEqual(value_bbb, Decimal('9'))
+        value_aaa = Utilities.day_delta_value(frame, 'AAA', date, Decimal('3'))
+        value_bbb = Utilities.day_delta_value(frame, 'BBB', date, Decimal('3'))
+        self.assertEqual(value_aaa, Decimal('5'))
+        self.assertEqual(value_bbb, Decimal('6'))
+        value_aaa = Utilities.day_delta_value(frame, 'AAA', date, Decimal('10'))
+        value_bbb = Utilities.day_delta_value(frame, 'BBB', date, Decimal('10'))
         self.assertTrue(math.isnan(value_aaa))
         self.assertTrue(math.isnan(value_bbb))
 
@@ -102,11 +103,21 @@ class UtilsTestCase(unittest.TestCase):
 
     def test_assert_attributes(self):
         attempt = AttemptDTO()
-        Utilities.set_attributes(attempt, amount_buy=1, distance_buy=2, delta_buy=3, amount_sell=4, distance_sell=5,
-                                 delta_sell=6)
+        Utilities.set_attributes(attempt, amount_buy=Decimal('1'), distance_buy=Decimal('2'), delta_buy=Decimal('3'),
+                                 amount_sell=Decimal('4'), distance_sell=Decimal('5'), delta_sell=Decimal('6'))
         self.assertIsInstance(attempt, AttemptDTO)
-        Utils.assert_attributes(attempt, amount_buy=1, distance_buy=2, delta_buy=3, amount_sell=4,
-                                distance_sell=5, delta_sell=6)
+        Utils.assert_attributes(attempt, amount_buy=Decimal('1'), distance_buy=Decimal('2'), delta_buy=Decimal('3'),
+                                amount_sell=Decimal('4'), distance_sell=Decimal('5'), delta_sell=Decimal('6'))
+
+    def test_truncate(self):
+        self.assertEqual(Utilities.truncate(Decimal('0.5')), Decimal('0'))
+        self.assertEqual(Utilities.truncate(Decimal('-0.5')), Decimal('0'))
+        self.assertEqual(Utilities.truncate(Decimal('1.2')), Decimal('1'))
+        self.assertEqual(Utilities.truncate(Decimal('-1.2')), Decimal('-1'))
+        self.assertEqual(Utilities.truncate(Decimal('1.9')), Decimal('1'))
+        self.assertEqual(Utilities.truncate(Decimal('-1.9')), Decimal('-1'))
+        self.assertEqual(Utilities.truncate(Decimal('10')), Decimal('10'))
+        self.assertEqual(Utilities.truncate(Decimal('-10')), Decimal('-10'))
 
 
 if __name__ == '__main__':

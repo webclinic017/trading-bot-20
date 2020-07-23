@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 from typing import Dict
 
 import pandas as pd
@@ -21,7 +22,7 @@ class AnalyserBO:
                 date: datetime = pytz.utc.localize(pd.to_datetime(frame.index.values[i], format='%d%b%Y:%H:%M:%S.%f'))
                 if latest_date_dict is not None and latest_date_dict[ticker] != date:
                     continue
-                price: float = frame.iloc[i][j]
+                price: Decimal = frame.iloc[i][j]
                 action, number = strategy(frame, ticker, date, attempt)
                 buy: bool = False
                 sell: bool = False

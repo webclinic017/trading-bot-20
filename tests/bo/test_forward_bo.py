@@ -1,5 +1,6 @@
 import unittest
 from datetime import datetime, timedelta
+from decimal import Decimal
 from unittest.mock import patch
 
 import pytz
@@ -35,67 +36,75 @@ class ForwardBOTestCase(unittest.TestCase):
         is_today.return_value = False
         is_working_day_ny.return_value = True
         now.return_value = ForwardBOTestCase.OLD_DATE
-        ForwardDAO.create_buy('AAA', 100.0, 10, 8996.1)
-        ForwardDAO.create_buy('BBB', 100.0, 10, 7992.200000000001)
+        ForwardDAO.create_buy('AAA', Decimal('100'), Decimal('10'), Decimal('8996.1'))
+        ForwardDAO.create_buy('BBB', Decimal('100'), Decimal('10'), Decimal('7992.200000000001'))
         now.return_value = ForwardBOTestCase.YOUNG_DATE
-        EvaluationDAO.create(40000, '', AttemptDTO())
+        EvaluationDAO.create(Decimal('40000'), '', AttemptDTO())
         Utils.persist_intraday_frame()
         ForwardBO.start()
         rows = ForwardDAO.read_all()
         self.assertEqual(len(rows), 4)
-        Utils.assert_attributes(rows[0], action=ActionEnum.BUY, cash=8996.1, timestamp=ForwardBOTestCase.OLD_DATE,
-                                number=10, price=100.0, ticker='AAA')
-        Utils.assert_attributes(rows[1], action=ActionEnum.BUY, cash=7992.200000000001,
-                                timestamp=ForwardBOTestCase.OLD_DATE, number=10, price=100.0, ticker='BBB')
-        Utils.assert_attributes(rows[2], action=ActionEnum.SELL, cash=8988.300000000001,
+        Utils.assert_attributes(rows[0], action=ActionEnum.BUY, cash=Decimal('8996.1'),
+                                timestamp=ForwardBOTestCase.OLD_DATE, number=Decimal('10'), price=Decimal('100'),
+                                ticker='AAA')
+        Utils.assert_attributes(rows[1], action=ActionEnum.BUY, cash=Decimal('7992.2'),
+                                timestamp=ForwardBOTestCase.OLD_DATE, number=Decimal('10'), price=Decimal('100'),
+                                ticker='BBB')
+        Utils.assert_attributes(rows[2], action=ActionEnum.SELL, cash=Decimal('8988.3'),
                                 timestamp=ForwardBOTestCase.YOUNG_DATE,
-                                number=2, price=500.0, ticker='AAA')
-        Utils.assert_attributes(rows[3], action=ActionEnum.BUY, cash=7984.4000000000015,
+                                number=Decimal('2'), price=Decimal('500'), ticker='AAA')
+        Utils.assert_attributes(rows[3], action=ActionEnum.BUY, cash=Decimal('7984.4'),
                                 timestamp=ForwardBOTestCase.YOUNG_DATE,
-                                number=10, price=100.0, ticker='CCC')
+                                number=Decimal('10'), price=Decimal('100'), ticker='CCC')
 
     @patch('src.utils.utils.Utils.now')
     def test_init(self, now):
-        prices = (20, 30, 40, 50, 60, 70)
-        numbers = (10, 10, 10, 5, 10, 10)
-        multipliers = (-1, -1, -1, 1, -1, 1)
+        prices = (Decimal('20'), Decimal('30'), Decimal('40'), Decimal('50'), Decimal('60'), Decimal('70'))
+        numbers = (Decimal('10'), Decimal('10'), Decimal('10'), Decimal('5'), Decimal('10'), Decimal('10'))
+        multipliers = (Decimal('-1'), Decimal('-1'), Decimal('-1'), Decimal('1'), Decimal('-1'), Decimal('1'))
         now.return_value = ForwardBOTestCase.YOUNG_DATE + timedelta(seconds=1)
-        ForwardDAO.create_buy('AAA', prices[0], numbers[0], 9000)
+        ForwardDAO.create_buy('AAA', prices[0], numbers[0], Decimal('9000'))
         now.return_value = ForwardBOTestCase.YOUNG_DATE + timedelta(seconds=2)
-        ForwardDAO.create_buy('AAA', prices[1], numbers[1], 8000)
+        ForwardDAO.create_buy('AAA', prices[1], numbers[1], Decimal('8000'))
         now.return_value = ForwardBOTestCase.YOUNG_DATE + timedelta(seconds=3)
-        ForwardDAO.create_buy('BBB', prices[2], numbers[2], 7000)
+        ForwardDAO.create_buy('BBB', prices[2], numbers[2], Decimal('7000'))
         now.return_value = ForwardBOTestCase.YOUNG_DATE + timedelta(seconds=4)
-        ForwardDAO.create_sell('BBB', prices[3], numbers[3], 7500)
+        ForwardDAO.create_sell('BBB', prices[3], numbers[3], Decimal('7500'))
         now.return_value = ForwardBOTestCase.YOUNG_DATE + timedelta(seconds=5)
-        ForwardDAO.create_buy('CCC', prices[4], numbers[4], 6500)
+        ForwardDAO.create_buy('CCC', prices[4], numbers[4], Decimal('6500'))
         now.return_value = ForwardBOTestCase.YOUNG_DATE + timedelta(seconds=6)
-        ForwardDAO.create_sell('CCC', prices[5], numbers[5], 7500)
+        ForwardDAO.create_sell('CCC', prices[5], numbers[5], Decimal('7500'))
         inventory, cash, fee = ForwardBO.init()
         estimated = ConfigurationEnum.FORWARD_CASH.v
         for i in range(len(prices)):
             estimated += prices[i] * numbers[i] * multipliers[i] - ConfigurationEnum.FORWARD_FEE.v
-        Utils.assert_attributes(inventory['AAA'], price=30.0, number=20)
-        Utils.assert_attributes(inventory['BBB'], price=50.0, number=5)
-        Utils.assert_attributes(inventory['CCC'], price=70.0, number=0)
+        Utils.assert_attributes(inventory['AAA'], price=Decimal('30'), number=Decimal('20'))
+        Utils.assert_attributes(inventory['BBB'], price=Decimal('50'), number=Decimal('5'))
+        Utils.assert_attributes(inventory['CCC'], price=Decimal('70'), number=Decimal('0'))
         self.assertEqual(cash, estimated)
 
     def test_update(self):
-        Utils.persist_intraday('AAA', ForwardBOTestCase.YOUNG_DATE, 10, 10, 10, 10, 10)
-        Utils.persist_intraday('AAA', ForwardBOTestCase.OLD_DATE, 7, 7, 7, 7, 7)
-        Utils.persist_intraday('BBB', ForwardBOTestCase.YOUNG_DATE, 20, 20, 20, 20, 20)
-        Utils.persist_intraday('BBB', ForwardBOTestCase.OLD_DATE, 8, 8, 8, 8, 8)
-        Utils.persist_intraday('CCC', ForwardBOTestCase.YOUNG_DATE, 30, 30, 30, 30, 30)
-        Utils.persist_intraday('CCC', ForwardBOTestCase.OLD_DATE, 9, 9, 9, 9, 9)
+        Utils.persist_intraday('AAA', ForwardBOTestCase.YOUNG_DATE, Decimal('10'), Decimal('10'), Decimal('10'),
+                               Decimal('10'), Decimal('10'))
+        Utils.persist_intraday('AAA', ForwardBOTestCase.OLD_DATE, Decimal('7'), Decimal('7'), Decimal('7'),
+                               Decimal('7'), Decimal('7'))
+        Utils.persist_intraday('BBB', ForwardBOTestCase.YOUNG_DATE, Decimal('20'), Decimal('20'), Decimal('20'),
+                               Decimal('20'), Decimal('20'))
+        Utils.persist_intraday('BBB', ForwardBOTestCase.OLD_DATE, Decimal('8'), Decimal('8'), Decimal('8'),
+                               Decimal('8'), Decimal('8'))
+        Utils.persist_intraday('CCC', ForwardBOTestCase.YOUNG_DATE, Decimal('30'), Decimal('30'), Decimal('30'),
+                               Decimal('30'), Decimal('30'))
+        Utils.persist_intraday('CCC', ForwardBOTestCase.OLD_DATE, Decimal('9'), Decimal('9'), Decimal('9'),
+                               Decimal('9'), Decimal('9'))
         inventory = {
-            'AAA': InventoryBO(70, 1),
-            'BBB': InventoryBO(80, 2),
-            'CCC': InventoryBO(90, 3),
+            'AAA': InventoryBO(Decimal('70'), Decimal('1')),
+            'BBB': InventoryBO(Decimal('80'), Decimal('2')),
+            'CCC': InventoryBO(Decimal('90'), Decimal('3')),
         }
         inventory, total_value, total = ForwardBO.update(inventory, ConfigurationEnum.FORWARD_CASH.v)
-        Utils.assert_attributes(inventory['AAA'], price=10, number=70)
-        Utils.assert_attributes(inventory['BBB'], price=20, number=80)
-        Utils.assert_attributes(inventory['CCC'], price=30, number=90)
+        Utils.assert_attributes(inventory['AAA'], price=Decimal('10'), number=Decimal('70'))
+        Utils.assert_attributes(inventory['BBB'], price=Decimal('20'), number=Decimal('80'))
+        Utils.assert_attributes(inventory['CCC'], price=Decimal('30'), number=Decimal('90'))
         estimated = inventory['AAA'].value() + inventory['BBB'].value() + inventory['CCC'].value()
         self.assertEqual(total_value, estimated)
         self.assertEqual(total, estimated + ConfigurationEnum.FORWARD_CASH.v)

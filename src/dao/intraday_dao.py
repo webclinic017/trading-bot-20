@@ -2,6 +2,7 @@ import json
 import logging
 import os
 from datetime import datetime
+from decimal import Decimal
 from typing import List, Tuple
 
 import pandas as pd
@@ -36,9 +37,9 @@ class IntradayDAO:
         rows = json.loads(content)
         for row in rows:
             intraday: IntradayEntity = IntradayEntity()
-            Utils.set_attributes(intraday, date=datetime.fromisoformat(row['date']), open=float(row['open']),
-                                 high=float(row['high']), low=float(row['low']), close=float(row['close']),
-                                 volume=float(row['volume']), ticker=row['ticker'])
+            Utils.set_attributes(intraday, date=datetime.fromisoformat(row['date']), open=Decimal(row['open']),
+                                 high=Decimal(row['high']), low=Decimal(row['low']), close=Decimal(row['close']),
+                                 volume=Decimal(row['volume']), ticker=row['ticker'])
             DAO.persist(intraday)
 
     @staticmethod
@@ -82,15 +83,15 @@ class IntradayDAO:
     def dataframe(rows: List[IntradayEntity]) -> DataFrame:
         frame: DataFrame = pd.DataFrame()
         for row in rows:
-            frame.at[row.date, row.ticker] = float(row.close)
+            frame.at[row.date, row.ticker] = Decimal(row.close)
         return frame
 
     @staticmethod
     def init(row: Series, ticker: str, timezone: str) -> IntradayEntity:
         intraday: IntradayEntity = IntradayEntity()
         Utils.set_attributes(intraday, date=pytz.timezone(timezone).localize(datetime.fromisoformat(str(row['date']))),
-                             open=float(row['1. open']), high=float(row['2. high']), low=float(row['3. low']),
-                             close=float(row['4. close']), volume=float(row['5. volume']), ticker=ticker)
+                             open=Decimal(row['1. open']), high=Decimal(row['2. high']), low=Decimal(row['3. low']),
+                             close=Decimal(row['4. close']), volume=Decimal(row['5. volume']), ticker=ticker)
         return intraday
 
 

@@ -1,5 +1,6 @@
 import unittest
 from datetime import datetime
+from decimal import Decimal
 from unittest.mock import patch
 
 import pytz
@@ -22,17 +23,17 @@ class ForwardDAOTestCase(unittest.TestCase):
     def setUp(self, now):
         Utils.truncate_tables()
         now.return_value = ForwardDAOTestCase.YOUNG_DATE
-        ForwardDAO.create_buy('AAA', 100, 4, 10)
+        ForwardDAO.create_buy('AAA', Decimal('100'), Decimal('4'), Decimal('10'))
         now.return_value = ForwardDAOTestCase.OLD_DATE
-        ForwardDAO.create_sell('AAA', 101, 5, 11)
+        ForwardDAO.create_sell('AAA', Decimal('101'), Decimal('5'), Decimal('11'))
 
     def test_read(self):
         rows = ForwardDAO.read()
         self.assertEqual(len(rows), 2)
         Utils.assert_attributes(rows[0], timestamp=ForwardDAOTestCase.OLD_DATE, ticker='AAA', action=ActionEnum.SELL,
-                                price=101, number=5, cash=11)
-        Utils.assert_attributes(rows[1], timestamp=ForwardDAOTestCase.YOUNG_DATE, ticker='AAA',
-                                action=ActionEnum.BUY, price=100, number=4, cash=10)
+                                price=Decimal('101'), number=Decimal('5'), cash=Decimal('11'))
+        Utils.assert_attributes(rows[1], timestamp=ForwardDAOTestCase.YOUNG_DATE, ticker='AAA', action=ActionEnum.BUY,
+                                price=Decimal('100'), number=Decimal('4'), cash=Decimal('10'))
 
     def test_read_all(self):
         rows = ForwardDAO.read_all()

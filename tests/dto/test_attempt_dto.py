@@ -1,4 +1,5 @@
 import unittest
+from decimal import Decimal
 
 from src.dto.attempt_dto import AttemptDTO
 from tests.utils.utils import Utils
@@ -12,10 +13,10 @@ class AttemptDTOTestCase(unittest.TestCase):
                                 distance_sell=30, delta_sell=1.5)
 
     def test_init_with_arguments(self):
-        attempt = AttemptDTO(1, 2, 3, 4, 5, 6)
+        attempt = AttemptDTO(Decimal('1'), Decimal('2'), Decimal('3'), Decimal('4'), Decimal('5'), Decimal('6'))
         self.assertIsInstance(attempt, AttemptDTO)
-        Utils.assert_attributes(attempt, amount_buy=1, distance_buy=2, delta_buy=3, amount_sell=4,
-                                distance_sell=5, delta_sell=6)
+        Utils.assert_attributes(attempt, amount_buy=Decimal('1'), distance_buy=Decimal('2'), delta_buy=Decimal('3'),
+                                amount_sell=Decimal('4'), distance_sell=Decimal('5'), delta_sell=Decimal('6'))
 
 
 if __name__ == '__main__':

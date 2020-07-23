@@ -1,17 +1,18 @@
 import unittest
+from decimal import Decimal
 
 from src.bo.inventory_bo import InventoryBO
 
 
 class InventoryBOTestCase(unittest.TestCase):
     def test_init(self):
-        inventory = InventoryBO(1, 2)
-        self.assertEqual(inventory.number, 1)
-        self.assertEqual(inventory.price, 2)
+        inventory = InventoryBO(Decimal('1'), Decimal('2'))
+        self.assertEqual(inventory.number, Decimal('1'))
+        self.assertEqual(inventory.price, Decimal('2'))
 
     def test_value(self):
-        inventory = InventoryBO(3, 5)
-        self.assertEqual(inventory.value(), 15)
+        inventory = InventoryBO(Decimal('3'), Decimal('5'))
+        self.assertEqual(inventory.value(), Decimal('15'))
 
 
 if __name__ == '__main__':

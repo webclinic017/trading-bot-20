@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import List
 
 from src.dao.dao import DAO
@@ -8,7 +9,7 @@ from src.utils.utils import Utils
 
 class EvaluationDAO:
     @staticmethod
-    def create(s: float, funds: str, attempt: AttemptDTO) -> None:
+    def create(s: Decimal, funds: str, attempt: AttemptDTO) -> None:
         evaluation: EvaluationEntity = EvaluationEntity()
         evaluation.timestamp = Utils.now()
         evaluation.sum = str(s)

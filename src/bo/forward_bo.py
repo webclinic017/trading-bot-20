@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 from typing import Dict, List, Tuple
 
 from pandas import DataFrame
@@ -42,9 +43,9 @@ class ForwardBO:
         AnalyserBO.analyse(frame, StrategyBO.counter_cyclical, broker, statistic, attempt, latest_date_dict)
 
     @staticmethod
-    def init() -> Tuple[Dict[str, InventoryBO], float, float]:
-        cash: float = ConfigurationDAO.read_filter_by_identifier(ConfigurationEnum.FORWARD_CASH.identifier).value
-        fee: float = ConfigurationDAO.read_filter_by_identifier(ConfigurationEnum.OPTIMIZE_FEE.identifier).value
+    def init() -> Tuple[Dict[str, InventoryBO], Decimal, Decimal]:
+        cash: Decimal = ConfigurationDAO.read_filter_by_identifier(ConfigurationEnum.FORWARD_CASH.identifier).value
+        fee: Decimal = ConfigurationDAO.read_filter_by_identifier(ConfigurationEnum.OPTIMIZE_FEE.identifier).value
         rows: List[ForwardEntity] = ForwardDAO.read()
         broker = BrokerBO(cash, fee)
         for row in rows:
@@ -55,14 +56,14 @@ class ForwardBO:
         return broker.inventory, broker.cash, fee
 
     @staticmethod
-    def update(inventory: Dict[str, InventoryBO], cash: float) -> Tuple[Dict[str, InventoryBO], float, float]:
-        total: float = 0
-        total_value: float = 0
+    def update(inventory: Dict[str, InventoryBO], cash: Decimal) -> Tuple[Dict[str, InventoryBO], Decimal, Decimal]:
+        total: Decimal = Decimal('0')
+        total_value: Decimal = Decimal('0')
         for ticker, entry in inventory.items():
             intraday: IntradayEntity = IntradayDAO.read_filter_by_ticker_first(ticker)
             if intraday is None:
                 continue
-            entry.price = float(intraday.close)
+            entry.price = Decimal(intraday.close)
             total_value += entry.value()
         total += cash + total_value
         return inventory, total_value, total
