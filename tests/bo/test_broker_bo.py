@@ -3,6 +3,7 @@ from decimal import Decimal
 
 from src.bo.broker_bo import BrokerBO
 from src.bo.inventory_bo import InventoryBO
+from src.constants import ZERO
 
 
 class BrokerBOTestCase(unittest.TestCase):
@@ -49,7 +50,7 @@ class BrokerBOTestCase(unittest.TestCase):
         sell = broker.sell('AAA', Decimal('0.2'), Decimal('10'))
         self.assertEqual(sell, True)
         self.assertEqual(broker.inventory['AAA'].price, Decimal('0.2'))
-        self.assertEqual(broker.inventory['AAA'].number, Decimal('0'))
+        self.assertEqual(broker.inventory['AAA'].number, ZERO)
         self.assertEqual(broker.cash, Decimal('10000') + Decimal('1') - Decimal('3.9') + Decimal('2') - Decimal('3.9'))
 
     def test_sell_insufficient_inventory(self):

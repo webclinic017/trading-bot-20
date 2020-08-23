@@ -10,6 +10,7 @@ from src.bo.forward_broker_bo import ForwardBrokerBO
 from src.bo.inventory_bo import InventoryBO
 from src.bo.statistic_bo import StatisticBO
 from src.bo.strategy_bo import StrategyBO
+from src.constants import ZERO
 from src.converter.attempt_dto_converter import AttemptDTOConverter
 from src.dao.configuration_dao import ConfigurationDAO
 from src.dao.evaluation_dao import EvaluationDAO
@@ -57,8 +58,8 @@ class ForwardBO:
 
     @staticmethod
     def update(inventory: Dict[str, InventoryBO], cash: Decimal) -> Tuple[Dict[str, InventoryBO], Decimal, Decimal]:
-        total: Decimal = Decimal('0')
-        total_value: Decimal = Decimal('0')
+        total: Decimal = ZERO
+        total_value: Decimal = ZERO
         for ticker, entry in inventory.items():
             intraday: IntradayEntity = IntradayDAO.read_filter_by_ticker_first(ticker)
             if intraday is None:

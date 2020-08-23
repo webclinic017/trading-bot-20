@@ -3,6 +3,7 @@ from decimal import Decimal
 from typing import Dict
 
 from src.bo.inventory_bo import InventoryBO
+from src.constants import ZERO
 
 
 class BrokerBO:
@@ -22,14 +23,14 @@ class BrokerBO:
 
     def update(self, ticker: str, price: Decimal) -> None:
         if not math.isnan(price):
-            entry: InventoryBO = self.__inventory.get(ticker, InventoryBO(Decimal('0'), price))
+            entry: InventoryBO = self.__inventory.get(ticker, InventoryBO(ZERO, price))
             entry.price = price
             self.__inventory[ticker] = entry
 
     def buy(self, ticker: str, price: Decimal, number: Decimal) -> bool:
         total_price: Decimal = price * number
         if self._cash >= total_price:
-            entry: InventoryBO = self.__inventory.get(ticker, InventoryBO(Decimal('0'), price))
+            entry: InventoryBO = self.__inventory.get(ticker, InventoryBO(ZERO, price))
             entry.number += number
             entry.price = price
             self.__inventory[ticker] = entry
@@ -39,7 +40,7 @@ class BrokerBO:
 
     def sell(self, ticker: str, price: Decimal, number: Decimal) -> bool:
         total_price: Decimal = price * number
-        entry: InventoryBO = self.__inventory.get(ticker, InventoryBO(Decimal('0'), price))
+        entry: InventoryBO = self.__inventory.get(ticker, InventoryBO(ZERO, price))
         if entry.number >= number:
             entry.number -= number
             entry.price = price
@@ -49,7 +50,7 @@ class BrokerBO:
         return False
 
     def funds(self) -> Decimal:
-        value: Decimal = Decimal('0')
+        value: Decimal = ZERO
         for ticker in self.__inventory:
             value += self.__inventory[ticker].value()
         return self._cash + value

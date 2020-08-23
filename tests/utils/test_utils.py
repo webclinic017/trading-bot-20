@@ -7,6 +7,7 @@ from unittest.mock import patch
 import pandas as pd
 import pytz
 
+from src.constants import ZERO
 from src.dto.attempt_dto import AttemptDTO
 from src.utils.utils import Utils as Utilities
 from tests.utils.utils import Utils
@@ -23,12 +24,14 @@ class UtilsTestCase(unittest.TestCase):
 
     def test_negation(self):
         negation = Utilities.negation()
+        self.assertIsInstance(negation, Decimal)
         self.assertGreaterEqual(negation, Decimal('-1'))
         self.assertLessEqual(negation, Decimal('1'))
 
     def test_inverse(self):
         inverse = Utilities.inverse()
-        self.assertGreaterEqual(inverse, Decimal('0'))
+        self.assertIsInstance(inverse, Decimal)
+        self.assertGreaterEqual(inverse, ZERO)
         self.assertLessEqual(inverse, math.inf)
 
     def test_group(self):
@@ -43,8 +46,8 @@ class UtilsTestCase(unittest.TestCase):
         self.assertEqual(number, Decimal('2'))
         number = Utilities.number(Decimal('9.2'), Decimal('2.9'))
         self.assertEqual(number, Decimal('3'))
-        number = Utilities.number(Decimal('0'), Decimal('0'))
-        self.assertEqual(number, Decimal('0'))
+        number = Utilities.number(ZERO, ZERO)
+        self.assertEqual(number, ZERO)
 
     def test_day_delta_value(self):
         dates = pd.date_range('1/1/2000', periods=15, freq='8h')
@@ -110,8 +113,8 @@ class UtilsTestCase(unittest.TestCase):
                                 amount_sell=Decimal('4'), distance_sell=Decimal('5'), delta_sell=Decimal('6'))
 
     def test_truncate(self):
-        self.assertEqual(Utilities.truncate(Decimal('0.5')), Decimal('0'))
-        self.assertEqual(Utilities.truncate(Decimal('-0.5')), Decimal('0'))
+        self.assertEqual(Utilities.truncate(Decimal('0.5')), ZERO)
+        self.assertEqual(Utilities.truncate(Decimal('-0.5')), ZERO)
         self.assertEqual(Utilities.truncate(Decimal('1.2')), Decimal('1'))
         self.assertEqual(Utilities.truncate(Decimal('-1.2')), Decimal('-1'))
         self.assertEqual(Utilities.truncate(Decimal('1.9')), Decimal('1'))

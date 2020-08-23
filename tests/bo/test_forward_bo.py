@@ -9,6 +9,7 @@ from src import db
 from src.bo.configuration_bo import ConfigurationBO
 from src.bo.forward_bo import ForwardBO
 from src.bo.inventory_bo import InventoryBO
+from src.constants import ZERO
 from src.dao.evaluation_dao import EvaluationDAO
 from src.dao.forward_dao import ForwardDAO
 from src.dto.attempt_dto import AttemptDTO
@@ -80,7 +81,7 @@ class ForwardBOTestCase(unittest.TestCase):
             estimated += prices[i] * numbers[i] * multipliers[i] - ConfigurationEnum.FORWARD_FEE.v
         Utils.assert_attributes(inventory['AAA'], price=Decimal('30'), number=Decimal('20'))
         Utils.assert_attributes(inventory['BBB'], price=Decimal('50'), number=Decimal('5'))
-        Utils.assert_attributes(inventory['CCC'], price=Decimal('70'), number=Decimal('0'))
+        Utils.assert_attributes(inventory['CCC'], price=Decimal('70'), number=ZERO)
         self.assertEqual(cash, estimated)
 
     def test_update(self):

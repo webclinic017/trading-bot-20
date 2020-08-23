@@ -8,7 +8,7 @@ import pytz
 from pandas import DataFrame
 from workalendar.usa import NewYork
 
-from src.constants import US_EASTERN
+from src.constants import US_EASTERN, ZERO
 
 T = TypeVar('T')
 
@@ -24,7 +24,7 @@ class Utils:
 
     @staticmethod
     def inverse() -> Decimal:
-        return random.random() if random.random() < 0.5 else 1 / (1 - random.random())
+        return Decimal(random.random()) if random.random() < 0.5 else Decimal(1 / (1 - random.random()))
 
     @staticmethod
     def group(number: int, iterable: List[T]) -> Tuple[Tuple[T]]:
@@ -33,7 +33,7 @@ class Utils:
 
     @staticmethod
     def number(numerator: Decimal, denominator: Decimal) -> Decimal:
-        return Decimal('0') if denominator == Decimal('0') else ExtendedContext.divide_int(numerator, denominator)
+        return ZERO if denominator == ZERO else ExtendedContext.divide_int(numerator, denominator)
 
     @staticmethod
     def day_delta_value(frame: DataFrame, column: str, date: datetime, delta: Decimal) -> Decimal:

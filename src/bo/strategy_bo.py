@@ -5,6 +5,7 @@ from typing import Tuple
 
 from pandas import DataFrame
 
+from src.constants import ZERO
 from src.dto.attempt_dto import AttemptDTO
 from src.enums.action_enum import ActionEnum
 from src.utils.utils import Utils
@@ -28,4 +29,4 @@ class StrategyBO:
             percent: Decimal = end_close / start_close
             if not math.isnan(start_close) and not math.isnan(end_close) and percent > attempt.delta_sell:
                 return ActionEnum.SELL, Utils.number(attempt.amount_sell, end_close)
-        return ActionEnum.NONE, Decimal('0')
+        return ActionEnum.NONE, ZERO

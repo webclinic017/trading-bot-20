@@ -5,6 +5,7 @@ from src.bo.analyser_bo import AnalyserBO
 from src.bo.broker_bo import BrokerBO
 from src.bo.statistic_bo import StatisticBO
 from src.bo.strategy_bo import StrategyBO
+from src.constants import ZERO
 from src.dto.attempt_dto import AttemptDTO
 from src.enums.action_enum import ActionEnum
 from tests.utils.utils import Utils
@@ -19,8 +20,8 @@ class AnalyserBOTestCase(unittest.TestCase):
         cash = broker.cash
         attempt = AttemptDTO(Decimal('1000'), Decimal('30'), Decimal('2'), Decimal('1000'), Decimal('30'), Decimal('2'))
         statistic = AnalyserBO.analyse(frame, StrategyBO.counter_cyclical, broker, StatisticBO(), attempt)
-        inventory = {'AAA': {'price': Decimal('0'), 'number': Decimal('0')},
-                     'CCC': {'price': Decimal('0'), 'number': Decimal('0')}}
+        inventory = {'AAA': {'price': ZERO, 'number': ZERO},
+                     'CCC': {'price': ZERO, 'number': ZERO}}
         for test_data in statistic.test_data:
             action = test_data['action']
             number = test_data['number']

@@ -8,6 +8,7 @@ from src.bo.analyser_bo import AnalyserBO
 from src.bo.broker_bo import BrokerBO
 from src.bo.statistic_bo import StatisticBO
 from src.bo.strategy_bo import StrategyBO
+from src.constants import INFINITY, ZERO
 from src.converter.attempt_dto_converter import AttemptDTOConverter
 from src.dao.configuration_dao import ConfigurationDAO
 from src.dao.evaluation_dao import EvaluationDAO
@@ -45,19 +46,17 @@ class OptimizerBO:
                 attempt.distance_sell * Utils.inverse()) * Utils.negation()
             evaluation_attempt.delta_sell += attempt.delta_sell * Utils.inverse() * Utils.negation()
 
-            if not Utils.valid(Decimal('0'), evaluation_attempt.amount_buy, Decimal('Infinity')) \
-                    or not Utils.valid(Decimal('0'), evaluation_attempt.distance_buy, Decimal('Infinity')) \
-                    or not Utils.valid(Decimal('0'), evaluation_attempt.delta_buy, Decimal('Infinity')) \
-                    or not Utils.valid(Decimal('0'), evaluation_attempt.amount_sell, Decimal('Infinity')) \
-                    or not Utils.valid(Decimal('0'), evaluation_attempt.distance_sell, Decimal('Infinity')) \
-                    or not Utils.valid(Decimal('0'), evaluation_attempt.delta_sell, Decimal('Infinity')):
+            start_tuple = (ZERO, ZERO, ZERO, ZERO, ZERO, ZERO)
+            stop_tuple = (INFINITY, INFINITY, INFINITY, INFINITY, INFINITY, INFINITY)
+            if not all([Utils.valid(start, value, stop) for start, value, stop in
+                        zip(start_tuple, evaluation_attempt.__dict__.values(), stop_tuple)]):
                 continue
 
             evaluation: EvaluationEntity = EvaluationDAO.read_attempt(evaluation_attempt)
             if evaluation is None:
                 break
 
-        evaluation_sum: Decimal = Decimal('0')
+        evaluation_sum: Decimal = ZERO
         analysis_funds: List[Decimal] = []
         table_number: int = len(tables)
         for i in range(table_number):

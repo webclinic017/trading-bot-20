@@ -5,6 +5,7 @@ from unittest.mock import patch
 from src import db
 from src.bo.configuration_bo import ConfigurationBO
 from src.bo.optimizer_bo import OptimizerBO
+from src.constants import ZERO
 from src.dao.evaluation_dao import EvaluationDAO
 from src.dto.attempt_dto import AttemptDTO
 from src.entity.evaluation_entity import EvaluationEntity
@@ -24,8 +25,8 @@ class OptimizerBOTestCase(unittest.TestCase):
     @patch('src.utils.utils.Utils.negation')
     @patch('src.utils.utils.Utils.inverse')
     def test_optimise(self, negation, inverse):
-        negation.return_value = Decimal('0')
-        inverse.return_value = Decimal('0')
+        negation.return_value = ZERO
+        inverse.return_value = ZERO
         rows = EvaluationDAO.read_all()
         self.assertEqual(len(rows), 0)
         OptimizerBO.optimise([Utils.create_table_frame()])
