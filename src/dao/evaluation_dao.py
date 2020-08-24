@@ -9,10 +9,10 @@ from src.utils.utils import Utils
 
 class EvaluationDAO:
     @staticmethod
-    def create(s: Decimal, funds: str, attempt: AttemptDTO) -> None:
+    def create(summation: Decimal, funds: str, attempt: AttemptDTO) -> None:
         evaluation: EvaluationEntity = EvaluationEntity()
         evaluation.timestamp = Utils.now()
-        evaluation.sum = str(s)
+        evaluation.sum = str(summation)
         evaluation.funds = funds
         Utils.set_attributes(evaluation, amount_buy=str(attempt.amount_buy), distance_buy=str(attempt.distance_buy),
                              delta_buy=str(attempt.delta_buy), amount_sell=str(attempt.amount_sell),

@@ -23,7 +23,7 @@ class ConfigurationBOTestCase(unittest.TestCase):
         self.assertEqual(len(configurations), 4)
         for enum, configuration in zip(ConfigurationEnum.__iter__(), configurations):
             self.assertIsInstance(configuration, ConfigurationEntity)
-            Utils.assert_attributes(configuration, identifier=enum.identifier, value=enum.v,
+            Utils.assert_attributes(configuration, identifier=enum.identifier, value=enum.val,
                                     description=enum.description)
 
 

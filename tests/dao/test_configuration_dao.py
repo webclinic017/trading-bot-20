@@ -23,7 +23,7 @@ class ConfigurationDAOTestCase(unittest.TestCase):
         configuration = ConfigurationDAO.read_filter_by_identifier(ConfigurationEnum.FORWARD_CASH.identifier)
         self.assertIsInstance(configuration, ConfigurationEntity)
         Utils.assert_attributes(configuration, identifier=ConfigurationEnum.FORWARD_CASH.identifier,
-                                value=ConfigurationEnum.FORWARD_CASH.v,
+                                value=ConfigurationEnum.FORWARD_CASH.val,
                                 description=ConfigurationEnum.FORWARD_CASH.description)
 
     def test_update(self):

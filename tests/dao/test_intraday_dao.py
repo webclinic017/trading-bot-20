@@ -75,6 +75,21 @@ class IntradayDAOTestCase(unittest.TestCase):
         Utils.assert_attributes(rows[0], date=date, open=Decimal('500'), high=Decimal('500'), low=Decimal('500'),
                                 close=Decimal('500'), volume=Decimal('500'), ticker='AAA')
 
+    def test_dataframe(self):
+        young_date = pytz.utc.localize(datetime.fromisoformat('2011-11-04T00:00:00'))
+        old_date = pytz.utc.localize(datetime.fromisoformat('2011-11-03T00:00:00'))
+        dates = (young_date, old_date, young_date)
+        tickers = ('AAA', 'AAA', 'BBB')
+        intradays = []
+        for date, ticker in zip(dates, tickers):
+            intraday = IntradayEntity()
+            Utilities.set_attributes(intraday, date=date, close=Decimal(1), ticker=ticker)
+            intradays.append(intraday)
+        frame = IntradayDAO.dataframe(intradays)
+        for i in range(frame.shape[0]):
+            for j in range(frame.shape[1]):
+                self.assertIsInstance(frame.iloc[i][j], Decimal)
+
 
 if __name__ == '__main__':
     unittest.main()

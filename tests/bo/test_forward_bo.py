@@ -76,9 +76,9 @@ class ForwardBOTestCase(unittest.TestCase):
         now.return_value = ForwardBOTestCase.YOUNG_DATE + timedelta(seconds=6)
         ForwardDAO.create_sell('CCC', prices[5], numbers[5], Decimal('7500'))
         inventory, cash, fee = ForwardBO.init()
-        estimated = ConfigurationEnum.FORWARD_CASH.v
+        estimated = ConfigurationEnum.FORWARD_CASH.val
         for i in range(len(prices)):
-            estimated += prices[i] * numbers[i] * multipliers[i] - ConfigurationEnum.FORWARD_FEE.v
+            estimated += prices[i] * numbers[i] * multipliers[i] - ConfigurationEnum.FORWARD_FEE.val
         Utils.assert_attributes(inventory['AAA'], price=Decimal('30'), number=Decimal('20'))
         Utils.assert_attributes(inventory['BBB'], price=Decimal('50'), number=Decimal('5'))
         Utils.assert_attributes(inventory['CCC'], price=Decimal('70'), number=ZERO)
@@ -102,13 +102,13 @@ class ForwardBOTestCase(unittest.TestCase):
             'BBB': InventoryBO(Decimal('80'), Decimal('2')),
             'CCC': InventoryBO(Decimal('90'), Decimal('3')),
         }
-        inventory, total_value, total = ForwardBO.update(inventory, ConfigurationEnum.FORWARD_CASH.v)
+        inventory, total_value, total = ForwardBO.update(inventory, ConfigurationEnum.FORWARD_CASH.val)
         Utils.assert_attributes(inventory['AAA'], price=Decimal('10'), number=Decimal('70'))
         Utils.assert_attributes(inventory['BBB'], price=Decimal('20'), number=Decimal('80'))
         Utils.assert_attributes(inventory['CCC'], price=Decimal('30'), number=Decimal('90'))
         estimated = inventory['AAA'].value() + inventory['BBB'].value() + inventory['CCC'].value()
         self.assertEqual(total_value, estimated)
-        self.assertEqual(total, estimated + ConfigurationEnum.FORWARD_CASH.v)
+        self.assertEqual(total, estimated + ConfigurationEnum.FORWARD_CASH.val)
 
 
 if __name__ == '__main__':

@@ -8,7 +8,7 @@ import pytz
 from pandas import DataFrame
 from workalendar.usa import NewYork
 
-from src.constants import US_EASTERN, ZERO
+from src.constants import US_EASTERN, ZERO, NAN
 
 T = TypeVar('T')
 
@@ -41,7 +41,7 @@ class Utils:
         interval_start = date - timedelta(days=float(delta) + 7)
         interval_date = frame.loc[interval_start:interval_end, column].index.max()
         if pd.isnull(interval_date):
-            return Decimal('NaN')
+            return NAN
         return frame.at[interval_date, column]
 
     @staticmethod

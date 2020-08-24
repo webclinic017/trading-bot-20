@@ -10,5 +10,5 @@ class ConfigurationEnum(Enum):
 
     def __init__(self, identifier: str, value: Decimal, description: str):
         self.identifier = identifier
-        self.v = value
+        self.val = value
         self.description = description

@@ -12,6 +12,7 @@ from pandas import DataFrame, Series
 from sqlalchemy import func
 
 from src import db
+from src.constants import NAN
 from src.dao.dao import DAO
 from src.dao.stock_dao import StockDAO
 from src.entity.intraday_entity import IntradayEntity
@@ -84,7 +85,7 @@ class IntradayDAO:
         frame: DataFrame = pd.DataFrame()
         for row in rows:
             frame.at[row.date, row.ticker] = Decimal(row.close)
-        return frame
+        return frame.fillna(NAN)
 
     @staticmethod
     def init(row: Series, ticker: str, timezone: str) -> IntradayEntity:

@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from pandas import DataFrame
 
-from src.constants import UTC, US_EASTERN
+from src.constants import UTC, US_EASTERN, NAN
 from src.dao.dao import DAO
 from src.dao.intraday_dao import IntradayDAO
 from src.entity.configuration_entity import ConfigurationEntity
@@ -25,7 +25,7 @@ class Utils:
         prices_ccc = copy.copy(prices_aaa)
         prices_aaa[30:60] = prices_aaa[90:120] = prices_ccc[0:30] = prices_ccc[60:90] = prices_ccc[120:150] = Decimal(
             100)
-        prices_bbb[0:30] = Decimal('NaN')
+        prices_bbb[0:30] = NAN
         tickers = ['AAA', 'BBB', 'CCC']
         prices = np.hstack((prices_aaa, prices_bbb, prices_ccc))
         frame = DataFrame(prices, index=dates, columns=tickers)

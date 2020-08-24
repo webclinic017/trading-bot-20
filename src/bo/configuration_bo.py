@@ -7,4 +7,4 @@ class ConfigurationBO:
     @staticmethod
     def create() -> None:
         for configuration in ConfigurationEnum:
-            ConfigurationDAO.create(configuration.identifier, configuration.v, configuration.description)
+            ConfigurationDAO.create(configuration.identifier, configuration.val, configuration.description)
