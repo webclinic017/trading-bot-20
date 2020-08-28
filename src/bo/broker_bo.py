@@ -29,7 +29,7 @@ class BrokerBO:
 
     def buy(self, ticker: str, price: Decimal, number: Decimal) -> bool:
         total_price: Decimal = price * number
-        if self._cash >= total_price:
+        if self._cash >= total_price and number > 0:
             entry: InventoryBO = self.__inventory.get(ticker, InventoryBO(ZERO, price))
             entry.number += number
             entry.price = price
@@ -41,7 +41,7 @@ class BrokerBO:
     def sell(self, ticker: str, price: Decimal, number: Decimal) -> bool:
         total_price: Decimal = price * number
         entry: InventoryBO = self.__inventory.get(ticker, InventoryBO(ZERO, price))
-        if entry.number >= number:
+        if entry.number >= number > 0:
             entry.number -= number
             entry.price = price
             self.__inventory[ticker] = entry

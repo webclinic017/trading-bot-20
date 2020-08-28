@@ -46,7 +46,7 @@ class ForwardBO:
     @staticmethod
     def init() -> Tuple[Dict[str, InventoryBO], Decimal, Decimal]:
         cash: Decimal = ConfigurationDAO.read_filter_by_identifier(ConfigurationEnum.FORWARD_CASH.identifier).value
-        fee: Decimal = ConfigurationDAO.read_filter_by_identifier(ConfigurationEnum.OPTIMIZE_FEE.identifier).value
+        fee: Decimal = ConfigurationDAO.read_filter_by_identifier(ConfigurationEnum.OPTIMIZATION_FEE.identifier).value
         rows: List[ForwardEntity] = ForwardDAO.read()
         broker = BrokerBO(cash, fee)
         for row in rows:

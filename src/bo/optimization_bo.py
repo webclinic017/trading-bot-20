@@ -21,12 +21,12 @@ from src.utils.utils import Utils
 
 
 # noinspection DuplicatedCode
-class OptimizerBO:
+class OptimizationBO:
 
     @staticmethod
     def optimise(tables: List[DataFrame]) -> None:
-        cash: Decimal = ConfigurationDAO.read_filter_by_identifier(ConfigurationEnum.OPTIMIZE_CASH.identifier).value
-        fee: Decimal = ConfigurationDAO.read_filter_by_identifier(ConfigurationEnum.OPTIMIZE_FEE.identifier).value
+        cash: Decimal = ConfigurationDAO.read_filter_by_identifier(ConfigurationEnum.OPTIMIZATION_CASH.identifier).value
+        fee: Decimal = ConfigurationDAO.read_filter_by_identifier(ConfigurationEnum.OPTIMIZATION_FEE.identifier).value
         evaluation: EvaluationEntity = EvaluationDAO.read_order_by_sum()
         if evaluation is None:
             attempt: AttemptDTO = AttemptDTO()
@@ -74,8 +74,8 @@ class OptimizerBO:
     def start(portfolio: List[str], number: int, group_number: int) -> None:
         group_size: int = int(number / group_number)
         groups: Tuple[Tuple[str]] = Utils.group(group_size, portfolio[:number])
-        OptimizerBO.optimise(IntradayDAO.dataframe_group(groups))
+        OptimizationBO.optimise(IntradayDAO.dataframe_group(groups))
 
 
 if __name__ == '__main__':
-    OptimizerBO.start(Portfolio.test_portfolio(), 100, 4)
+    OptimizationBO.start(Portfolio.test_portfolio(), 100, 4)

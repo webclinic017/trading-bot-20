@@ -66,5 +66,5 @@ class Utils:
             setattr(assignable, key, value)
 
     @staticmethod
-    def truncate(number: Decimal) -> None:
+    def truncate(number: Decimal) -> Decimal:
         return Decimal(number).quantize(Decimal('1'), rounding=ROUND_DOWN)

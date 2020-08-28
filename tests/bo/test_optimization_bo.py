@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from src import db
 from src.bo.configuration_bo import ConfigurationBO
-from src.bo.optimizer_bo import OptimizerBO
+from src.bo.optimization_bo import OptimizationBO
 from src.constants import ZERO
 from src.dao.evaluation_dao import EvaluationDAO
 from src.dto.attempt_dto import AttemptDTO
@@ -12,7 +12,7 @@ from src.entity.evaluation_entity import EvaluationEntity
 from tests.utils.utils import Utils
 
 
-class OptimizerBOTestCase(unittest.TestCase):
+class OptimizationBOTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -29,7 +29,7 @@ class OptimizerBOTestCase(unittest.TestCase):
         inverse.return_value = ZERO
         rows = EvaluationDAO.read_all()
         self.assertEqual(len(rows), 0)
-        OptimizerBO.optimise([Utils.create_table_frame()])
+        OptimizationBO.optimise([Utils.create_table_frame()])
         evaluation = EvaluationDAO.read_order_by_sum()
         Utils.assert_attributes(evaluation, sum=Decimal('185266.8'), funds='185266.8', amount_buy=Decimal('1000'),
                                 amount_sell=Decimal('1000'), delta_buy=Decimal('1.5'), delta_sell=Decimal('1.5'),
@@ -43,7 +43,7 @@ class OptimizerBOTestCase(unittest.TestCase):
         EvaluationDAO.create(Decimal('10000'), 'second', AttemptDTO(Decimal('1000'), Decimal('10'), Decimal('1.5'),
                                                                     Decimal('1000'), Decimal('10'), Decimal('1.5')))
         Utils.persist_intraday_frame()
-        OptimizerBO.start(['AAA', 'BBB', 'CCC'], 3, 1)
+        OptimizationBO.start(['AAA', 'BBB', 'CCC'], 3, 1)
         evaluation = EvaluationDAO.read_order_by_sum()
         self.assertIsInstance(evaluation, EvaluationEntity)
         Utils.assert_attributes(evaluation, sum=Decimal('235112.5'), funds='235112.5', amount_buy=Decimal('2000'),

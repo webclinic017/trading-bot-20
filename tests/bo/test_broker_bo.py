@@ -39,6 +39,11 @@ class BrokerBOTestCase(unittest.TestCase):
         buy = broker.buy('AAA', Decimal('10'), Decimal('10'))
         self.assertEqual(buy, False)
 
+    def test_buy_number_zero(self):
+        broker = BrokerBO(cash=Decimal('10000'), fee=Decimal('3.9'))
+        buy = broker.buy('AAA', Decimal('10'), Decimal('0'))
+        self.assertEqual(buy, False)
+
     def test_sell(self):
         broker = BrokerBO(cash=Decimal('10000'), fee=Decimal('3.9'))
         broker.inventory['AAA'] = InventoryBO(Decimal('20'), Decimal('0.1'))
@@ -56,6 +61,12 @@ class BrokerBOTestCase(unittest.TestCase):
     def test_sell_insufficient_inventory(self):
         broker = BrokerBO(cash=Decimal('10'), fee=Decimal('3.9'))
         sell = broker.sell('AAA', Decimal('10'), Decimal('10'))
+        self.assertEqual(sell, False)
+
+    def test_sell_number_zero(self):
+        broker = BrokerBO(cash=Decimal('10000'), fee=Decimal('3.9'))
+        broker.inventory['AAA'] = InventoryBO(Decimal('20'), Decimal('0.1'))
+        sell = broker.sell('AAA', Decimal('0.1'), Decimal('0'))
         self.assertEqual(sell, False)
 
     def test_funds(self):

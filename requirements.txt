@@ -1,7 +1,7 @@
 wtforms==2.3.3
 parameterized==0.7.4
 pytz==2020.1
-workalendar==10.3.0
+workalendar==10.4.0
 schedule==0.6.0
 werkzeug==1.0.1
 numpy==1.19.1

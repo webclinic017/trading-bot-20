@@ -4,7 +4,7 @@ from typing import Dict, List, Tuple, Any, Optional
 
 from src.bo.forward_bo import ForwardBO
 from src.bo.intraday_bo import IntradayBO
-from src.bo.optimizer_bo import OptimizerBO
+from src.bo.optimization_bo import OptimizationBO
 from src.dao.stock_dao import StockDAO
 from src.portfolio import Portfolio
 from src.scheduler import Scheduler
@@ -28,7 +28,7 @@ class ProcessManager:
             ARGS: []
         },
         'optimize': {
-            TARGET: OptimizerBO.start,
+            TARGET: OptimizationBO.start,
             ARGS: (Portfolio.test_portfolio(), 100, 4)
         },
         'forward': {

@@ -1,11 +1,18 @@
 ![logo](https://raw.githubusercontent.com/Asconius/media/master/trading-bot/logo.png)
 
-![Python application](https://github.com/Asconius/trading-bot/workflows/Python%20application/badge.svg)
+[![Python application](https://github.com/Asconius/trading-bot/workflows/Python%20application/badge.svg)](https://github.com/Asconius/trading-bot/actions?query=workflow%3A%22Python+application%22)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Asconius_trading-bot&metric=alert_status)](https://sonarcloud.io/dashboard?id=Asconius_trading-bot)
 [![codecov](https://codecov.io/gh/Asconius/trading-bot/branch/master/graph/badge.svg)](https://codecov.io/gh/Asconius/trading-bot)
 
 # Trading Bot
 Trading Bot is a software in which trading strategies can be tested for- and backwards, optimized and executed
+## Use Cases
+### Optimizer
+Strategies are tested with different input parameters using historical data. Successful attempts are saved and used for forward and realization.
+### Forward
+Strategies are applied to current data. Buy or sell orders are generated in a sample portfolio.
+### Realization
+Strategies are applied to current data. Buy or sell orders are generated in a depot.
 ## Installation
 ### Database
 The database can be created with the following command. The database must then be added to the database subdirectory in the project directory
