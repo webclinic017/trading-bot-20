@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import List, Dict, Tuple
 
 from flask import Request
@@ -17,8 +18,9 @@ class IntradayBO:
     @staticmethod
     def to_file() -> List[Dict[str, str]]:
         rows: List[IntradayEntity] = IntradayDAO.read_order_by_date_asc()
-        rows_dict: List[Dict[str, str]] = list(
-            map(lambda row: dict(filter(lambda e: not e[0].startswith('_'), row.__dict__.items())), rows))
+        rows_dict: List[Dict[str, str]] = list(map(lambda row: dict(list(map(
+            lambda i: (str(i[0]), str(float(i[1])) if isinstance(i[1], Decimal) else str(i[1])), filter(
+                lambda e: not e[0].startswith('_'), row.__dict__.items())))), rows))
         return rows_dict
 
     @staticmethod

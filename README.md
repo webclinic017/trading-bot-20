@@ -7,7 +7,7 @@
 # Trading Bot
 Trading Bot is a software in which trading strategies can be tested for- and backwards, optimized and executed
 ## Use Cases
-### Optimizer
+### Optimization
 Strategies are tested with different input parameters using historical data. Successful attempts are saved and used for forward and realization.
 ### Forward
 Strategies are applied to current data. Buy or sell orders are generated in a sample portfolio.

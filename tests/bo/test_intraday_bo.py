@@ -60,10 +60,10 @@ class IntradayBOTestCase(unittest.TestCase):
         Utils.persist_intraday('BBB', IntradayBOTestCase.OLD_DATE, 6, 7, 8, 9, 0)
         content = IntradayBO.to_file()
         self.assertEqual(len(content), 2)
-        Utils.assert_items(content[1], date=IntradayBOTestCase.YOUNG_DATE, open=1, high=2, low=3, close=4, volume=5,
-                           ticker='AAA')
-        Utils.assert_items(content[0], date=IntradayBOTestCase.OLD_DATE, open=6, high=7, low=8, close=9, volume=0,
-                           ticker='BBB')
+        Utils.assert_items(content[1], date='2011-11-04 04:00:00+00:00', open='1.0', high='2.0',
+                           low='3.0', close='4.0', volume='5.0', ticker='AAA')
+        Utils.assert_items(content[0], date='2011-11-03 04:00:00+00:00', open='6.0', high='7.0',
+                           low='8.0', close='9.0', volume='0.0', ticker='BBB')
 
     @patch('alpha_vantage.timeseries.TimeSeries.get_intraday')
     @patch('src.bo.stock_bo.StockBO.isin')

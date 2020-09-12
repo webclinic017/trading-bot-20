@@ -40,7 +40,7 @@ class Utils:
     @staticmethod
     def assert_items(assertable, **kwargs):
         for key, value in kwargs.items():
-            TestCase().assertEqual(assertable[key], value)
+            TestCase().assertEqual(value, assertable[key])
 
     @staticmethod
     def persist_intraday(ticker, date, o, high, low, close, volume):
