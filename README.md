@@ -5,34 +5,58 @@
 [![codecov](https://codecov.io/gh/Asconius/trading-bot/branch/master/graph/badge.svg)](https://codecov.io/gh/Asconius/trading-bot)
 
 # Trading Bot
+
 Trading Bot is a software in which trading strategies can be tested for- and backwards, optimized and executed
+
 ## Use Cases
+
 ### Optimization
-Strategies are tested with different input parameters using historical data. Successful attempts are saved and used for forward and realization.
+
+Strategies are tested with different input parameters using historical data. Successful attempts are saved and used for
+forward and realization.
+
 ### Forward
+
 Strategies are applied to current data. Buy or sell orders are generated in a sample portfolio.
+
 ### Realization
+
 Strategies are applied to current data. Buy or sell orders are generated in a depot.
+
 ## Installation
+
 ### Database
-The database can be created with the following command. The database must then be added to the database subdirectory in the project directory
+
+The database can be created with the following command. The database must then be added to the database subdirectory in
+the project directory
+
 ```python
 import sqlite3
+
 sqlite3.connect('tradingbot.db')
 ```
+
 ### Enviroment Variables
-The following command must be used to insert the [Alpha Vantage API key][cb956311] into the environment variables in Windows
+
+The following command must be used to insert the [Alpha Vantage API key][cb956311] into the environment variables in
+Windows
+
 ```batch
 setx ALPHA_VANTAGE "API key" /m
 ```
+
 ### Start Batch
+
 The following command can be used to run the application and start the scheduler
+
 ```batch
 start cmd.exe /k "cd path to project dir\trading-bot & py -m venv env & env\Scripts\activate & pip install -r requirements.txt & set FLASK_APP=src\main.py & flask run"
 timeout /t 10
 powershell.exe -noprofile -command "Invoke-WebRequest -Uri http://127.0.0.1:5000/process/start/schedule"
 ```
+
 ### Web GUI
+
 The web gui can be opened by entering `http://127.0.0.1:5000/` in the address bar of the browser
 
-  [cb956311]: https://www.alphavantage.co/support/#api-key "Alpha Vantage API key"
+[cb956311]: https://www.alphavantage.co/support/#api-key "Alpha Vantage API key"

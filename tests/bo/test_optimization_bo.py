@@ -20,7 +20,7 @@ class OptimizationBOTestCase(unittest.TestCase):
 
     def setUp(self):
         Utils.truncate_tables()
-        ConfigurationBO.create()
+        ConfigurationBO.init()
 
     @patch('src.utils.utils.Utils.negation')
     @patch('src.utils.utils.Utils.inverse')

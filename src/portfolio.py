@@ -1,4 +1,3 @@
-import hashlib
 import json
 import re
 from typing import List, Tuple, Dict
@@ -7,22 +6,9 @@ import lxml.html as lh
 import requests
 from fake_useragent import UserAgent
 from requests import Response
-from yahoo_fin.stock_info import tickers_sp500
 
 
 class Portfolio:
-
-    @staticmethod
-    def test_portfolio(size: int = 100) -> List[str]:
-        return sorted(tickers_sp500(), key=lambda x: hashlib.md5(x.encode()).hexdigest())[:size]
-
-    @staticmethod
-    def prod_portfolio() -> List[str]:
-        return []
-
-    @staticmethod
-    def test_prod_portfolio() -> List[str]:
-        return Portfolio.test_portfolio() + Portfolio.prod_portfolio()
 
     @staticmethod
     def berkshire_hathaway_cnbc() -> Tuple[str]:

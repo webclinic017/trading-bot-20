@@ -3,7 +3,7 @@ import logging
 import os
 from datetime import datetime
 from decimal import Decimal
-from typing import List, Tuple
+from typing import List, Tuple, Any, NoReturn
 
 import pandas as pd
 import pytz
@@ -22,7 +22,7 @@ from src.utils.utils import Utils
 
 class IntradayDAO:
     @staticmethod
-    def create_ticker(ticker: str) -> None:
+    def create_ticker(ticker: str) -> NoReturn:
         try:
             time_series = TimeSeries(key=os.environ.get('ALPHA_VANTAGE'), output_format='pandas')
             frame, meta_data = time_series.get_intraday(symbol=ticker.replace('.', '-'), outputsize='full')
@@ -34,7 +34,7 @@ class IntradayDAO:
             logging.exception(e)
 
     @staticmethod
-    def create_from_file(content: str) -> None:
+    def create_from_file(content: str) -> NoReturn:
         rows = json.loads(content)
         for row in rows:
             intraday: IntradayEntity = IntradayEntity()
@@ -61,7 +61,7 @@ class IntradayDAO:
         return IntradayEntity.query.filter_by(ticker=ticker).order_by(IntradayEntity.date.desc()).first()
 
     @staticmethod
-    def read_latest_date() -> List[IntradayEntity]:
+    def read_latest_date() -> List[List[Any]]:
         return db.session.query(func.max(IntradayEntity.date), IntradayEntity.ticker).group_by(
             IntradayEntity.ticker).all()
 

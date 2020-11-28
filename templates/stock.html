@@ -17,10 +17,10 @@
 
     <tbody>
     {% for stock in stocks %}
-    <tr>
-        <td><a href="/stock/intraday/{{ stock.ticker }}">{{ stock.ticker }}</a></td>
-        <td>{{ stock.isin }}</td>
-    </tr>
+        <tr>
+            <td><a href="/stock/intraday/{{ stock.ticker }}">{{ stock.ticker }}</a></td>
+            <td>{{ stock.isin }}</td>
+        </tr>
     {% endfor %}
     </tbody>
 </table>

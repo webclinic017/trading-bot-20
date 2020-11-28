@@ -1,5 +1,4 @@
-from wtforms import Form, FieldList, \
-    FormField, SubmitField
+from wtforms import Form, FieldList, FormField, SubmitField
 
 from src.form.configuration_field_form import ConfigurationFieldForm
 

@@ -7,7 +7,7 @@
 <body>
 <a href="/">Main</a>
 <br>
-<form method=post>
+<form method="post">
     <table>
         <caption>Configuration</caption>
         <thead>
@@ -17,16 +17,29 @@
         </tr>
         </thead>
         <tbody>
-        {% for form in form.form_list %}
-        {{ form.identifier }}
-        <tr>
-            <td>{{ form.form.description }}</td>
-            <td>{{ form.form.value }}</td>
-        </tr>
-        {% endfor %}
+        {% if operation == 'read' %}
+            {% for item in configuration %}
+                <tr>
+                    <td>{{ item.description }}</td>
+                    <td>{{ item.value }}</td>
+                    <td><a href="/configuration/update/{{ item.identifier }}">Update</a></td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            {% for form in form.form_list %}
+                {{ form.identifier }}
+                <tr>
+                    <td>{{ form.form.description }}</td>
+                    <td>{{ form.form.value }}</td>
+                </tr>
+            {% endfor %}
+        {% endif %}
         </tbody>
     </table>
-    {{ form.submit }}
+    {% if operation != 'read' %}
+        <a href="/configuration">Back</a>
+        {{ form.submit }}
+    {% endif %}
 </form>
 </body>
 </html>

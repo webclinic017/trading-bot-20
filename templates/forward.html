@@ -37,12 +37,12 @@
     </thead>
     <tbody>
     {% for ticker, entry in inventory.items() %}
-    <tr>
-        <td>{{ ticker }}</td>
-        <td>{{ entry.price }}</td>
-        <td>{{ entry.number }}</td>
-        <td>{{ entry.value() }}</td>
-    </tr>
+        <tr>
+            <td>{{ ticker }}</td>
+            <td>{{ entry.price }}</td>
+            <td>{{ entry.number }}</td>
+            <td>{{ entry.value() }}</td>
+        </tr>
     {% endfor %}
     </tbody>
 </table>
@@ -61,14 +61,14 @@
     </thead>
     <tbody>
     {% for forward in forwards %}
-    <tr>
-        <td>{{ forward.timestamp }}</td>
-        <td>{{ forward.ticker }}</td>
-        <td>{{ forward.action }}</td>
-        <td>{{ forward.price }}</td>
-        <td>{{ forward.number }}</td>
-        <td>{{ forward.cash }}</td>
-    </tr>
+        <tr>
+            <td>{{ forward.timestamp }}</td>
+            <td>{{ forward.ticker }}</td>
+            <td>{{ forward.action }}</td>
+            <td>{{ forward.price }}</td>
+            <td>{{ forward.number }}</td>
+            <td>{{ forward.cash }}</td>
+        </tr>
     {% endfor %}
     </tbody>
 </table>

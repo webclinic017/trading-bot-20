@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import List
+from typing import List, NoReturn
 
 from src.dao.dao import DAO
 from src.dto.attempt_dto import AttemptDTO
@@ -9,7 +9,7 @@ from src.utils.utils import Utils
 
 class EvaluationDAO:
     @staticmethod
-    def create(summation: Decimal, funds: str, attempt: AttemptDTO) -> None:
+    def create(summation: Decimal, funds: str, attempt: AttemptDTO) -> NoReturn:
         evaluation: EvaluationEntity = EvaluationEntity()
         evaluation.timestamp = Utils.now()
         evaluation.sum = str(summation)

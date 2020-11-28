@@ -5,8 +5,8 @@ from typing import Dict, List, Tuple, Any, Optional
 from src.bo.forward_bo import ForwardBO
 from src.bo.intraday_bo import IntradayBO
 from src.bo.optimization_bo import OptimizationBO
+from src.bo.portfolio_bo import PortfolioBO
 from src.dao.stock_dao import StockDAO
-from src.portfolio import Portfolio
 from src.scheduler import Scheduler
 
 
@@ -17,11 +17,11 @@ class ProcessManager:
     CONFIGURATION: Dict[str, Dict[str, Tuple[Any, ...]]] = {
         'update-table-stock': {
             TARGET: StockDAO.update,
-            ARGS: (Portfolio.test_prod_portfolio(),)
+            ARGS: (PortfolioBO.backward_forward_portfolio(),)
         },
         'update-table-intraday': {
             TARGET: IntradayBO.update,
-            ARGS: (Portfolio.test_prod_portfolio(),)
+            ARGS: (PortfolioBO.backward_forward_portfolio(),)
         },
         'schedule': {
             TARGET: Scheduler.start,
@@ -29,11 +29,11 @@ class ProcessManager:
         },
         'optimize': {
             TARGET: OptimizationBO.start,
-            ARGS: (Portfolio.test_portfolio(), 100, 4)
+            ARGS: (PortfolioBO.backward_portfolio(), 100, 4)
         },
         'forward': {
             TARGET: ForwardBO.start,
-            ARGS: []
+            ARGS: (PortfolioBO.forward_portfolio(),)
         }
     }
 

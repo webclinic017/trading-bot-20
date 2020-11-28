@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Dict
+from typing import Dict, NoReturn
 
 from src.bo.broker_bo import BrokerBO
 from src.bo.inventory_bo import InventoryBO
@@ -8,7 +8,7 @@ from src.dao.forward_dao import ForwardDAO
 
 class ForwardBrokerBO(BrokerBO):
 
-    def __init__(self, cash: Decimal, fee: Decimal, inventory: Dict[str, InventoryBO]) -> None:
+    def __init__(self, cash: Decimal, fee: Decimal, inventory: Dict[str, InventoryBO]) -> NoReturn:
         super().__init__(cash, fee, inventory)
 
     def buy(self, ticker: str, price: Decimal, number: Decimal) -> bool:

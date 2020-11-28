@@ -1,6 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Any, NoReturn
 
 from pandas import DataFrame
 
@@ -8,6 +8,7 @@ from src.bo.analyser_bo import AnalyserBO
 from src.bo.broker_bo import BrokerBO
 from src.bo.forward_broker_bo import ForwardBrokerBO
 from src.bo.inventory_bo import InventoryBO
+from src.bo.portfolio_bo import PortfolioBO
 from src.bo.statistic_bo import StatisticBO
 from src.bo.strategy_bo import StrategyBO
 from src.constants import ZERO
@@ -28,14 +29,14 @@ from src.utils.utils import Utils
 class ForwardBO:
 
     @staticmethod
-    def start() -> None:
+    def start(portfolio: List[str]) -> NoReturn:
         latest_date: datetime = ForwardDAO.read_latest_date()
         evaluation: EvaluationEntity = EvaluationDAO.read_order_by_sum()
         if evaluation is None or Utils.is_today(latest_date) or not Utils.is_working_day_ny():
             return
-        read_latest_date: List[IntradayEntity] = IntradayDAO.read_latest_date()
-        latest_date_dict: Dict[str, str] = {r.ticker: r[0] for r in read_latest_date}
-        rows: List[IntradayEntity] = IntradayDAO.read_order_by_date_asc()
+        read_latest_date: List[List[Any]] = IntradayDAO.read_latest_date()
+        latest_date_dict: Dict[str, str] = {r[1]: r[0] for r in read_latest_date}
+        rows: List[IntradayEntity] = IntradayDAO.read(portfolio)
         frame: DataFrame = IntradayDAO.dataframe(rows)
         inventory, cash, fee = ForwardBO.init()
         broker: BrokerBO = ForwardBrokerBO(cash, fee, inventory)
@@ -71,4 +72,4 @@ class ForwardBO:
 
 
 if __name__ == '__main__':
-    ForwardBO.start()
+    ForwardBO.start(PortfolioBO.forward_portfolio(100))

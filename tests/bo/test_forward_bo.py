@@ -28,7 +28,7 @@ class ForwardBOTestCase(unittest.TestCase):
 
     def setUp(self):
         Utils.truncate_tables()
-        ConfigurationBO.create()
+        ConfigurationBO.init()
 
     @patch('src.utils.utils.Utils.is_today')
     @patch('src.utils.utils.Utils.is_working_day_ny')
@@ -42,7 +42,7 @@ class ForwardBOTestCase(unittest.TestCase):
         now.return_value = ForwardBOTestCase.YOUNG_DATE
         EvaluationDAO.create(Decimal('40000'), '', AttemptDTO())
         Utils.persist_intraday_frame()
-        ForwardBO.start()
+        ForwardBO.start(['AAA', 'BBB', 'CCC'])
         rows = ForwardDAO.read_all()
         self.assertEqual(len(rows), 4)
         Utils.assert_attributes(rows[0], action=ActionEnum.BUY, cash=Decimal('8996.1'),

@@ -1,7 +1,7 @@
 import random
 from datetime import timedelta, datetime
 from decimal import Decimal, ROUND_DOWN, ExtendedContext
-from typing import Iterable, List, Iterator, Tuple, Optional, TypeVar, Sequence
+from typing import Iterable, List, Iterator, Tuple, Optional, TypeVar, Sequence, NoReturn
 
 import pandas as pd
 import pytz
@@ -61,7 +61,7 @@ class Utils:
         return None if len(sequence) == 0 else sequence[0]
 
     @staticmethod
-    def set_attributes(assignable: object, **kwargs: any) -> None:
+    def set_attributes(assignable: object, **kwargs: any) -> NoReturn:
         for key, value in kwargs.items():
             setattr(assignable, key, value)
 
