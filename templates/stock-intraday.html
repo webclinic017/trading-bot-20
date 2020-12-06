@@ -22,15 +22,15 @@
 
     <tbody>
     {% for intraday in intradays %}
-    <tr>
-        <td>{{ intraday.date }}</td>
-        <td>{{ intraday.open }}</td>
-        <td>{{ intraday.high }}</td>
-        <td>{{ intraday.low }}</td>
-        <td>{{ intraday.close }}</td>
-        <td>{{ intraday.volume }}</td>
-        <td>{{ intraday.ticker }}</td>
-    </tr>
+        <tr>
+            <td>{{ intraday.date }}</td>
+            <td>{{ intraday.open }}</td>
+            <td>{{ intraday.high }}</td>
+            <td>{{ intraday.low }}</td>
+            <td>{{ intraday.close }}</td>
+            <td>{{ intraday.volume }}</td>
+            <td>{{ intraday.ticker }}</td>
+        </tr>
     {% endfor %}
     </tbody>
 </table>

@@ -17,7 +17,7 @@ class ConfigurationDAOTestCase(unittest.TestCase):
 
     def setUp(self):
         Utils.truncate_tables()
-        ConfigurationBO.create()
+        ConfigurationBO.init()
 
     def test_read_filter_by_identifier(self):
         configuration = ConfigurationDAO.read_filter_by_identifier(ConfigurationEnum.FORWARD_CASH.identifier)

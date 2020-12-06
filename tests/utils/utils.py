@@ -13,6 +13,7 @@ from src.entity.configuration_entity import ConfigurationEntity
 from src.entity.evaluation_entity import EvaluationEntity
 from src.entity.forward_entity import ForwardEntity
 from src.entity.intraday_entity import IntradayEntity
+from src.entity.portfolio_entity import PortfolioEntity
 from src.entity.stock_entity import StockEntity
 
 
@@ -77,6 +78,7 @@ class Utils:
 
     @staticmethod
     def truncate_tables():
+        PortfolioEntity.query.delete()
         EvaluationEntity.query.delete()
         IntradayEntity.query.delete()
         ForwardEntity.query.delete()

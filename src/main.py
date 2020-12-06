@@ -1,19 +1,24 @@
 import logging
-from typing import Tuple
+from typing import Tuple, NoReturn, Optional, List, Any
 
-from flask import render_template, make_response, request, jsonify
+from flask import render_template, make_response, request, jsonify, redirect, url_for
 
 from src import app, db
 from src.bo.configuration_bo import ConfigurationBO
 from src.bo.forward_bo import ForwardBO
 from src.bo.intraday_bo import IntradayBO
-from src.dao.configuration_dao import ConfigurationDAO
+from src.bo.portfolio_bo import PortfolioBO
 from src.dao.evaluation_dao import EvaluationDAO
 from src.dao.forward_dao import ForwardDAO
 from src.dao.intraday_dao import IntradayDAO
 from src.dao.stock_dao import StockDAO
+from src.entity.configuration_entity import ConfigurationEntity
+from src.entity.portfolio_entity import PortfolioEntity
+from src.enums.mode_enum import ModeEnum
 from src.form.configuration_field_form import ConfigurationFieldForm
 from src.form.configuration_form import ConfigurationForm
+from src.form.portfolio_field_form import PortfolioFieldForm
+from src.form.portfolio_form import PortfolioForm
 from src.process_manager import ProcessManager
 
 process_manager: ProcessManager = ProcessManager()
@@ -24,7 +29,8 @@ POST = 'POST'
 @app.before_first_request
 def create_all() -> None:
     db.create_all()
-    ConfigurationBO.create()
+    ConfigurationBO.init()
+    PortfolioBO.init()
 
 
 @app.route('/')
@@ -97,20 +103,59 @@ def export_view(data: str) -> str:
     return render_template('export.html')
 
 
-@app.route('/configuration', methods=[GET, POST])
-def configuration_view() -> str:
+@app.route('/configuration', defaults={'operation': 'read', 'identifier': ''}, methods=[GET, POST])
+@app.route('/configuration/<path:operation>', defaults={'identifier': ''}, methods=[GET, POST])
+@app.route('/configuration/<path:operation>/<path:identifier>', methods=[GET, POST])
+def configuration_view(operation: str, identifier: str) -> str:
     form: ConfigurationForm = ConfigurationForm(request.form)
-    if request.method == POST and form.validate():
-        for entry in form.form_list.entries:
-            ConfigurationDAO.update(entry.form.identifier.data, entry.form.value.data)
+    configuration: List[ConfigurationEntity] = []
     if request.method == GET:
-        for configuration in ConfigurationDAO.read_all():
+        if operation == 'read':
+            configuration = ConfigurationBO.read_all()
+        elif operation == 'update':
+            configuration: ConfigurationEntity = ConfigurationBO.read_filter_by_identifier(identifier)
             field_form: ConfigurationFieldForm = ConfigurationFieldForm(request.form)
             field_form.identifier = configuration.identifier
             field_form.value = configuration.value
             field_form.description = configuration.description
             form.form_list.append_entry(field_form)
-    return render_template('configuration.html', form=form)
+    elif request.method == POST and form.validate():
+        for entry in form.form_list.entries:
+            ConfigurationBO.update(entry.form.identifier.data, entry.form.value.data)
+        return redirect(url_for('configuration_view'))
+    return render_template('configuration.html', form=form, configuration=configuration, operation=operation)
+
+
+@app.route('/portfolio', defaults={'operation': 'read', 'ticker': ''}, methods=[GET, POST])
+@app.route('/portfolio/<path:operation>', defaults={'ticker': ''}, methods=[GET, POST])
+@app.route('/portfolio/<path:operation>/<path:ticker>', methods=[GET, POST])
+def portfolio_view(operation: str, ticker: str) -> str:
+    form: PortfolioForm = PortfolioForm(request.form)
+    portfolio: List[Any] = []
+    if request.method == GET:
+        if operation == 'create':
+            append_portfolio_form('', '', None, form)
+        elif operation == 'read':
+            portfolio = PortfolioBO.read()
+        elif operation == 'update':
+            entity: PortfolioEntity = PortfolioBO.read_filter_by_ticker_isin(ticker)
+            append_portfolio_form(entity.isin, entity.ticker, entity.mode, form)
+        elif operation == 'delete':
+            PortfolioBO.delete(ticker)
+            return redirect(url_for('portfolio_view'))
+    elif request.method == POST and form.validate():
+        for entry in form.form_list.entries:
+            PortfolioBO.update(entry.form.ticker.data, ModeEnum[entry.form.mode.data[9:]])
+        return redirect(url_for('portfolio_view'))
+    return render_template('portfolio.html', form=form, portfolio=portfolio, operation=operation)
+
+
+def append_portfolio_form(isin: str, ticker: str, mode: Optional[ModeEnum], form: PortfolioForm) -> NoReturn:
+    field_form: PortfolioFieldForm = PortfolioFieldForm(request.form)
+    field_form.isin = isin
+    field_form.ticker = ticker
+    field_form.mode = mode
+    form.form_list.append_entry(field_form)
 
 
 @app.errorhandler(404)

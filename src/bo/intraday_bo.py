@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, NoReturn
 
 from flask import Request
 
@@ -12,7 +12,7 @@ from src.utils.utils import Utils
 
 class IntradayBO:
     @staticmethod
-    def from_file(request: Request) -> None:
+    def from_file(request: Request) -> NoReturn:
         IntradayDAO.create_from_file(request.files['file'].read())
 
     @staticmethod
@@ -24,7 +24,7 @@ class IntradayBO:
         return rows_dict
 
     @staticmethod
-    def update(portfolio: Tuple[str, ...]) -> None:
+    def update(portfolio: Tuple[str, ...]) -> NoReturn:
         StockDAO.create_if_not_exists(portfolio)
         rows: List[IntradayEntity] = IntradayEntity.query.with_entities(IntradayEntity.ticker).filter(
             IntradayEntity.ticker.in_(portfolio)).distinct(IntradayEntity.ticker).all()

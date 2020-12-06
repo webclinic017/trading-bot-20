@@ -1,6 +1,6 @@
 import math
 from decimal import Decimal
-from typing import Dict
+from typing import Dict, NoReturn
 
 from src.bo.inventory_bo import InventoryBO
 from src.constants import ZERO
@@ -8,7 +8,7 @@ from src.constants import ZERO
 
 class BrokerBO:
 
-    def __init__(self, cash: Decimal, fee: Decimal, inventory: Dict[str, InventoryBO] = None) -> None:
+    def __init__(self, cash: Decimal, fee: Decimal, inventory: Dict[str, InventoryBO] = None) -> NoReturn:
         self._cash: Decimal = cash
         self.__fee: Decimal = fee
         self.__inventory: Dict[str, InventoryBO] = dict() if inventory is None else inventory
@@ -21,7 +21,7 @@ class BrokerBO:
     def inventory(self):
         return self.__inventory
 
-    def update(self, ticker: str, price: Decimal) -> None:
+    def update(self, ticker: str, price: Decimal) -> NoReturn:
         if not math.isnan(price):
             entry: InventoryBO = self.__inventory.get(ticker, InventoryBO(ZERO, price))
             entry.price = price

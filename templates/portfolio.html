@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Portfolio</title>
+</head>
+<body>
+<a href="/">Main</a>
+<form method="post">
+    <table>
+        <caption>Portfolio</caption>
+        <thead>
+        <tr>
+            <th scope="col">Isin</th>
+            <th scope="col">Ticker</th>
+            <th scope="col">Mode</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if operation == 'read' %}
+            {% for item in portfolio %}
+                <tr>
+                    <td>{{ item.isin }}</td>
+                    <td>{{ item.ticker }}</td>
+                    <td>{{ item.mode }}</td>
+                    <td><a href="/portfolio/delete/{{ item.ticker }}">Delete</a></td>
+                    <td><a href="/portfolio/update/{{ item.ticker }}">Update</a></td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            {% for form in form.form_list %}
+                <tr>
+                    <td>{{ form.form.isin }}</td>
+                    <td>{{ form.form.ticker }}</td>
+                    <td>{{ form.form.mode }}</td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
+
+    {% if operation == 'read' %}
+        <a href="/portfolio/create">Create</a>
+        <a href="/portfolio/update">Update</a>
+    {% else %}
+        <a href="/portfolio">Back</a>
+        {{ form.submit }}
+    {% endif %}
+</form>
+</body>
+</html>

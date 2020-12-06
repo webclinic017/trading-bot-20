@@ -24,17 +24,17 @@
 
     <tbody>
     {% for evaluation in evaluations %}
-    <tr>
-        <td>{{ evaluation.timestamp }}</td>
-        <td>{{ evaluation.sum }}</td>
-        <td>{{ evaluation.funds }}</td>
-        <td>{{ evaluation.amount_buy }}</td>
-        <td>{{ evaluation.distance_buy }}</td>
-        <td>{{ evaluation.delta_buy }}</td>
-        <td>{{ evaluation.amount_sell }}</td>
-        <td>{{ evaluation.distance_sell }}</td>
-        <td>{{ evaluation.delta_sell }}</td>
-    </tr>
+        <tr>
+            <td>{{ evaluation.timestamp }}</td>
+            <td>{{ evaluation.sum }}</td>
+            <td>{{ evaluation.funds }}</td>
+            <td>{{ evaluation.amount_buy }}</td>
+            <td>{{ evaluation.distance_buy }}</td>
+            <td>{{ evaluation.delta_buy }}</td>
+            <td>{{ evaluation.amount_sell }}</td>
+            <td>{{ evaluation.distance_sell }}</td>
+            <td>{{ evaluation.delta_sell }}</td>
+        </tr>
     {% endfor %}
     </tbody>
 </table>

@@ -1,11 +1,12 @@
 import copy
 from decimal import Decimal
-from typing import Tuple, List
+from typing import Tuple, List, NoReturn
 
 from pandas import DataFrame
 
 from src.bo.analyser_bo import AnalyserBO
 from src.bo.broker_bo import BrokerBO
+from src.bo.portfolio_bo import PortfolioBO
 from src.bo.statistic_bo import StatisticBO
 from src.bo.strategy_bo import StrategyBO
 from src.constants import INFINITY, ZERO
@@ -16,7 +17,6 @@ from src.dao.intraday_dao import IntradayDAO
 from src.dto.attempt_dto import AttemptDTO
 from src.entity.evaluation_entity import EvaluationEntity
 from src.enums.configuration_enum import ConfigurationEnum
-from src.portfolio import Portfolio
 from src.utils.utils import Utils
 
 
@@ -24,7 +24,7 @@ from src.utils.utils import Utils
 class OptimizationBO:
 
     @staticmethod
-    def optimise(tables: List[DataFrame]) -> None:
+    def optimise(tables: List[DataFrame]) -> NoReturn:
         cash: Decimal = ConfigurationDAO.read_filter_by_identifier(ConfigurationEnum.OPTIMIZATION_CASH.identifier).value
         fee: Decimal = ConfigurationDAO.read_filter_by_identifier(ConfigurationEnum.OPTIMIZATION_FEE.identifier).value
         evaluation: EvaluationEntity = EvaluationDAO.read_order_by_sum()
@@ -71,11 +71,11 @@ class OptimizationBO:
                 EvaluationDAO.create(evaluation_sum, ','.join(map(str, analysis_funds)), evaluation_attempt)
 
     @staticmethod
-    def start(portfolio: List[str], number: int, group_number: int) -> None:
+    def start(portfolio: List[str], number: int, group_number: int) -> NoReturn:
         group_size: int = int(number / group_number)
         groups: Tuple[Tuple[str]] = Utils.group(group_size, portfolio[:number])
         OptimizationBO.optimise(IntradayDAO.dataframe_group(groups))
 
 
 if __name__ == '__main__':
-    OptimizationBO.start(Portfolio.test_portfolio(), 100, 4)
+    OptimizationBO.start(PortfolioBO.backward_portfolio(), 100, 4)

@@ -1,4 +1,4 @@
-from typing import Tuple, List, Optional
+from typing import Tuple, List, Union, NoReturn
 
 from src.bo.stock_bo import StockBO
 from src.dao.dao import DAO
@@ -8,7 +8,7 @@ from src.utils.utils import Utils
 
 class StockDAO:
     @staticmethod
-    def create_if_not_exists(portfolio: Tuple[str]) -> None:
+    def create_if_not_exists(portfolio: Tuple[str]) -> NoReturn:
         rows: List[StockEntity] = StockEntity.query.with_entities(StockEntity.ticker).filter(
             StockEntity.ticker.in_(portfolio)).all()
         if len(rows) < len(portfolio):
@@ -23,7 +23,7 @@ class StockDAO:
         return StockEntity.query.with_entities(StockEntity.ticker).all()
 
     @staticmethod
-    def update(portfolio: Tuple[Optional[str]]) -> None:
+    def update(portfolio: Tuple[Union[str, None], ...]) -> NoReturn:
         for ticker in portfolio:
             stock: StockEntity = StockEntity()
             Utils.set_attributes(stock, ticker=ticker, isin=StockBO.isin(ticker))

@@ -1,5 +1,6 @@
 import logging
 import time
+from typing import NoReturn
 
 import requests
 import schedule
@@ -23,7 +24,7 @@ class Scheduler:
         requests.get('http://127.0.0.1:5000/process/start/forward')
 
     @staticmethod
-    def start() -> None:
+    def start() -> NoReturn:
         logging.warning('Scheduler start')
         schedule.every(20).seconds.do(Scheduler.update_table_intraday)
         schedule.every(5).minutes.do(Scheduler.optimize)

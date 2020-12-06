@@ -1,6 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
-from typing import List
+from typing import List, NoReturn
 
 from sqlalchemy import func
 
@@ -13,12 +13,12 @@ from src.utils.utils import Utils
 
 class ForwardDAO:
     @staticmethod
-    def create_buy(ticker: str, price: Decimal, number: Decimal, cash: Decimal) -> None:
+    def create_buy(ticker: str, price: Decimal, number: Decimal, cash: Decimal) -> NoReturn:
         forward: ForwardEntity = ForwardDAO.__init(ActionEnum.BUY, ticker, price, number, cash)
         DAO.persist(forward)
 
     @staticmethod
-    def create_sell(ticker: str, price: Decimal, number: Decimal, cash: Decimal) -> None:
+    def create_sell(ticker: str, price: Decimal, number: Decimal, cash: Decimal) -> NoReturn:
         forward: ForwardEntity = ForwardDAO.__init(ActionEnum.SELL, ticker, price, number, cash)
         DAO.persist(forward)
 
