@@ -5,7 +5,7 @@
     <title>Process Stop</title>
 </head>
 <body>
-<a href="/process">Process</a>
+<a href="{{ url_for('process_view') }}">Process</a>
 {% if successful %}
     <p>{{ process_name }} stopped</p>
 {% else %}

@@ -1,5 +1,5 @@
-import unittest
 from datetime import datetime
+from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 import pandas as pd
@@ -13,7 +13,7 @@ from src.dao.stock_dao import StockDAO
 from tests.utils.utils import Utils
 
 
-class IntradayBOTestCase(unittest.TestCase):
+class IntradayBOTestCase(TestCase):
     YOUNG_DATE = pytz.timezone(US_EASTERN).localize(datetime.fromisoformat('2011-11-04T00:00:00'))
     OLD_DATE = pytz.timezone(US_EASTERN).localize(datetime.fromisoformat('2011-11-03T00:00:00'))
 
@@ -60,9 +60,9 @@ class IntradayBOTestCase(unittest.TestCase):
         Utils.persist_intraday('BBB', IntradayBOTestCase.OLD_DATE, 6, 7, 8, 9, 0)
         content = IntradayBO.to_file()
         self.assertEqual(len(content), 2)
-        Utils.assert_items(content[1], date='2011-11-04 04:00:00+00:00', open='1.0', high='2.0',
+        Utils.assert_items(content[0], date='2011-11-04 04:00:00+00:00', open='1.0', high='2.0',
                            low='3.0', close='4.0', volume='5.0', ticker='AAA')
-        Utils.assert_items(content[0], date='2011-11-03 04:00:00+00:00', open='6.0', high='7.0',
+        Utils.assert_items(content[1], date='2011-11-03 04:00:00+00:00', open='6.0', high='7.0',
                            low='8.0', close='9.0', volume='0.0', ticker='BBB')
 
     @patch('alpha_vantage.timeseries.TimeSeries.get_intraday')
@@ -106,7 +106,3 @@ class IntradayBOTestCase(unittest.TestCase):
                                 volume=500, ticker='BBB')
         Utils.assert_attributes(rows[11], date=IntradayBOTestCase.YOUNG_DATE, open=500, high=500, low=500, close=500,
                                 volume=500, ticker='AAA')
-
-
-if __name__ == '__main__':
-    unittest.main()

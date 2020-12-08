@@ -1,4 +1,4 @@
-import unittest
+from unittest import TestCase
 from unittest.mock import patch
 
 from src import db
@@ -9,7 +9,7 @@ from src.enums.mode_enum import ModeEnum
 from tests.utils.utils import Utils
 
 
-class PortfolioDAOTestCase(unittest.TestCase):
+class PortfolioDAOTestCase(TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -46,7 +46,3 @@ class PortfolioDAOTestCase(unittest.TestCase):
         portfolio = PortfolioDAO.read_filter_by_ticker('ticker3')
         self.assertIsInstance(portfolio, PortfolioEntity)
         Utils.assert_attributes(portfolio, ticker='ticker3', mode=ModeEnum.BACKWARD)
-
-
-if __name__ == '__main__':
-    unittest.main()

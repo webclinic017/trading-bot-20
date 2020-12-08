@@ -1,6 +1,6 @@
-import unittest
 from decimal import Decimal
 from typing import Dict, List
+from unittest import TestCase
 
 import pandas as pd
 from pandas import DataFrame
@@ -10,7 +10,7 @@ from src.dto.attempt_dto import AttemptDTO
 from src.enums.action_enum import ActionEnum
 
 
-class StrategyBOTestCase(unittest.TestCase):
+class StrategyBOTestCase(TestCase):
 
     def setUp(self):
         self.attempt = AttemptDTO(amount_buy=Decimal('1000'), distance_buy=Decimal('1'), delta_buy=Decimal('1.5'),
@@ -41,7 +41,3 @@ class StrategyBOTestCase(unittest.TestCase):
         frame = pd.DataFrame(data, index=dates)
         frame.sort_index(inplace=True, ascending=True)
         return frame
-
-
-if __name__ == '__main__':
-    unittest.main()

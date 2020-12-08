@@ -1,12 +1,12 @@
-import unittest
 from decimal import Decimal
+from unittest import TestCase
 
 from src.bo.broker_bo import BrokerBO
 from src.bo.inventory_bo import InventoryBO
 from src.constants import ZERO
 
 
-class BrokerBOTestCase(unittest.TestCase):
+class BrokerBOTestCase(TestCase):
     def test_update(self):
         broker = BrokerBO(cash=Decimal('10000'), fee=Decimal('3.9'))
         broker.update('AAA', Decimal('0.1'))
@@ -75,7 +75,3 @@ class BrokerBOTestCase(unittest.TestCase):
         broker.inventory['BBB'] = InventoryBO(Decimal('20'), Decimal('0.2'))
         self.assertEqual(broker.funds(), Decimal('10') + Decimal('10') * Decimal('0.1') + Decimal('20') *
                          Decimal('0.2'))
-
-
-if __name__ == '__main__':
-    unittest.main()

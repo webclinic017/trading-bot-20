@@ -5,8 +5,8 @@
     <title>Export</title>
 </head>
 <body>
-<a href="/">Main</a>
+<a href="{{ url_for('main_view') }}">Main</a>
 <br>
-<a download href="/export/intraday">Intraday</a>
+<a download href="{{ url_for('export_view', data='intraday') }}">Intraday</a>
 </body>
 </html>

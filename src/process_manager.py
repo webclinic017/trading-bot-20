@@ -7,6 +7,7 @@ from src.bo.intraday_bo import IntradayBO
 from src.bo.optimization_bo import OptimizationBO
 from src.bo.portfolio_bo import PortfolioBO
 from src.dao.stock_dao import StockDAO
+from src.database import Database
 from src.scheduler import Scheduler
 
 
@@ -15,6 +16,10 @@ class ProcessManager:
     ARGS: str = 'args'
 
     CONFIGURATION: Dict[str, Dict[str, Tuple[Any, ...]]] = {
+        'init-database': {
+            TARGET: Database.init,
+            ARGS: []
+        },
         'update-table-stock': {
             TARGET: StockDAO.update,
             ARGS: (PortfolioBO.backward_forward_portfolio(),)

@@ -5,7 +5,7 @@
     <title>Process</title>
 </head>
 <body>
-<a href="/">Main</a>
+<a href="{{ url_for('main_view') }}">Main</a>
 {% if running %}
     <p>Process Manager is running</p>
 {% else %}
@@ -17,11 +17,11 @@
     {% endfor %}
 </ul>
 {% for process in active_processes %}
-    <a href="/process/stop/{{ process }}">Stop {{ process }}</a>
+    <a href="{{ url_for('process_stop_view', process_name=process) }}">Stop {{ process }}</a>
     <br>
 {% endfor %}
 {% for process in inactive_processes %}
-    <a href="/process/start/{{ process }}">Start {{ process }}</a>
+    <a href="{{ url_for('process_start_view', process_name=process) }}">Start {{ process }}</a>
     <br>
 {% endfor %}
 </body>

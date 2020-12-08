@@ -1,12 +1,18 @@
 import io
-import unittest
+from unittest import TestCase
 
 from parameterized import parameterized
 
 from src import main
+from src.bo.configuration_bo import ConfigurationBO
 
 
-class MainTestCase(unittest.TestCase):
+class MainTestCase(TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        ConfigurationBO.init()
+
     @parameterized.expand([
         ('/', 200),
         ('/stock', 200),
@@ -47,7 +53,3 @@ class MainTestCase(unittest.TestCase):
         response = client.post('/configuration', environ_base={'REMOTE_ADDR': '127.0.0.1'}, data=data,
                                content_type='application/x-www-form-urlencoded', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
-
-
-if __name__ == '__main__':
-    unittest.main()

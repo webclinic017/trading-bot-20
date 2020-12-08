@@ -1,4 +1,4 @@
-import unittest
+from unittest import TestCase
 from unittest.mock import patch
 
 from src import db
@@ -6,7 +6,7 @@ from src.dao.stock_dao import StockDAO
 from tests.utils.utils import Utils
 
 
-class StockDAOTestCase(unittest.TestCase):
+class StockDAOTestCase(TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -37,7 +37,3 @@ class StockDAOTestCase(unittest.TestCase):
         StockDAO.update((None,))
         result = StockDAO.read_all()
         self.assertListEqual(result, [])
-
-
-if __name__ == '__main__':
-    unittest.main()

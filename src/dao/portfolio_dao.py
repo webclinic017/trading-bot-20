@@ -24,7 +24,7 @@ class PortfolioDAO:
             StockEntity, StockEntity.ticker == PortfolioEntity.ticker).all()
 
     @staticmethod
-    def read_filter_by_ticker_isin(ticker: str) -> PortfolioEntity:
+    def read_filter_by_ticker_isin(ticker: str) -> Any:
         return db.session.query(PortfolioEntity.ticker, PortfolioEntity.mode, StockEntity.isin).filter(
             StockEntity.ticker == ticker).join(StockEntity, StockEntity.ticker == PortfolioEntity.ticker).first()
 

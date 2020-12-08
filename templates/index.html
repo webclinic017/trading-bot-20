@@ -5,22 +5,22 @@
     <title>Trading Bot</title>
 </head>
 <body>
-<a href="/stock">Stock</a>
+<a href="{{ url_for('stock_view') }}">Stock</a>
 <br>
-<a href="/intraday">Intraday</a>
+<a href="{{ url_for('intraday_view') }}">Intraday</a>
 <br>
-<a href="/evaluation">Evaluation</a>
+<a href="{{ url_for('evaluation_view') }}">Evaluation</a>
 <br>
-<a href="/forward">Forward</a>
+<a href="{{ url_for('forward_view') }}">Forward</a>
 <br>
-<a href="/process">Process</a>
+<a href="{{ url_for('process_view') }}">Process</a>
 <br>
-<a href="/import">Import</a>
+<a href="{{ url_for('import_view') }}">Import</a>
 <br>
-<a href="/export">Export</a>
+<a href="{{ url_for('export_view') }}">Export</a>
 <br>
-<a href="/configuration">Configuration</a>
+<a href="{{ url_for('configuration_view') }}">Configuration</a>
 <br>
-<a href="/portfolio">Portfolio</a>
+<a href="{{ url_for('portfolio_view') }}">Portfolio</a>
 </body>
 </html>
