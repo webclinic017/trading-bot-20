@@ -1,9 +1,9 @@
 import unittest
-from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 import pandas as pd
 import pytz
+from pandas import to_datetime, date_range
 
 from src import db
 from src.bo.intraday_bo import IntradayBO
@@ -14,8 +14,8 @@ from tests.utils.utils import Utils
 
 
 class IntradayBOTestCase(unittest.TestCase):
-    YOUNG_DATE = pytz.timezone(US_EASTERN).localize(datetime.fromisoformat('2011-11-04T00:00:00'))
-    OLD_DATE = pytz.timezone(US_EASTERN).localize(datetime.fromisoformat('2011-11-03T00:00:00'))
+    YOUNG_DATE = Utils.create_datetime('2011-11-04T00:00:00')
+    OLD_DATE = Utils.create_datetime('2011-11-03T00:00:00')
 
     @classmethod
     def setUpClass(cls):
@@ -90,22 +90,27 @@ class IntradayBOTestCase(unittest.TestCase):
         isin.return_value = 'isin'
         intraday.return_value = Utils.get_intraday()
         StockDAO.create_if_not_exists(('AAA',))
-        Utils.persist_intraday('AAA', IntradayBOTestCase.YOUNG_DATE, 500, 500, 500, 500, 500)
+        Utils.persist_intraday('AAA', Utils.create_datetime('2011-11-04T23:00:00'), 500, 500, 500, 500, 500)
         StockDAO.create_if_not_exists(('BBB',))
-        Utils.persist_intraday('BBB', IntradayBOTestCase.OLD_DATE, 500, 500, 500, 500, 500)
+        Utils.persist_intraday('BBB', Utils.create_datetime('2011-11-04T22:00:00'), 500, 500, 500, 500, 500)
+        StockDAO.create_if_not_exists(('CCC',))
+        Utils.persist_intraday('CCC', Utils.create_datetime('2011-11-03T23:00:00'), 500, 500, 500, 500, 500)
         with patch('alpha_vantage.timeseries.TimeSeries.__init__', return_value=None):
-            IntradayBO.update(('AAA', 'BBB',))
+            IntradayBO.update(('AAA', 'BBB', 'CCC'))
+        intraday.assert_called_with(symbol='CCC', outputsize='full')
         rows = IntradayDAO.read_order_by_date_asc()
-        self.assertEqual(len(rows), 12)
-        dates = pd.date_range('1/1/2000', periods=10)
-        for i in range(len(rows) - 2):
-            date = pytz.timezone(US_EASTERN).localize(pd.to_datetime(dates[i], format='%d%b%Y:%H:%M:%S.%f'))
+        self.assertEqual(len(rows), 13)
+        dates = date_range('1/1/2000', periods=10)
+        for i in range(len(rows) - 3):
+            date = pytz.timezone(US_EASTERN).localize(to_datetime(dates[i], format='%d%b%Y:%H:%M:%S.%f'))
             Utils.assert_attributes(rows[i], date=date, open=500, high=500, low=500, close=500, volume=500,
-                                    ticker='BBB')
-        Utils.assert_attributes(rows[10], date=IntradayBOTestCase.OLD_DATE, open=500, high=500, low=500, close=500,
-                                volume=500, ticker='BBB')
-        Utils.assert_attributes(rows[11], date=IntradayBOTestCase.YOUNG_DATE, open=500, high=500, low=500, close=500,
-                                volume=500, ticker='AAA')
+                                    ticker='CCC')
+        Utils.assert_attributes(rows[10], date=Utils.create_datetime('2011-11-03T23:00:00'), open=500, high=500,
+                                low=500, close=500, volume=500, ticker='CCC')
+        Utils.assert_attributes(rows[11], date=Utils.create_datetime('2011-11-04T22:00:00'), open=500, high=500,
+                                low=500, close=500, volume=500, ticker='BBB')
+        Utils.assert_attributes(rows[12], date=Utils.create_datetime('2011-11-04T23:00:00'), open=500, high=500,
+                                low=500, close=500, volume=500, ticker='AAA')
 
 
 if __name__ == '__main__':
