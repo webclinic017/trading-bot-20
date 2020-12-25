@@ -1,9 +1,11 @@
 import copy
+from datetime import datetime
 from decimal import Decimal
 from unittest import TestCase
 
 import numpy as np
 import pandas as pd
+import pytz
 from pandas import DataFrame
 
 from src.constants import UTC, US_EASTERN, NAN
@@ -84,3 +86,7 @@ class Utils:
         ForwardEntity.query.delete()
         StockEntity.query.delete()
         ConfigurationEntity.query.delete()
+
+    @staticmethod
+    def create_datetime(date: str, timezone: str = US_EASTERN):
+        return pytz.timezone(timezone).localize(datetime.fromisoformat(date))
