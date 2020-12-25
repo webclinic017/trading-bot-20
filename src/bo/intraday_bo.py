@@ -1,3 +1,4 @@
+from datetime import datetime
 from decimal import Decimal
 from typing import List, Dict, Tuple
 
@@ -37,8 +38,8 @@ class IntradayBO:
             rows: List[IntradayEntity] = db.session.query(IntradayEntity.ticker, db.func.max(
                 IntradayEntity.date)).group_by(IntradayEntity.ticker).all()
             if rows is not None:
-                latest_date: str = max(list(map(lambda r: r[1], rows)))
-                ticker: str = Utils.first(
-                    sorted(list(map(lambda r: r.ticker, list(filter(lambda f: (f[1] != latest_date), rows))))))
+                latest_date: datetime = max(list(map(lambda r: r[1], rows)))
+                ticker: str = Utils.first(sorted(list(map(
+                    lambda r: r.ticker, list(filter(lambda f: (f[1].date() != latest_date.date()), rows))))))
                 if ticker is not None:
                     IntradayDAO.create_ticker(ticker)
