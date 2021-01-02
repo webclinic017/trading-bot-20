@@ -1,4 +1,4 @@
-import unittest
+from unittest import TestCase
 from unittest.mock import patch
 
 from src import db
@@ -9,7 +9,7 @@ from src.enums.mode_enum import ModeEnum
 from tests.utils.utils import Utils
 
 
-class PortfolioBOTestCase(unittest.TestCase):
+class PortfolioBOTestCase(TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -73,6 +73,10 @@ class PortfolioBOTestCase(unittest.TestCase):
         self.assertEqual(portfolio[5], 'DDD')
         self.assertEqual(portfolio[6], 'CCC')
         self.assertEqual(portfolio[7], 'AAA')
+        stocks = StockDAO.read_all()
+        self.assertEqual(len(stocks), 8)
+        self.assertListEqual(list(map(lambda stock: stock.ticker, stocks)), ['AAA', 'BBB', 'CCC', 'DDD',
+                                                                             'BABA', 'AMZN', 'MSFT', 'GOOGL'])
 
     @patch('src.bo.stock_bo.StockBO.isin')
     def test_update(self, isin):

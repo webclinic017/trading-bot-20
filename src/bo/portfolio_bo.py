@@ -31,6 +31,8 @@ class PortfolioBO:
 
     @staticmethod
     def init() -> NoReturn:
+        StockDAO.update(tickers_sp500())
+        StockDAO.update(PortfolioBO.FORWARD_TICKER)
         for ticker in tickers_sp500():
             PortfolioDAO.create(ticker, ModeEnum.BACKWARD)
         for ticker in PortfolioBO.FORWARD_TICKER:
@@ -41,7 +43,7 @@ class PortfolioBO:
         return PortfolioDAO.read()
 
     @staticmethod
-    def read_filter_by_ticker_isin(ticker: str) -> PortfolioEntity:
+    def read_filter_by_ticker_isin(ticker: str) -> Any:
         return PortfolioDAO.read_filter_by_ticker_isin(ticker)
 
     @staticmethod

@@ -1,6 +1,6 @@
-import unittest
 from datetime import datetime
 from decimal import Decimal
+from unittest import TestCase
 from unittest.mock import patch
 
 import pytz
@@ -12,7 +12,7 @@ from src.entity.evaluation_entity import EvaluationEntity
 from tests.utils.utils import Utils
 
 
-class EvaluationDAOTestCase(unittest.TestCase):
+class EvaluationDAOTestCase(TestCase):
     YOUNG_DATE = pytz.utc.localize(datetime.fromisoformat('2011-11-04T00:00:00'))
     OLD_DATE = pytz.utc.localize(datetime.fromisoformat('2011-11-03T00:00:00'))
 
@@ -49,7 +49,3 @@ class EvaluationDAOTestCase(unittest.TestCase):
                                 funds='first', amount_buy=Decimal('1'), distance_buy=Decimal('2'),
                                 delta_buy=Decimal('3'), amount_sell=Decimal('4'), distance_sell=Decimal('5'),
                                 delta_sell=Decimal('6'))
-
-
-if __name__ == '__main__':
-    unittest.main()

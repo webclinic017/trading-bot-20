@@ -1,5 +1,5 @@
-import unittest
 from decimal import Decimal
+from unittest import TestCase
 
 from src import db
 from src.bo.configuration_bo import ConfigurationBO
@@ -8,7 +8,7 @@ from src.enums.configuration_enum import ConfigurationEnum
 from tests.utils.utils import Utils
 
 
-class ConfigurationBOTestCase(unittest.TestCase):
+class ConfigurationBOTestCase(TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -32,7 +32,3 @@ class ConfigurationBOTestCase(unittest.TestCase):
         self.assertIsInstance(configuration, ConfigurationEntity)
         Utils.assert_attributes(configuration, identifier='FORWARD_CASH', value=Decimal('10000'),
                                 description='Forward Cash')
-
-
-if __name__ == '__main__':
-    unittest.main()

@@ -5,7 +5,7 @@
     <title>Configuration</title>
 </head>
 <body>
-<a href="/">Main</a>
+<a href="{{ url_for('main_view') }}">Main</a>
 <br>
 <form method="post">
     <table>
@@ -22,7 +22,9 @@
                 <tr>
                     <td>{{ item.description }}</td>
                     <td>{{ item.value }}</td>
-                    <td><a href="/configuration/update/{{ item.identifier }}">Update</a></td>
+                    <td><a href="{{ url_for('configuration_view', operation='update', identifier=item.identifier) }}">
+                        Update
+                    </a></td>
                 </tr>
             {% endfor %}
         {% else %}
@@ -37,7 +39,7 @@
         </tbody>
     </table>
     {% if operation != 'read' %}
-        <a href="/configuration">Back</a>
+        <a href="{{ url_for('configuration_view') }}">Back</a>
         {{ form.submit }}
     {% endif %}
 </form>

@@ -1,5 +1,5 @@
-import unittest
 from decimal import Decimal
+from unittest import TestCase
 
 from src.bo.analyser_bo import AnalyserBO
 from src.bo.broker_bo import BrokerBO
@@ -11,7 +11,7 @@ from src.enums.action_enum import ActionEnum
 from tests.utils.utils import Utils
 
 
-class AnalyserBOTestCase(unittest.TestCase):
+class AnalyserBOTestCase(TestCase):
 
     def test_analyser(self):
         frame = Utils.create_table_frame()

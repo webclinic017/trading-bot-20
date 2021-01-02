@@ -1,6 +1,6 @@
-import unittest
 from datetime import datetime, timedelta
 from decimal import Decimal
+from unittest import TestCase
 from unittest.mock import patch
 
 import pandas as pd
@@ -15,7 +15,7 @@ from src.utils.utils import Utils as Utilities
 from tests.utils.utils import Utils
 
 
-class IntradayDAOTestCase(unittest.TestCase):
+class IntradayDAOTestCase(TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -89,7 +89,3 @@ class IntradayDAOTestCase(unittest.TestCase):
         for i in range(frame.shape[0]):
             for j in range(frame.shape[1]):
                 self.assertIsInstance(frame.iloc[i][j], Decimal)
-
-
-if __name__ == '__main__':
-    unittest.main()

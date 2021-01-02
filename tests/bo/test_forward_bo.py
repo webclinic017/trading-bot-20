@@ -1,6 +1,6 @@
-import unittest
 from datetime import datetime, timedelta
 from decimal import Decimal
+from unittest import TestCase
 from unittest.mock import patch
 
 import pytz
@@ -18,7 +18,7 @@ from src.enums.configuration_enum import ConfigurationEnum
 from tests.utils.utils import Utils
 
 
-class ForwardBOTestCase(unittest.TestCase):
+class ForwardBOTestCase(TestCase):
     YOUNG_DATE = pytz.utc.localize(datetime.fromisoformat('2011-11-04T00:00:00'))
     OLD_DATE = pytz.utc.localize(datetime.fromisoformat('2011-11-03T00:00:00'))
 
@@ -109,7 +109,3 @@ class ForwardBOTestCase(unittest.TestCase):
         estimated = inventory['AAA'].value() + inventory['BBB'].value() + inventory['CCC'].value()
         self.assertEqual(total_value, estimated)
         self.assertEqual(total, estimated + ConfigurationEnum.FORWARD_CASH.val)
-
-
-if __name__ == '__main__':
-    unittest.main()

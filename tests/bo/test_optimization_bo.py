@@ -1,5 +1,5 @@
-import unittest
 from decimal import Decimal
+from unittest import TestCase
 from unittest.mock import patch
 
 from src import db
@@ -12,7 +12,7 @@ from src.entity.evaluation_entity import EvaluationEntity
 from tests.utils.utils import Utils
 
 
-class OptimizationBOTestCase(unittest.TestCase):
+class OptimizationBOTestCase(TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -49,7 +49,3 @@ class OptimizationBOTestCase(unittest.TestCase):
         Utils.assert_attributes(evaluation, sum=Decimal('235112.5'), funds='235112.5', amount_buy=Decimal('2000'),
                                 amount_sell=Decimal('2000'), delta_buy=Decimal('3'), delta_sell=Decimal('3'),
                                 distance_buy=Decimal('20'), distance_sell=Decimal('20'))
-
-
-if __name__ == '__main__':
-    unittest.main()

@@ -5,7 +5,7 @@
     <title>Intraday</title>
 </head>
 <body>
-<a href="/">Main</a>
+<a href="{{ url_for('main_view') }}">Main</a>
 {% for table in tables %}
     {{ table|safe }}
 {% endfor %}

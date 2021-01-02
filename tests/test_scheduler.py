@@ -1,10 +1,10 @@
-import unittest
+from unittest import TestCase
 from unittest.mock import patch
 
 from src.scheduler import Scheduler
 
 
-class SchedulerTestCase(unittest.TestCase):
+class SchedulerTestCase(TestCase):
 
     @patch('requests.get')
     def test_update_table_intraday(self, get):
@@ -28,7 +28,3 @@ class SchedulerTestCase(unittest.TestCase):
         except RuntimeError:
             pass
         run_pending.assert_called_once_with()
-
-
-if __name__ == '__main__':
-    unittest.main()

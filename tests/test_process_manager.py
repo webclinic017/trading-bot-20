@@ -1,6 +1,6 @@
 import multiprocessing
 import time
-import unittest
+from unittest import TestCase
 from unittest.mock import patch
 
 from src.bo.forward_bo import ForwardBO
@@ -13,7 +13,7 @@ from src.scheduler import Scheduler
 from tests.utils.utils import Utils
 
 
-class ProcessManagerTestCase(unittest.TestCase):
+class ProcessManagerTestCase(TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -24,7 +24,7 @@ class ProcessManagerTestCase(unittest.TestCase):
         def test():
             time.sleep(1)
 
-    configuration = {
+    CONFIGURATION = {
         'test1': {
             ProcessManager.TARGET: TestProcess.test,
             ProcessManager.ARGS: []
@@ -36,7 +36,7 @@ class ProcessManagerTestCase(unittest.TestCase):
     }
 
     def test_configuration(self):
-        names = ['update-table-stock', 'update-table-intraday', 'schedule', 'optimize', 'forward']
+        names = ['init-database', 'update-table-stock', 'update-table-intraday', 'schedule', 'optimize', 'forward']
         self.assertListEqual(list(ProcessManager.CONFIGURATION.keys()), names)
         update_table_stock = ProcessManager.CONFIGURATION['update-table-stock']
         self.assertEqual(update_table_stock[ProcessManager.TARGET], StockDAO.update)
@@ -54,13 +54,13 @@ class ProcessManagerTestCase(unittest.TestCase):
         self.assertEqual(forward[ProcessManager.TARGET], ForwardBO.start)
         self.assertEqual(forward[ProcessManager.ARGS], (PortfolioBO.forward_portfolio(),))
 
-    @patch('src.process_manager.ProcessManager.CONFIGURATION', new=configuration)
+    @patch('src.process_manager.ProcessManager.CONFIGURATION', new=CONFIGURATION)
     def test_successful(self):
         self.__start('test1', True, True, ['test1'], ['test2'])
         self.__start('test1', False, True, ['test1'], ['test2'])
         self.__stop('test1', True, False, [], ['test1', 'test2'])
 
-    @patch('src.process_manager.ProcessManager.CONFIGURATION', new=configuration)
+    @patch('src.process_manager.ProcessManager.CONFIGURATION', new=CONFIGURATION)
     def test_successful_twice(self):
         self.__stop('test1', False, False, [], ['test1', 'test2'])
         self.__start('test1', True, True, ['test1'], ['test2'])
@@ -68,14 +68,14 @@ class ProcessManagerTestCase(unittest.TestCase):
         self.__start('test1', True, True, ['test1'], ['test2'])
         self.__stop('test1', True, False, [], ['test1', 'test2'])
 
-    @patch('src.process_manager.ProcessManager.CONFIGURATION', new=configuration)
+    @patch('src.process_manager.ProcessManager.CONFIGURATION', new=CONFIGURATION)
     def test_successful_with_second(self):
         self.__start('test1', True, True, ['test1'], ['test2'])
         self.__start('test2', True, True, ['test1', 'test2'], [])
         self.__stop('test2', True, True, ['test1'], ['test2'])
         self.__stop('test1', True, False, [], ['test1', 'test2'])
 
-    @patch('src.process_manager.ProcessManager.CONFIGURATION', new=configuration)
+    @patch('src.process_manager.ProcessManager.CONFIGURATION', new=CONFIGURATION)
     def test_successful_wait(self):
         self.__start('test1', True, True, ['test1'], ['test2'])
         while len(multiprocessing.active_children()) > 0:
@@ -86,7 +86,7 @@ class ProcessManagerTestCase(unittest.TestCase):
         self.__start('test1', True, True, ['test1'], ['test2'])
         self.__stop('test1', True, False, [], ['test1', 'test2'])
 
-    @patch('src.process_manager.ProcessManager.CONFIGURATION', new=configuration)
+    @patch('src.process_manager.ProcessManager.CONFIGURATION', new=CONFIGURATION)
     def test_failed(self):
         self.__start('', False, False, [], ['test1', 'test2'])
         self.__stop('', False, False, [], ['test1', 'test2'])
@@ -104,7 +104,3 @@ class ProcessManagerTestCase(unittest.TestCase):
         self.assertEqual(ProcessManager.running(), running)
         self.assertListEqual(ProcessManager.get_active_names(), active_names)
         self.assertListEqual(ProcessManager.get_inactive_names(), inactive_names)
-
-
-if __name__ == '__main__':
-    unittest.main()

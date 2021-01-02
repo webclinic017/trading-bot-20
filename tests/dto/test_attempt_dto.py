@@ -1,11 +1,11 @@
-import unittest
 from decimal import Decimal
+from unittest import TestCase
 
 from src.dto.attempt_dto import AttemptDTO
 from tests.utils.utils import Utils
 
 
-class AttemptDTOTestCase(unittest.TestCase):
+class AttemptDTOTestCase(TestCase):
     def test_init(self):
         attempt = AttemptDTO()
         self.assertIsInstance(attempt, AttemptDTO)
@@ -17,7 +17,3 @@ class AttemptDTOTestCase(unittest.TestCase):
         self.assertIsInstance(attempt, AttemptDTO)
         Utils.assert_attributes(attempt, amount_buy=Decimal('1'), distance_buy=Decimal('2'), delta_buy=Decimal('3'),
                                 amount_sell=Decimal('4'), distance_sell=Decimal('5'), delta_sell=Decimal('6'))
-
-
-if __name__ == '__main__':
-    unittest.main()

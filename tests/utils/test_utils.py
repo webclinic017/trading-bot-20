@@ -1,7 +1,7 @@
 import math
-import unittest
 from datetime import datetime, timedelta
 from decimal import Decimal
+from unittest import TestCase
 from unittest.mock import patch
 
 import pandas as pd
@@ -13,7 +13,7 @@ from src.utils.utils import Utils as Utilities
 from tests.utils.utils import Utils
 
 
-class UtilsTestCase(unittest.TestCase):
+class UtilsTestCase(TestCase):
     def test_valid(self):
         valid = Utilities.valid(Decimal('1'), Decimal('2'), Decimal('3'))
         self.assertEqual(valid, True)
@@ -121,7 +121,3 @@ class UtilsTestCase(unittest.TestCase):
         self.assertEqual(Utilities.truncate(Decimal('-1.9')), Decimal('-1'))
         self.assertEqual(Utilities.truncate(Decimal('10')), Decimal('10'))
         self.assertEqual(Utilities.truncate(Decimal('-10')), Decimal('-10'))
-
-
-if __name__ == '__main__':
-    unittest.main()

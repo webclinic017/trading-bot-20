@@ -1,6 +1,6 @@
-import unittest
 from datetime import datetime
 from decimal import Decimal
+from unittest import TestCase
 from unittest.mock import patch
 
 import pytz
@@ -11,7 +11,7 @@ from src.enums.action_enum import ActionEnum
 from tests.utils.utils import Utils
 
 
-class ForwardDAOTestCase(unittest.TestCase):
+class ForwardDAOTestCase(TestCase):
     YOUNG_DATE = pytz.utc.localize(datetime.fromisoformat('2011-11-04T00:00:00'))
     OLD_DATE = pytz.utc.localize(datetime.fromisoformat('2011-11-03T00:00:00'))
 

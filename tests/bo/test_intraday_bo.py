@@ -1,7 +1,6 @@
-import unittest
+from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
-import pandas as pd
 import pytz
 from pandas import to_datetime, date_range
 
@@ -13,7 +12,7 @@ from src.dao.stock_dao import StockDAO
 from tests.utils.utils import Utils
 
 
-class IntradayBOTestCase(unittest.TestCase):
+class IntradayBOTestCase(TestCase):
     YOUNG_DATE = Utils.create_datetime('2011-11-04T00:00:00')
     OLD_DATE = Utils.create_datetime('2011-11-03T00:00:00')
 
@@ -60,9 +59,9 @@ class IntradayBOTestCase(unittest.TestCase):
         Utils.persist_intraday('BBB', IntradayBOTestCase.OLD_DATE, 6, 7, 8, 9, 0)
         content = IntradayBO.to_file()
         self.assertEqual(len(content), 2)
-        Utils.assert_items(content[1], date='2011-11-04 04:00:00+00:00', open='1.0', high='2.0',
+        Utils.assert_items(content[0], date='2011-11-04 04:00:00+00:00', open='1.0', high='2.0',
                            low='3.0', close='4.0', volume='5.0', ticker='AAA')
-        Utils.assert_items(content[0], date='2011-11-03 04:00:00+00:00', open='6.0', high='7.0',
+        Utils.assert_items(content[1], date='2011-11-03 04:00:00+00:00', open='6.0', high='7.0',
                            low='8.0', close='9.0', volume='0.0', ticker='BBB')
 
     @patch('alpha_vantage.timeseries.TimeSeries.get_intraday')
@@ -76,9 +75,9 @@ class IntradayBOTestCase(unittest.TestCase):
             IntradayBO.update(('AAA', 'BBB',))
         rows = IntradayDAO.read_order_by_date_asc()
         self.assertEqual(len(rows), 11)
-        dates = pd.date_range('1/1/2000', periods=10)
+        dates = date_range('1/1/2000', periods=10)
         for i in range(len(rows) - 1):
-            date = pytz.timezone(US_EASTERN).localize(pd.to_datetime(dates[i], format='%d%b%Y:%H:%M:%S.%f'))
+            date = pytz.timezone(US_EASTERN).localize(to_datetime(dates[i], format='%d%b%Y:%H:%M:%S.%f'))
             Utils.assert_attributes(rows[i], date=date, open=500, high=500, low=500, close=500, volume=500,
                                     ticker='BBB')
         Utils.assert_attributes(rows[10], date=IntradayBOTestCase.OLD_DATE, open=500, high=500, low=500, close=500,
@@ -111,7 +110,3 @@ class IntradayBOTestCase(unittest.TestCase):
                                 low=500, close=500, volume=500, ticker='BBB')
         Utils.assert_attributes(rows[12], date=Utils.create_datetime('2011-11-04T23:00:00'), open=500, high=500,
                                 low=500, close=500, volume=500, ticker='AAA')
-
-
-if __name__ == '__main__':
-    unittest.main()
