@@ -1,6 +1,5 @@
 import json
 import logging
-import os
 from datetime import datetime
 from decimal import Decimal
 from typing import List, Tuple, Any, NoReturn
