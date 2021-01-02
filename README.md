@@ -6,7 +6,7 @@
 
 # Trading Bot
 
-Trading Bot is a software in which trading strategies can be tested for- and backwards, optimized and executed
+Trading Bot is a software in which trading strategies can be tested for- and backwards, optimized and executed.
 
 ## Use Cases
 
@@ -25,38 +25,31 @@ Strategies are applied to current data. Buy or sell orders are generated in a de
 
 ## Installation
 
-### Database
-
-The database can be created with the following command. The database must then be added to the database subdirectory in
-the project directory
-
-```python
-import sqlite3
-
-sqlite3.connect('tradingbot.db')
-```
-
 ### Enviroment Variables
 
 The following command must be used to insert the [Alpha Vantage API key][cb956311] into the environment variables in
-Windows
+Windows:
 
 ```batch
-setx ALPHA_VANTAGE "API key" /m
+setx ALPHAVANTAGE_API_KEY "API key" /m
 ```
 
-### Start Batch
+### Docker
 
-The following command can be used to run the application and start the scheduler
+The Docker image can be created with the following command:
 
-```batch
-start cmd.exe /k "cd path to project dir\trading-bot & py -m venv env & env\Scripts\activate & pip install -r requirements.txt & set FLASK_APP=src\main.py & flask run"
-timeout /t 10
-powershell.exe -noprofile -command "Invoke-WebRequest -Uri http://127.0.0.1:5000/process/start/schedule"
+```
+docker build --build-arg alphavantage_api_key=${ALPHAVANTAGE_API_KEY} -t trading_bot_image .
+```
+
+The Docker container can be started with the following command:
+
+```
+docker run -d --name trading_bot_container --restart=always -p 80:5000 trading_bot_image
 ```
 
 ### Web GUI
 
-The web gui can be opened by entering `http://127.0.0.1:5000/` in the address bar of the browser
+The web gui can be opened by entering `http://localhost/` in the address bar of the browser.
 
 [cb956311]: https://www.alphavantage.co/support/#api-key "Alpha Vantage API key"

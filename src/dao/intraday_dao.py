@@ -24,7 +24,7 @@ class IntradayDAO:
     @staticmethod
     def create_ticker(ticker: str) -> NoReturn:
         try:
-            time_series = TimeSeries(key=os.environ.get('ALPHA_VANTAGE'), output_format='pandas')
+            time_series = TimeSeries(output_format='pandas')
             frame, meta_data = time_series.get_intraday(symbol=ticker.replace('.', '-'), outputsize='full')
             frame = frame.reset_index()
             for index, row in frame.iterrows():
