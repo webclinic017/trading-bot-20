@@ -5,7 +5,7 @@ from typing import Tuple
 
 from pandas import DataFrame
 
-from src.constants import ZERO
+from src.common.constants import ZERO
 from src.dto.attempt_dto import AttemptDTO
 from src.enums.action_enum import ActionEnum
 from src.utils.utils import Utils

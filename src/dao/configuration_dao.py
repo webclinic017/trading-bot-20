@@ -1,18 +1,18 @@
 from decimal import Decimal
 from typing import List, NoReturn
 
-from src.dao.dao import DAO
+from src.dao.base_dao import BaseDAO
 from src.entity.configuration_entity import ConfigurationEntity
 from src.utils.utils import Utils
 
 
-class ConfigurationDAO:
+class ConfigurationDAO(BaseDAO):
 
-    @staticmethod
-    def create(identifier: str, value: str, description: str) -> NoReturn:
+    @classmethod
+    def create(cls, identifier: str, value: str, description: str) -> NoReturn:
         configuration: ConfigurationEntity = ConfigurationEntity()
         Utils.set_attributes(configuration, identifier=identifier, value=value, description=description)
-        DAO.persist(configuration)
+        cls.persist(configuration)
 
     @staticmethod
     def read_all() -> List[ConfigurationEntity]:
@@ -22,8 +22,8 @@ class ConfigurationDAO:
     def read_filter_by_identifier(identifier: str) -> ConfigurationEntity:
         return ConfigurationEntity.query.filter_by(identifier=identifier).first()
 
-    @staticmethod
-    def update(identifier: str, value: Decimal) -> NoReturn:
-        configuration = ConfigurationDAO.read_filter_by_identifier(identifier)
+    @classmethod
+    def update(cls, identifier: str, value: Decimal) -> NoReturn:
+        configuration = cls.read_filter_by_identifier(identifier)
         configuration.value = value
-        DAO.commit()
+        cls.commit()

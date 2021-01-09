@@ -1,20 +1,19 @@
 from decimal import Decimal
-from unittest import TestCase
 
 from src.bo.analyser_bo import AnalyserBO
 from src.bo.broker_bo import BrokerBO
 from src.bo.statistic_bo import StatisticBO
 from src.bo.strategy_bo import StrategyBO
-from src.constants import ZERO
+from src.common.constants import ZERO
 from src.dto.attempt_dto import AttemptDTO
 from src.enums.action_enum import ActionEnum
-from tests.utils.utils import Utils
+from tests.base_test_case import BaseTestCase
 
 
-class AnalyserBOTestCase(TestCase):
+class AnalyserBOTestCase(BaseTestCase):
 
     def test_analyser(self):
-        frame = Utils.create_table_frame()
+        frame = self.create_table_frame()
         broker = BrokerBO(cash=Decimal('10000'), fee=Decimal('3.9'))
         initial_cash = broker.cash
         cash = broker.cash

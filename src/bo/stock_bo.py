@@ -4,6 +4,7 @@ import requests
 
 
 class StockBO:
+
     @staticmethod
     def isin(ticker: str) -> str:
         url = 'https://markets.businessinsider.com/ajax/' \

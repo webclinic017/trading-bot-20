@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
+from json import dumps
 from typing import Dict, List, Tuple, Any, NoReturn
 
 from pandas import DataFrame
@@ -11,7 +12,7 @@ from src.bo.inventory_bo import InventoryBO
 from src.bo.portfolio_bo import PortfolioBO
 from src.bo.statistic_bo import StatisticBO
 from src.bo.strategy_bo import StrategyBO
-from src.constants import ZERO
+from src.common.constants import ZERO
 from src.converter.attempt_dto_converter import AttemptDTOConverter
 from src.dao.configuration_dao import ConfigurationDAO
 from src.dao.evaluation_dao import EvaluationDAO
@@ -28,8 +29,8 @@ from src.utils.utils import Utils
 
 class ForwardBO:
 
-    @staticmethod
-    def start(portfolio: List[str]) -> NoReturn:
+    @classmethod
+    def start(cls, portfolio: List[str]) -> NoReturn:
         latest_date: datetime = ForwardDAO.read_latest_date()
         evaluation: EvaluationEntity = EvaluationDAO.read_order_by_sum()
         if evaluation is None or Utils.is_today(latest_date) or not Utils.is_working_day_ny():
@@ -38,11 +39,15 @@ class ForwardBO:
         latest_date_dict: Dict[str, str] = {r[1]: r[0] for r in read_latest_date}
         rows: List[IntradayEntity] = IntradayDAO.read(portfolio)
         frame: DataFrame = IntradayDAO.dataframe(rows)
-        inventory, cash, fee = ForwardBO.init()
+        inventory, cash, fee = cls.init()
         broker: BrokerBO = ForwardBrokerBO(cash, fee, inventory)
         statistic: StatisticBO = StatisticBO('forward')
         attempt: AttemptDTO = AttemptDTOConverter.from_evaluation(evaluation)
-        AnalyserBO.analyse(frame, StrategyBO.counter_cyclical, broker, statistic, attempt, latest_date_dict)
+        statistic: StatisticBO = AnalyserBO.analyse(frame, StrategyBO.counter_cyclical, broker, statistic, attempt,
+                                                    latest_date_dict)
+        log_data_without_action_none: List[Dict[str, Any]] = statistic.log_data_without_action_none()
+        if len(statistic.log_data_without_action_none()) > 0:
+            Utils.send_mail(dumps(log_data_without_action_none, indent=4, sort_keys=True, default=str))
 
     @staticmethod
     def init() -> Tuple[Dict[str, InventoryBO], Decimal, Decimal]:

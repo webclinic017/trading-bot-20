@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from parameterized import parameterized
 
-from src import main
+from src import main, db
 from src.bo.configuration_bo import ConfigurationBO
 
 
@@ -11,6 +11,7 @@ class MainTestCase(TestCase):
 
     @classmethod
     def setUpClass(cls):
+        db.create_all()
         ConfigurationBO.init()
 
     @parameterized.expand([

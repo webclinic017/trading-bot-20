@@ -31,7 +31,12 @@ The following command must be used to insert the [Alpha Vantage API key][cb95631
 Windows:
 
 ```batch
-setx ALPHAVANTAGE_API_KEY "API key" /m
+setx ALPHAVANTAGE_API_KEY "Alpha Vantage API Key" /m
+setx FROM_EMAIL_ADDRESS "Source Email Address" /m
+setx TO_EMAIL_ADDRESS "Destination Email Address" /m
+setx EMAIL_PASSWORD "Email Password" /m
+setx SMTP_HOST "SMTP Host" /m
+setx SMTP_PORT "SMTP Port" /m
 ```
 
 ### Docker
@@ -39,7 +44,7 @@ setx ALPHAVANTAGE_API_KEY "API key" /m
 The Docker image can be created with the following command:
 
 ```
-docker build --build-arg alphavantage_api_key=${ALPHAVANTAGE_API_KEY} -t trading_bot_image .
+docker build --build-arg alphavantage_api_key=${ALPHAVANTAGE_API_KEY} --build-arg from_email_address=${FROM_EMAIL_ADDRESS} --build-arg to_email_address=${TO_EMAIL_ADDRESS} --build-arg email_password=${EMAIL_PASSWORD} --build-arg smtp_host=${SMTP_HOST} --build-arg smtp_port=${SMTP_PORT} -t trading_bot_image .
 ```
 
 The Docker container can be started with the following command:

@@ -5,22 +5,23 @@ from typing import List, NoReturn
 from sqlalchemy import func
 
 from src import db
-from src.dao.dao import DAO
+from src.dao.base_dao import BaseDAO
 from src.entity.forward_entity import ForwardEntity
 from src.enums.action_enum import ActionEnum
 from src.utils.utils import Utils
 
 
-class ForwardDAO:
-    @staticmethod
-    def create_buy(ticker: str, price: Decimal, number: Decimal, cash: Decimal) -> NoReturn:
-        forward: ForwardEntity = ForwardDAO.__init(ActionEnum.BUY, ticker, price, number, cash)
-        DAO.persist(forward)
+class ForwardDAO(BaseDAO):
 
-    @staticmethod
-    def create_sell(ticker: str, price: Decimal, number: Decimal, cash: Decimal) -> NoReturn:
-        forward: ForwardEntity = ForwardDAO.__init(ActionEnum.SELL, ticker, price, number, cash)
-        DAO.persist(forward)
+    @classmethod
+    def create_buy(cls, ticker: str, price: Decimal, number: Decimal, cash: Decimal) -> NoReturn:
+        forward: ForwardEntity = cls.__init(ActionEnum.BUY, ticker, price, number, cash)
+        cls.persist(forward)
+
+    @classmethod
+    def create_sell(cls, ticker: str, price: Decimal, number: Decimal, cash: Decimal) -> NoReturn:
+        forward: ForwardEntity = cls.__init(ActionEnum.SELL, ticker, price, number, cash)
+        cls.persist(forward)
 
     @staticmethod
     def read() -> List[ForwardEntity]:

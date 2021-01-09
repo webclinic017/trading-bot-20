@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from src.bo.broker_bo import BrokerBO
 from src.bo.inventory_bo import InventoryBO
-from src.constants import ZERO
+from src.common.constants import ZERO
 
 
 class BrokerBOTestCase(TestCase):

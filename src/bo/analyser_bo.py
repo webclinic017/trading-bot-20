@@ -35,5 +35,5 @@ class AnalyserBO:
                 if statistic is not None:
                     statistic.plot(date, ticker, price, buy, sell)
                     statistic.test(action, number, ticker, price)
-                    statistic.log(action, date, ticker, price, buy, sell)
+                    statistic.log(action, date, ticker, price)
         return statistic

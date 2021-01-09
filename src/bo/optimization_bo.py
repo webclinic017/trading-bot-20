@@ -9,7 +9,7 @@ from src.bo.broker_bo import BrokerBO
 from src.bo.portfolio_bo import PortfolioBO
 from src.bo.statistic_bo import StatisticBO
 from src.bo.strategy_bo import StrategyBO
-from src.constants import INFINITY, ZERO
+from src.common.constants import INFINITY, ZERO
 from src.converter.attempt_dto_converter import AttemptDTOConverter
 from src.dao.configuration_dao import ConfigurationDAO
 from src.dao.evaluation_dao import EvaluationDAO
@@ -70,11 +70,11 @@ class OptimizationBO:
             if analysis_number == table_number and evaluation_sum > optimise_sum:
                 EvaluationDAO.create(evaluation_sum, ','.join(map(str, analysis_funds)), evaluation_attempt)
 
-    @staticmethod
-    def start(portfolio: List[str], number: int, group_number: int) -> NoReturn:
+    @classmethod
+    def start(cls, portfolio: List[str], number: int, group_number: int) -> NoReturn:
         group_size: int = int(number / group_number)
         groups: Tuple[Tuple[str]] = Utils.group(group_size, portfolio[:number])
-        OptimizationBO.optimise(IntradayDAO.dataframe_group(groups))
+        cls.optimise(IntradayDAO.dataframe_group(groups))
 
 
 if __name__ == '__main__':
