@@ -1,10 +1,11 @@
 import os
-import sys
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-if len(sys.argv) > 0 and 'test' in sys.argv[0]:
+from src.utils.utils import Utils
+
+if Utils.is_test():
     uri = 'sqlite:///:memory:'
 else:
     uri = r'sqlite:///{}/database/tradingbot.sqlite'.format(os.path.abspath(os.path.join(

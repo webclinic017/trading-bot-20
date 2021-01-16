@@ -6,11 +6,12 @@ from sqlalchemy.exc import SQLAlchemyError
 from src import db
 
 
-class DAO:
-    @staticmethod
-    def persist(entity: db.Model) -> NoReturn:
+class BaseDAO:
+
+    @classmethod
+    def persist(cls, entity: db.Model) -> NoReturn:
         db.session.add(entity)
-        DAO.commit()
+        cls.commit()
 
     @staticmethod
     def commit() -> NoReturn:

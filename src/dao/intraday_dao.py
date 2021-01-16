@@ -2,7 +2,8 @@ import json
 import logging
 from datetime import datetime
 from decimal import Decimal
-from typing import List, Tuple, Any, NoReturn
+from time import sleep
+from typing import List, Tuple, Any, NoReturn, Final, Union
 
 import pandas as pd
 import pytz
@@ -11,36 +12,61 @@ from pandas import DataFrame, Series
 from sqlalchemy import func
 
 from src import db
-from src.constants import NAN
-from src.dao.dao import DAO
+from src.common.constants import NAN, US_EASTERN, REQUEST_SLEEP
+from src.dao.base_dao import BaseDAO
 from src.dao.stock_dao import StockDAO
 from src.entity.intraday_entity import IntradayEntity
 from src.entity.stock_entity import StockEntity
 from src.utils.utils import Utils
 
 
-class IntradayDAO:
-    @staticmethod
-    def create_ticker(ticker: str) -> NoReturn:
+class IntradayDAO(BaseDAO):
+    YEAR_RANGE: Final[int] = 2
+    MONTH_RANGE: Final[int] = 12
+    INTRADAY_COLUMN: Tuple[str] = ('date', '1. open', '2. high', '3. low', '4. close', '5. volume')
+    INTRADAY_EXTENDED_COLUMN: Tuple[int] = tuple(range(6))
+
+    @classmethod
+    def create_ticker(cls, ticker: str) -> NoReturn:
         try:
             time_series = TimeSeries(output_format='pandas')
             frame, meta_data = time_series.get_intraday(symbol=ticker.replace('.', '-'), outputsize='full')
             frame = frame.reset_index()
             for index, row in frame.iterrows():
-                intraday = IntradayDAO.init(row, ticker, meta_data['6. Time Zone'])
-                DAO.persist(intraday)
+                intraday = cls.init(row, ticker, meta_data['6. Time Zone'])
+                cls.persist(intraday)
         except ValueError as e:
             logging.exception(e)
 
-    @staticmethod
-    def create_from_file(content: str) -> NoReturn:
+    @classmethod
+    def create_ticker_extended(cls, symbol: str) -> NoReturn:
+        time_series = TimeSeries(output_format='csv')
+        for year in range(cls.YEAR_RANGE):
+            for month in range(cls.MONTH_RANGE):
+                try:
+                    s: str = 'year{}month{}'.format(year + 1, month + 1)
+                    csv_reader, _ = time_series.get_intraday_extended(symbol, slice=s)
+                    line_count: int = 0
+                    for row in csv_reader:
+                        if line_count > 0:
+                            intraday = cls.init(row, symbol, US_EASTERN, cls.INTRADAY_EXTENDED_COLUMN)
+                            cls.persist(intraday)
+                        line_count += 1
+                except ValueError as e:
+                    logging.exception(e)
+                    return
+                if not Utils.is_test():
+                    sleep(REQUEST_SLEEP)
+
+    @classmethod
+    def create_from_file(cls, content: str) -> NoReturn:
         rows = json.loads(content)
         for row in rows:
             intraday: IntradayEntity = IntradayEntity()
             Utils.set_attributes(intraday, date=datetime.fromisoformat(row['date']), open=Decimal(row['open']),
                                  high=Decimal(row['high']), low=Decimal(row['low']), close=Decimal(row['close']),
                                  volume=Decimal(row['volume']), ticker=row['ticker'])
-            DAO.persist(intraday)
+            cls.persist(intraday)
 
     @staticmethod
     def read(portfolio: List[str]) -> List[IntradayEntity]:
@@ -64,20 +90,20 @@ class IntradayDAO:
         return db.session.query(func.max(IntradayEntity.date), IntradayEntity.ticker).group_by(
             IntradayEntity.ticker).all()
 
-    @staticmethod
-    def dataframe_ticker() -> DataFrame:
+    @classmethod
+    def dataframe_ticker(cls) -> DataFrame:
         rows: List[StockEntity] = StockDAO.read_ticker()
         tickers: List[str] = list(map(lambda r: r.ticker, rows))
-        return IntradayDAO.dataframe_portfolio(tickers)
+        return cls.dataframe_portfolio(tickers)
 
-    @staticmethod
-    def dataframe_portfolio(portfolio: List[str]) -> DataFrame:
-        rows: List[IntradayEntity] = IntradayDAO.read(portfolio)
-        return IntradayDAO.dataframe(rows)
+    @classmethod
+    def dataframe_portfolio(cls, portfolio: List[str]) -> DataFrame:
+        rows: List[IntradayEntity] = cls.read(portfolio)
+        return cls.dataframe(rows)
 
-    @staticmethod
-    def dataframe_group(group: Tuple[Tuple[str]]) -> List[DataFrame]:
-        return list(map(lambda g: IntradayDAO.dataframe_portfolio(g), group))
+    @classmethod
+    def dataframe_group(cls, group: Tuple[Tuple[str]]) -> List[DataFrame]:
+        return list(map(lambda g: cls.dataframe_portfolio(g), group))
 
     @staticmethod
     def dataframe(rows: List[IntradayEntity]) -> DataFrame:
@@ -87,11 +113,13 @@ class IntradayDAO:
         return frame.fillna(NAN)
 
     @staticmethod
-    def init(row: Series, ticker: str, timezone: str) -> IntradayEntity:
+    def init(row: Series, ticker: str, timezone: str,
+             column: Tuple[Union[int, str]] = INTRADAY_COLUMN) -> IntradayEntity:
         intraday: IntradayEntity = IntradayEntity()
-        Utils.set_attributes(intraday, date=pytz.timezone(timezone).localize(datetime.fromisoformat(str(row['date']))),
-                             open=Decimal(row['1. open']), high=Decimal(row['2. high']), low=Decimal(row['3. low']),
-                             close=Decimal(row['4. close']), volume=Decimal(row['5. volume']), ticker=ticker)
+        Utils.set_attributes(intraday,
+                             date=pytz.timezone(timezone).localize(datetime.fromisoformat(str(row[column[0]]))),
+                             open=Decimal(row[column[1]]), high=Decimal(row[column[2]]), low=Decimal(row[column[3]]),
+                             close=Decimal(row[column[4]]), volume=Decimal(row[column[5]]), ticker=ticker)
         return intraday
 
 

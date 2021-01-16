@@ -1,6 +1,10 @@
+import os
 import random
+import sys
 from datetime import timedelta, datetime
 from decimal import Decimal, ROUND_DOWN, ExtendedContext
+from email.mime.text import MIMEText
+from smtplib import SMTP
 from typing import Iterable, List, Iterator, Tuple, Optional, TypeVar, Sequence, NoReturn
 
 import pandas as pd
@@ -8,7 +12,7 @@ import pytz
 from pandas import DataFrame
 from workalendar.usa import NewYork
 
-from src.constants import US_EASTERN, ZERO, NAN
+from src.common.constants import US_EASTERN, ZERO, NAN
 
 T = TypeVar('T')
 
@@ -44,17 +48,17 @@ class Utils:
             return NAN
         return frame.at[interval_date, column]
 
-    @staticmethod
-    def is_today(today: Optional[datetime]) -> bool:
-        return False if not isinstance(today, datetime) else Utils.now().date() == today.date()
+    @classmethod
+    def is_today(cls, today: Optional[datetime]) -> bool:
+        return False if not isinstance(today, datetime) else cls.now().date() == today.date()
 
     @staticmethod
     def now() -> datetime:
         return pytz.utc.localize(datetime.utcnow())
 
-    @staticmethod
-    def is_working_day_ny() -> datetime:
-        return NewYork().is_working_day(Utils.now().astimezone(pytz.timezone(US_EASTERN)))
+    @classmethod
+    def is_working_day_ny(cls) -> datetime:
+        return NewYork().is_working_day(cls.now().astimezone(pytz.timezone(US_EASTERN)))
 
     @staticmethod
     def first(sequence: Sequence[T]) -> T:
@@ -68,3 +72,25 @@ class Utils:
     @staticmethod
     def truncate(number: Decimal) -> Decimal:
         return Decimal(number).quantize(Decimal('1'), rounding=ROUND_DOWN)
+
+    @staticmethod
+    def is_test() -> bool:
+        return len(sys.argv) > 0 and 'test' in sys.argv[0]
+
+    @staticmethod
+    def send_mail(text: str):
+        from_address: str = os.getenv('FROM_EMAIL_ADDRESS')
+        to_address: str = os.getenv('TO_EMAIL_ADDRESS')
+        password: str = os.getenv('EMAIL_PASSWORD')
+        msg: MIMEText = MIMEText(text)
+        msg['Subject'] = 'trading-bot'
+        msg['From'] = from_address
+        msg['To'] = to_address
+        smtp: SMTP = SMTP(os.getenv('SMTP_HOST'), os.getenv('SMTP_PORT'))
+        smtp.starttls()
+        smtp.login(from_address, password)
+        smtp.sendmail(from_address, to_address, msg.as_string())
+
+
+if __name__ == '__main__':
+    Utils.send_mail('This is the body of the message.')

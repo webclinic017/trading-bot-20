@@ -1,4 +1,3 @@
-from unittest import TestCase
 from unittest.mock import patch
 
 from src import db
@@ -6,24 +5,24 @@ from src.bo.portfolio_bo import PortfolioBO
 from src.dao.portfolio_dao import PortfolioDAO
 from src.dao.stock_dao import StockDAO
 from src.enums.mode_enum import ModeEnum
-from tests.utils.utils import Utils
+from tests.base_test_case import BaseTestCase
 
 
-class PortfolioBOTestCase(TestCase):
+class PortfolioBOTestCase(BaseTestCase):
 
     @classmethod
     def setUpClass(cls):
         db.create_all()
 
     def setUp(self):
-        Utils.truncate_tables()
+        self.truncate_tables()
 
     def tearDown(self):
-        Utils.truncate_tables()
+        self.truncate_tables()
 
     @patch('src.bo.stock_bo.StockBO.isin')
     def test_forward_portfolio(self, isin):
-        PortfolioBOTestCase.__init_database(isin)
+        self.__init_database(isin)
         portfolio = PortfolioBO.forward_portfolio(100)
         self.assertEqual(len(portfolio), 2)
         self.assertEqual(portfolio[0], 'ticker1')
@@ -31,7 +30,7 @@ class PortfolioBOTestCase(TestCase):
 
     @patch('src.bo.stock_bo.StockBO.isin')
     def test_backward_portfolio(self, isin):
-        PortfolioBOTestCase.__init_database(isin)
+        self.__init_database(isin)
         portfolio = PortfolioBO.backward_portfolio(100)
         self.assertEqual(len(portfolio), 2)
         self.assertEqual(portfolio[0], 'ticker3')
@@ -39,7 +38,7 @@ class PortfolioBOTestCase(TestCase):
 
     @patch('src.bo.stock_bo.StockBO.isin')
     def test_backward_forward_portfolio(self, isin):
-        PortfolioBOTestCase.__init_database(isin)
+        self.__init_database(isin)
         portfolio = PortfolioBO.backward_forward_portfolio()
         self.assertEqual(len(portfolio), 4)
         self.assertEqual(portfolio[0], 'ticker1')
@@ -48,35 +47,26 @@ class PortfolioBOTestCase(TestCase):
         self.assertEqual(portfolio[3], 'ticker4')
 
     @patch('src.bo.portfolio_bo.tickers_sp500')
-    def test_init(self, tickers_sp500):
+    @patch('src.bo.portfolio_bo.tickers_nasdaq')
+    @patch('src.dao.stock_dao.StockDAO.update')
+    def test_init(self, update, tickers_nasdaq, tickers_sp500):
+        ticker_list = ('FFF', 'BBB', 'DDD', 'GGG', 'CCC', 'AAA', 'HHH', 'EEE')
         tickers_sp500.return_value = ('AAA', 'BBB', 'CCC', 'DDD')
+        tickers_nasdaq.return_value = ('EEE', 'FFF', 'GGG', 'HHH')
         PortfolioBO.init()
         portfolio = PortfolioBO.forward_portfolio(100)
-        self.assertEqual(len(portfolio), 4)
-        self.assertEqual(portfolio[0], 'AMZN')
-        self.assertEqual(portfolio[1], 'BABA')
-        self.assertEqual(portfolio[2], 'MSFT')
-        self.assertEqual(portfolio[3], 'GOOGL')
-        portfolio = PortfolioBO.backward_portfolio(100)
-        self.assertEqual(len(portfolio), 4)
-        self.assertEqual(portfolio[0], 'BBB')
-        self.assertEqual(portfolio[1], 'DDD')
-        self.assertEqual(portfolio[2], 'CCC')
-        self.assertEqual(portfolio[3], 'AAA')
-        portfolio = PortfolioBO.backward_forward_portfolio()
         self.assertEqual(len(portfolio), 8)
-        self.assertEqual(portfolio[0], 'AMZN')
-        self.assertEqual(portfolio[1], 'BABA')
-        self.assertEqual(portfolio[2], 'MSFT')
-        self.assertEqual(portfolio[3], 'GOOGL')
-        self.assertEqual(portfolio[4], 'BBB')
-        self.assertEqual(portfolio[5], 'DDD')
-        self.assertEqual(portfolio[6], 'CCC')
-        self.assertEqual(portfolio[7], 'AAA')
-        stocks = StockDAO.read_all()
-        self.assertEqual(len(stocks), 8)
-        self.assertListEqual(list(map(lambda stock: stock.ticker, stocks)), ['AAA', 'BBB', 'CCC', 'DDD',
-                                                                             'BABA', 'AMZN', 'MSFT', 'GOOGL'])
+        for p, ticker in zip(portfolio, ticker_list):
+            self.assertEqual(p, ticker)
+        portfolio = PortfolioBO.backward_portfolio(100)
+        self.assertEqual(len(portfolio), 8)
+        for p, ticker in zip(portfolio, ticker_list):
+            self.assertEqual(p, ticker)
+        portfolio = PortfolioBO.backward_forward_portfolio()
+        self.assertEqual(len(portfolio), 16)
+        for p, ticker in zip(portfolio, ticker_list * 2):
+            self.assertEqual(p, ticker)
+        update.assert_called_once_with(tuple(sorted(ticker_list)))
 
     @patch('src.bo.stock_bo.StockBO.isin')
     def test_update(self, isin):
@@ -84,7 +74,7 @@ class PortfolioBOTestCase(TestCase):
         PortfolioBO.update('AAA', ModeEnum.BACKWARD)
         portfolio = PortfolioBO.read()
         self.assertEqual(len(portfolio), 1)
-        Utils.assert_attributes(portfolio[0], ticker='AAA', mode=ModeEnum.BACKWARD)
+        self.assert_attributes(portfolio[0], ticker='AAA', mode=ModeEnum.BACKWARD)
         PortfolioBO.delete('AAA')
         portfolio = PortfolioBO.read_filter_by_ticker_isin('AAA')
         self.assertIsNone(portfolio)

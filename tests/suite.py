@@ -1,5 +1,6 @@
-import unittest
+from unittest import TestLoader, TextTestRunner
+from unittest.suite import TestSuite
 
-suite = unittest.TestLoader().discover('.')
-runner = unittest.TextTestRunner()
+suite: TestSuite = TestLoader().discover('.')
+runner: TextTestRunner = TextTestRunner()
 runner.run(suite)

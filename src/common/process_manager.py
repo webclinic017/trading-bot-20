@@ -6,9 +6,9 @@ from src.bo.forward_bo import ForwardBO
 from src.bo.intraday_bo import IntradayBO
 from src.bo.optimization_bo import OptimizationBO
 from src.bo.portfolio_bo import PortfolioBO
+from src.common.database import Database
+from src.common.scheduler import Scheduler
 from src.dao.stock_dao import StockDAO
-from src.database import Database
-from src.scheduler import Scheduler
 
 
 class ProcessManager:
@@ -42,22 +42,22 @@ class ProcessManager:
         }
     }
 
-    @staticmethod
-    def start(name: str) -> bool:
-        if name in ProcessManager.CONFIGURATION.keys():
-            configuration: Dict[str, Tuple[Any, ...]] = ProcessManager.CONFIGURATION.get(name)
-            process: Process = ProcessManager.__find(name)
+    @classmethod
+    def start(cls, name: str) -> bool:
+        if name in cls.CONFIGURATION.keys():
+            configuration: Dict[str, Tuple[Any, ...]] = cls.CONFIGURATION.get(name)
+            process: Process = cls.__find(name)
             if process is None or not process.is_alive():
-                process = multiprocessing.Process(name=name, target=configuration.get(ProcessManager.TARGET),
-                                                  args=configuration.get(ProcessManager.ARGS))
+                process = multiprocessing.Process(name=name, target=configuration.get(cls.TARGET),
+                                                  args=configuration.get(cls.ARGS))
                 process.start()
                 return True
         return False
 
-    @staticmethod
-    def stop(name: str) -> bool:
-        if name in ProcessManager.CONFIGURATION.keys():
-            process: Process = ProcessManager.__find(name)
+    @classmethod
+    def stop(cls, name: str) -> bool:
+        if name in cls.CONFIGURATION.keys():
+            process: Process = cls.__find(name)
             if process is not None:
                 process.terminate()
                 process.join()
@@ -72,10 +72,9 @@ class ProcessManager:
     def get_active_names() -> List[str]:
         return sorted(list(map(lambda p: p.name, list(multiprocessing.active_children()))))
 
-    @staticmethod
-    def get_inactive_names() -> List[str]:
-        return sorted(list(filter(lambda p: p not in ProcessManager.get_active_names(),
-                                  ProcessManager.CONFIGURATION.keys())))
+    @classmethod
+    def get_inactive_names(cls) -> List[str]:
+        return sorted(list(filter(lambda p: p not in cls.get_active_names(), cls.CONFIGURATION.keys())))
 
     @staticmethod
     def __find(name: str) -> Optional[Process]:

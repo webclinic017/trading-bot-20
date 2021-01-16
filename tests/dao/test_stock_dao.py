@@ -1,19 +1,18 @@
-from unittest import TestCase
 from unittest.mock import patch
 
 from src import db
 from src.dao.stock_dao import StockDAO
-from tests.utils.utils import Utils
+from tests.base_test_case import BaseTestCase
 
 
-class StockDAOTestCase(TestCase):
+class StockDAOTestCase(BaseTestCase):
 
     @classmethod
     def setUpClass(cls):
         db.create_all()
 
     def setUp(self):
-        Utils.truncate_tables()
+        self.truncate_tables()
 
     @patch('src.bo.stock_bo.StockBO.isin')
     def test_read_all(self, isin):
