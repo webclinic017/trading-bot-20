@@ -4,10 +4,10 @@ from unittest.mock import patch
 
 import pytz
 
-from src import db
-from src.dao.forward_dao import ForwardDAO
-from src.enums.strategy_enum import StrategyEnum
 from tests.base_test_case import BaseTestCase
+from trading_bot import db
+from trading_bot.dao.forward_dao import ForwardDAO
+from trading_bot.enums.strategy_enum import StrategyEnum
 
 
 class ForwardDAOTestCase(BaseTestCase):
@@ -18,7 +18,7 @@ class ForwardDAOTestCase(BaseTestCase):
     def setUpClass(cls):
         db.create_all()
 
-    @patch('src.utils.utils.Utils.now')
+    @patch('trading_bot.utils.utils.Utils.now')
     def setUp(self, now):
         self.truncate_tables()
         now.return_value = self.YOUNG_DATE

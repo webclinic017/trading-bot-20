@@ -18,13 +18,13 @@ COPY requirements.txt /app/requirements.txt
 RUN pip install -r requirements.txt
 
 RUN mkdir /app/database
-RUN touch /app/database/tradingbot.db
+RUN touch /app/database/trading_bot.db
 
 COPY start.py /app/start.py
-COPY src /app/src
+COPY src/trading_bot /app/src/trading_bot
 COPY templates /app/templates
 
-ENV FLASK_APP=src/main.py
+ENV FLASK_APP=src/trading_bot/main.py
 ENV ALPHAVANTAGE_API_KEY=$alphavantage_api_key
 ENV FROM_EMAIL_ADDRESS=$from_email_address
 ENV TO_EMAIL_ADDRESS=$to_email_address

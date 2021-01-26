@@ -3,24 +3,27 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Union
 from unittest import TestCase
+from unittest.mock import MagicMock
 
 from numpy import full
 from pandas import DataFrame, date_range
 from pytz import timezone
 
-from src import Utils
-from src.common.constants import US_EASTERN, NAN
-from src.dao.base_dao import BaseDAO
-from src.dao.intraday_dao import IntradayDAO
-from src.entity.configuration_entity import ConfigurationEntity
-from src.entity.evaluation_entity import EvaluationEntity
-from src.entity.forward_entity import ForwardEntity
-from src.entity.intraday_entity import IntradayEntity
-from src.entity.portfolio_entity import PortfolioEntity
-from src.entity.stock_entity import StockEntity
+from trading_bot import Utils
+from trading_bot.common.constants import US_EASTERN, NAN
+from trading_bot.dao.base_dao import BaseDAO
+from trading_bot.dao.intraday_dao import IntradayDAO
+from trading_bot.entity.configuration_entity import ConfigurationEntity
+from trading_bot.entity.evaluation_entity import EvaluationEntity
+from trading_bot.entity.forward_entity import ForwardEntity
+from trading_bot.entity.intraday_entity import IntradayEntity
+from trading_bot.entity.portfolio_entity import PortfolioEntity
+from trading_bot.entity.stock_entity import StockEntity
 
 
 class BaseTestCase(TestCase):
+    PAST = 120
+    FUTURE = 12
 
     def assert_attributes(self, assertable, **kwargs):
         for key, value in kwargs.items():
@@ -42,6 +45,15 @@ class BaseTestCase(TestCase):
         data = {'AAA': {'start': '1/1/2000', 'data': table_aaa},
                 'BBB': {'start': '31/1/2000', 'data': full((120, 5), Decimal(500))},
                 'CCC': {'start': '1/1/2000', 'data': table_ccc}}
+        for key, value in data.items():
+            cls.__persist_get_intraday(value['start'], value['data'], key)
+
+    @classmethod
+    def persist_large_intraday(cls, number: int = 480):
+        table_aaa = full((number, 5), Decimal(100))
+        for i in range(0, number, 10):
+            table_aaa[i:i + 5] = Decimal(500)
+        data = {'AAA': {'start': '1/1/2000', 'data': table_aaa}}
         for key, value in data.items():
             cls.__persist_get_intraday(value['start'], value['data'], key)
 
@@ -120,3 +132,14 @@ class BaseTestCase(TestCase):
                                  volume=decimal, symbol=symbol)
             intraday_list.append(intraday)
         return intraday_list
+
+    @staticmethod
+    def spy_decorator(method_to_decorate, **kw):
+        mock = MagicMock()
+
+        def wrapper(self, *args, **kwargs):
+            mock(*args, **kwargs)
+            return method_to_decorate(self, *args, **{**kw, **kwargs})
+
+        wrapper.mock = mock
+        return wrapper

@@ -1,11 +1,11 @@
 from unittest.mock import patch, Mock
 
-from src import db
-from src.bo.configuration_bo import ConfigurationBO
-from src.bo.portfolio_bo import PortfolioBO
-from src.common.database import Database
-from src.enums.configuration_enum import ConfigurationEnum
 from tests.base_test_case import BaseTestCase
+from trading_bot import db
+from trading_bot.bo.configuration_bo import ConfigurationBO
+from trading_bot.bo.portfolio_bo import PortfolioBO
+from trading_bot.common.database import Database
+from trading_bot.enums.configuration_enum import ConfigurationEnum
 
 
 class DatabaseTestCase(BaseTestCase):
@@ -14,9 +14,9 @@ class DatabaseTestCase(BaseTestCase):
     def setUpClass(cls):
         db.create_all()
 
-    @patch('src.bo.portfolio_bo.tickers_sp500')
-    @patch('src.bo.portfolio_bo.tickers_nasdaq')
-    @patch('src.bo.stock_bo.get')
+    @patch('trading_bot.bo.portfolio_bo.tickers_sp500')
+    @patch('trading_bot.bo.portfolio_bo.tickers_nasdaq')
+    @patch('trading_bot.bo.stock_bo.get')
     def test_init(self, get, tickers_nasdaq, tickers_sp500):
         symbol_list = ('BBB', 'DDD', 'CCC', 'AAA')
         tickers_sp500.return_value = ('AAA', 'BBB')

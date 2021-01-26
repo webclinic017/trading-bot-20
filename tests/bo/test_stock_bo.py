@@ -1,11 +1,11 @@
 from unittest import TestCase
 from unittest.mock import patch, Mock
 
-from src.bo.stock_bo import StockBO
+from trading_bot.bo.stock_bo import StockBO
 
 
 class StockBOTestCase(TestCase):
-    @patch('src.bo.stock_bo.get')
+    @patch('trading_bot.bo.stock_bo.get')
     def test_isin(self, get):
         response = Mock()
         get.return_value = response

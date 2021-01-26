@@ -2,14 +2,15 @@ import multiprocessing
 import time
 from unittest.mock import patch
 
-from src.bo.forward_bo import ForwardBO
-from src.bo.intraday_bo import IntradayBO
-from src.bo.optimization_bo import OptimizationBO
-from src.bo.portfolio_bo import PortfolioBO
-from src.common.process_manager import ProcessManager
-from src.common.scheduler import Scheduler
-from src.dao.stock_dao import StockDAO
 from tests.base_test_case import BaseTestCase
+from trading_bot.bo.forward_bo import ForwardBO
+from trading_bot.bo.intraday_bo import IntradayBO
+from trading_bot.bo.optimization_bo import OptimizationBO
+from trading_bot.bo.portfolio_bo import PortfolioBO
+from trading_bot.common.constants import EMPTY
+from trading_bot.common.process_manager import ProcessManager
+from trading_bot.common.scheduler import Scheduler
+from trading_bot.dao.stock_dao import StockDAO
 
 
 class ProcessManagerTestCase(BaseTestCase):
@@ -35,7 +36,8 @@ class ProcessManagerTestCase(BaseTestCase):
     }
 
     def test_configuration(self):
-        names = ['init-database', 'update-table-stock', 'update-table-intraday', 'schedule', 'optimize', 'forward']
+        names = ['init-database', 'update-table-stock', 'update-table-intraday', 'schedule', 'optimize', 'forward',
+                 'fit']
         self.assertListEqual(list(ProcessManager.CONFIGURATION.keys()), names)
         update_table_stock = ProcessManager.CONFIGURATION['update-table-stock']
         self.assertEqual(update_table_stock[ProcessManager.TARGET], StockDAO.update)
@@ -53,13 +55,13 @@ class ProcessManagerTestCase(BaseTestCase):
         self.assertEqual(forward[ProcessManager.TARGET], ForwardBO.start)
         self.assertEqual(forward[ProcessManager.ARGS], (PortfolioBO.forward_portfolio(),))
 
-    @patch('src.common.process_manager.ProcessManager.CONFIGURATION', new=CONFIGURATION)
+    @patch('trading_bot.common.process_manager.ProcessManager.CONFIGURATION', new=CONFIGURATION)
     def test_successful(self):
         self.__start('test1', True, True, ['test1'], ['test2'])
         self.__start('test1', False, True, ['test1'], ['test2'])
         self.__stop('test1', True, False, [], ['test1', 'test2'])
 
-    @patch('src.common.process_manager.ProcessManager.CONFIGURATION', new=CONFIGURATION)
+    @patch('trading_bot.common.process_manager.ProcessManager.CONFIGURATION', new=CONFIGURATION)
     def test_successful_twice(self):
         self.__stop('test1', False, False, [], ['test1', 'test2'])
         self.__start('test1', True, True, ['test1'], ['test2'])
@@ -67,14 +69,14 @@ class ProcessManagerTestCase(BaseTestCase):
         self.__start('test1', True, True, ['test1'], ['test2'])
         self.__stop('test1', True, False, [], ['test1', 'test2'])
 
-    @patch('src.common.process_manager.ProcessManager.CONFIGURATION', new=CONFIGURATION)
+    @patch('trading_bot.common.process_manager.ProcessManager.CONFIGURATION', new=CONFIGURATION)
     def test_successful_with_second(self):
         self.__start('test1', True, True, ['test1'], ['test2'])
         self.__start('test2', True, True, ['test1', 'test2'], [])
         self.__stop('test2', True, True, ['test1'], ['test2'])
         self.__stop('test1', True, False, [], ['test1', 'test2'])
 
-    @patch('src.common.process_manager.ProcessManager.CONFIGURATION', new=CONFIGURATION)
+    @patch('trading_bot.common.process_manager.ProcessManager.CONFIGURATION', new=CONFIGURATION)
     def test_successful_wait(self):
         self.__start('test1', True, True, ['test1'], ['test2'])
         while len(multiprocessing.active_children()) > 0:
@@ -85,10 +87,10 @@ class ProcessManagerTestCase(BaseTestCase):
         self.__start('test1', True, True, ['test1'], ['test2'])
         self.__stop('test1', True, False, [], ['test1', 'test2'])
 
-    @patch('src.common.process_manager.ProcessManager.CONFIGURATION', new=CONFIGURATION)
+    @patch('trading_bot.common.process_manager.ProcessManager.CONFIGURATION', new=CONFIGURATION)
     def test_failed(self):
-        self.__start('', False, False, [], ['test1', 'test2'])
-        self.__stop('', False, False, [], ['test1', 'test2'])
+        self.__start(EMPTY, False, False, [], ['test1', 'test2'])
+        self.__stop(EMPTY, False, False, [], ['test1', 'test2'])
 
     def __start(self, name, successful, running, active_names, inactive_names):
         self.assertEqual(ProcessManager.start(name), successful)

@@ -1,13 +1,13 @@
 from decimal import Decimal
 
-from src.bo.analyser_bo import AnalyserBO
-from src.bo.broker_bo import BrokerBO
-from src.bo.statistic_bo import StatisticBO
-from src.bo.strategy_bo import StrategyBO
-from src.common.constants import ZERO
-from src.dto.attempt_dto import AttemptDTO
-from src.enums.action_enum import ActionEnum
 from tests.base_test_case import BaseTestCase
+from trading_bot.bo.analyser_bo import AnalyserBO
+from trading_bot.bo.broker_bo import BrokerBO
+from trading_bot.bo.statistic_bo import StatisticBO
+from trading_bot.common.constants import ZERO
+from trading_bot.dto.attempt_dto import AttemptDTO
+from trading_bot.enums.action_enum import ActionEnum
+from trading_bot.enums.strategy_enum import StrategyEnum
 
 
 class AnalyserBOTestCase(BaseTestCase):
@@ -18,7 +18,7 @@ class AnalyserBOTestCase(BaseTestCase):
         initial_cash = broker.cash
         cash = broker.cash
         attempt = AttemptDTO(Decimal('1000'), Decimal('30'), Decimal('2'), Decimal('1000'), Decimal('30'), Decimal('2'))
-        statistic = AnalyserBO.analyse(intraday_list, StrategyBO.counter_cyclical, broker, StatisticBO(), attempt)
+        statistic = AnalyserBO.analyse(intraday_list, StrategyEnum.COUNTER_CYCLICAL, broker, StatisticBO(), attempt)
         inventory = {'AAA': {'price': ZERO, 'number': ZERO},
                      'CCC': {'price': ZERO, 'number': ZERO}}
         for test_data in statistic.test_data:
