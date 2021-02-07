@@ -1,9 +1,9 @@
 from decimal import Decimal
 from unittest import TestCase
 
-from src.bo.broker_bo import BrokerBO
-from src.bo.inventory_bo import InventoryBO
-from src.common.constants import ZERO
+from trading_bot.bo.broker_bo import BrokerBO
+from trading_bot.bo.inventory_bo import InventoryBO
+from trading_bot.common.constants import ZERO
 
 
 class BrokerBOTestCase(TestCase):

@@ -4,13 +4,13 @@ from unittest.mock import patch
 from pandas import to_datetime, date_range
 from pytz import timezone
 
-from src import db, Utils
-from src.bo.intraday_bo import IntradayBO
-from src.common.constants import US_EASTERN
-from src.dao.intraday_dao import IntradayDAO
-from src.dao.stock_dao import StockDAO
-from src.entity.intraday_entity import IntradayEntity
 from tests.base_test_case import BaseTestCase
+from trading_bot import db, Utils
+from trading_bot.bo.intraday_bo import IntradayBO
+from trading_bot.common.constants import US_EASTERN
+from trading_bot.dao.intraday_dao import IntradayDAO
+from trading_bot.dao.stock_dao import StockDAO
+from trading_bot.entity.intraday_entity import IntradayEntity
 
 
 class IntradayBOTestCase(BaseTestCase):
@@ -42,7 +42,7 @@ class IntradayBOTestCase(BaseTestCase):
                 self.assertEqual(intraday.symbol, symbol)
 
     @patch('alpha_vantage.timeseries.TimeSeries.get_intraday_extended')
-    @patch('src.bo.stock_bo.StockBO.isin')
+    @patch('trading_bot.bo.stock_bo.StockBO.isin')
     def test_update(self, isin, intraday):
         isin.return_value = 'isin'
         intraday.return_value = self.get_intraday_csv('BBB')
@@ -63,7 +63,7 @@ class IntradayBOTestCase(BaseTestCase):
                                open=500, high=500, low=500, close=500, volume=500, symbol='AAA')
 
     @patch('alpha_vantage.timeseries.TimeSeries.get_intraday')
-    @patch('src.bo.stock_bo.StockBO.isin')
+    @patch('trading_bot.bo.stock_bo.StockBO.isin')
     def test_update_all_available(self, isin, intraday):
         isin.return_value = 'isin'
         intraday.return_value = self.get_intraday()

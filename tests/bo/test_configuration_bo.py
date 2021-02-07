@@ -1,10 +1,10 @@
 from decimal import Decimal
 
-from src import db
-from src.bo.configuration_bo import ConfigurationBO
-from src.entity.configuration_entity import ConfigurationEntity
-from src.enums.configuration_enum import ConfigurationEnum
 from tests.base_test_case import BaseTestCase
+from trading_bot import db
+from trading_bot.bo.configuration_bo import ConfigurationBO
+from trading_bot.entity.configuration_entity import ConfigurationEntity
+from trading_bot.enums.configuration_enum import ConfigurationEnum
 
 
 class ConfigurationBOTestCase(BaseTestCase):

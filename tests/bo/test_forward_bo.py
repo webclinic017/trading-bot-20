@@ -1,30 +1,39 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 from json import dumps
+from os import remove
+from os.path import join, exists
 from unittest.mock import patch
 
 import pytz
 from pandas import date_range
 
-from src import db
-from src.bo.configuration_bo import ConfigurationBO
-from src.bo.forward_bo import ForwardBO
-from src.bo.inventory_bo import InventoryBO
-from src.common.constants import ZERO
-from src.dao.evaluation_dao import EvaluationDAO
-from src.dao.forward_dao import ForwardDAO
-from src.dto.account_dto import AccountDTO
-from src.dto.attempt_dto import AttemptDTO
-from src.enums.action_enum import ActionEnum
-from src.enums.configuration_enum import ConfigurationEnum
-from src.enums.strategy_enum import StrategyEnum
 from tests.base_test_case import BaseTestCase
+from trading_bot import db
+from trading_bot.bo.broker_bo import BrokerBO
+from trading_bot.bo.configuration_bo import ConfigurationBO
+from trading_bot.bo.forward_bo import ForwardBO
+from trading_bot.bo.inventory_bo import InventoryBO
+from trading_bot.common.constants import ZERO, EMPTY
+from trading_bot.common.predictor_adapter import PredictorAdapter
+from trading_bot.dao.evaluation_dao import EvaluationDAO
+from trading_bot.dao.forward_dao import ForwardDAO
+from trading_bot.dto.account_dto import AccountDTO
+from trading_bot.dto.attempt_dto import AttemptDTO
+from trading_bot.entity.intraday_entity import IntradayEntity
+from trading_bot.enums.action_enum import ActionEnum
+from trading_bot.enums.configuration_enum import ConfigurationEnum
+from trading_bot.enums.strategy_enum import StrategyEnum
 
 
 class ForwardBOTestCase(BaseTestCase):
+    PATH_CHECKPOINT_FILE = join('..', '..', 'model', 'test_checkpoint.h5')
+    PATH_MODEL_FILE = join('..', '..', 'model', 'test.h5')
+    PATH_MODEL_DIR = join('..', '..', 'model')
     YOUNG_DATE = pytz.utc.localize(datetime.fromisoformat('2011-11-04T00:00:00'))
     OLD_DATE = pytz.utc.localize(datetime.fromisoformat('2011-11-03T00:00:00'))
     STATISTIC_JSON = [{
+        "strategy": "StrategyEnum.COUNTER_CYCLICAL"}, {
         "action": "ActionEnum.SELL",
         "date": "2000-05-29 04:00:00+00:00",
         "price": "500.0000000000",
@@ -42,12 +51,18 @@ class ForwardBOTestCase(BaseTestCase):
         self.truncate_tables()
         ConfigurationBO.init()
 
-    @patch('src.bo.forward_bo.choice')
-    @patch('src.utils.utils.Utils.send_mail')
-    @patch('src.utils.utils.Utils.is_today')
-    @patch('src.utils.utils.Utils.is_working_day_ny')
-    @patch('src.utils.utils.Utils.now')
-    def test_start(self, now, is_working_day_ny, is_today, send_mail, choice):
+    @classmethod
+    def tearDownClass(cls):
+        if exists(cls.PATH_MODEL_FILE):
+            remove(cls.PATH_MODEL_FILE)
+
+    # noinspection DuplicatedCode
+    @patch('trading_bot.bo.forward_bo.choice')
+    @patch('trading_bot.utils.utils.Utils.send_mail')
+    @patch('trading_bot.utils.utils.Utils.is_today')
+    @patch('trading_bot.utils.utils.Utils.is_working_day_ny')
+    @patch('trading_bot.utils.utils.Utils.now')
+    def test_start_counter_cyclical(self, now, is_working_day_ny, is_today, send_mail, choice):
         is_today.return_value = False
         is_working_day_ny.return_value = True
         now.return_value = self.OLD_DATE
@@ -56,7 +71,7 @@ class ForwardBOTestCase(BaseTestCase):
         ForwardDAO.create_buy('BBB', Decimal('100'), Decimal('10'), Decimal('7992.200000000001'),
                               StrategyEnum.COUNTER_CYCLICAL)
         now.return_value = self.YOUNG_DATE
-        EvaluationDAO.create(Decimal('40000'), '', AttemptDTO(), StrategyEnum.COUNTER_CYCLICAL)
+        EvaluationDAO.create(Decimal('40000'), EMPTY, AttemptDTO(), StrategyEnum.COUNTER_CYCLICAL)
         self.persist_default_intraday()
         ForwardBO.start(['AAA', 'BBB', 'CCC'])
         send_mail.assert_called_with(dumps(self.STATISTIC_JSON, indent=4, sort_keys=True, default=str))
@@ -76,7 +91,54 @@ class ForwardBOTestCase(BaseTestCase):
                                number=Decimal('10'), price=Decimal('100'), symbol='CCC',
                                strategy=StrategyEnum.COUNTER_CYCLICAL)
 
-    @patch('src.utils.utils.Utils.now')
+    # noinspection DuplicatedCode
+    @patch('trading_bot.bo.forward_bo.choice')
+    @patch('trading_bot.utils.utils.Utils.send_mail')
+    @patch('trading_bot.utils.utils.Utils.is_today')
+    @patch('trading_bot.utils.utils.Utils.is_working_day_ny')
+    @patch('trading_bot.utils.utils.Utils.now')
+    @patch('trading_bot.bo.portfolio_bo.PortfolioBO.forward_portfolio')
+    @patch('predictor.utils.predictor_utils.PredictorUtils.PATH_CHECKPOINT_FILE', new=PATH_CHECKPOINT_FILE)
+    @patch('predictor.utils.predictor_utils.PredictorUtils.PATH_MODEL_FILE', new=PATH_MODEL_FILE)
+    @patch('predictor.utils.predictor_utils.PredictorUtils.PATH_MODEL_DIR', new=PATH_MODEL_DIR)
+    def test_start_predictor(self, forward_portfolio, now, is_working_day_ny, is_today, send_mail, choice):
+        choice.return_value = StrategyEnum.PREDICTOR
+        is_today.return_value = False
+        is_working_day_ny.return_value = True
+        now.return_value = self.OLD_DATE
+        forward_portfolio.return_value = ['AAA']
+        ForwardDAO.create_buy('AAA', Decimal('100'), Decimal('10'), Decimal('8996.1'), StrategyEnum.PREDICTOR)
+        ForwardDAO.create_buy('BBB', Decimal('100'), Decimal('10'), Decimal('7992.200000000001'),
+                              StrategyEnum.PREDICTOR)
+        now.return_value = self.YOUNG_DATE
+        EvaluationDAO.create(Decimal('40000'), EMPTY, AttemptDTO(), StrategyEnum.PREDICTOR)
+        self.persist_large_intraday()
+        PredictorAdapter.fit(sufficient_data=0, past=self.PAST, future=self.FUTURE)
+        IntradayEntity.query.delete()
+        self.persist_large_intraday(number=125)
+        buy = self.spy_decorator(BrokerBO.buy)
+        sell = self.spy_decorator(BrokerBO.sell)
+        predict = self.spy_decorator(PredictorAdapter.predict, past=self.PAST, future=self.FUTURE)
+        with patch.object(BrokerBO, 'buy', buy), patch.object(BrokerBO, 'sell', sell), \
+                patch.object(PredictorAdapter, 'predict', predict):
+            ForwardBO.start(['AAA'])
+        self.assertEqual(buy.mock.call_count, 2)
+        self.assertEqual(sell.mock.call_count, 1)
+        self.assertEqual(send_mail.call_count, 1)
+        ForwardBO.start(['AAA'])
+        rows = ForwardDAO.read_all()
+        self.assertEqual(len(rows), 3)
+        self.assert_attributes(rows[0], action=ActionEnum.BUY, cash=Decimal('8996.1'), timestamp=self.OLD_DATE,
+                               number=Decimal('10'), price=Decimal('100'), symbol='AAA',
+                               strategy=StrategyEnum.PREDICTOR)
+        self.assert_attributes(rows[1], action=ActionEnum.BUY, cash=Decimal('7992.2'), timestamp=self.OLD_DATE,
+                               number=Decimal('10'), price=Decimal('100'), symbol='BBB',
+                               strategy=StrategyEnum.PREDICTOR)
+        self.assert_attributes(rows[2], action=ActionEnum.SELL, cash=Decimal('8988.3'), timestamp=self.YOUNG_DATE,
+                               number=Decimal('2'), price=Decimal('500'), symbol='AAA',
+                               strategy=StrategyEnum.PREDICTOR)
+
+    @patch('trading_bot.utils.utils.Utils.now')
     def test_init(self, now):
         prices = (Decimal('20'), Decimal('30'), Decimal('40'), Decimal('50'), Decimal('60'), Decimal('70'))
         numbers = (Decimal('10'), Decimal('10'), Decimal('10'), Decimal('5'), Decimal('10'), Decimal('10'))
@@ -128,7 +190,7 @@ class ForwardBOTestCase(BaseTestCase):
         self.assertEqual(total_value, estimated)
         self.assertEqual(total, estimated + ConfigurationEnum.FORWARD_CASH.val)
 
-    @patch('src.utils.utils.Utils.now')
+    @patch('trading_bot.utils.utils.Utils.now')
     def test_group_by_strategy(self, now):
         dates = date_range('1/1/2000', periods=2)
         for i in range(len(dates)):
@@ -145,23 +207,23 @@ class ForwardBOTestCase(BaseTestCase):
         for evaluation in grouped[StrategyEnum.VOLUME_TRADING]:
             self.assertEqual(evaluation.strategy, StrategyEnum.VOLUME_TRADING)
 
-    @patch('src.utils.utils.Utils.now')
+    @patch('trading_bot.utils.utils.Utils.now')
     def test_get_account(self, now):
         dates = date_range('1/1/2000', periods=10)
         for i in range(len(dates)):
-            date_young = self.create_datetime(dates[i] + timedelta(seconds=2))
-            date_old = self.create_datetime(dates[i])
-            self.persist_intraday('AAA', date_young, Decimal(i), Decimal(i), Decimal(i), Decimal(i + 1), Decimal(i))
-            now.return_value = date_young
+            date = self.create_datetime(dates[i])
+            now.return_value = date
+            self.persist_intraday('AAA', date, Decimal(i), Decimal(i), Decimal(i), Decimal(i + 1), Decimal(i))
             ForwardDAO.create_buy('AAA', Decimal(i + 1), Decimal(i + 1), Decimal(i + 1), StrategyEnum.COUNTER_CYCLICAL)
-            self.persist_intraday('AAA', date_old, Decimal(i), Decimal(i), Decimal(i), Decimal(i + 2), Decimal(i))
-            now.return_value = date_old
             ForwardDAO.create_buy('AAA', Decimal(i + 2), Decimal(i + 2), Decimal(i + 2), StrategyEnum.VOLUME_TRADING)
+            ForwardDAO.create_buy('AAA', Decimal(i + 3), Decimal(i + 3), Decimal(i + 3), StrategyEnum.PREDICTOR)
         accounts = ForwardBO.get_accounts()
-        self.assertEqual(len(accounts), 2)
+        self.assertEqual(len(accounts), len(StrategyEnum))
         for account in accounts.values():
             self.assertIsInstance(account, AccountDTO)
         account = accounts[StrategyEnum.COUNTER_CYCLICAL]
         self.assert_attributes(account, cash=Decimal('9576'), total_value=Decimal('550'), total=Decimal('10126'))
         account = accounts[StrategyEnum.VOLUME_TRADING]
         self.assert_attributes(account, cash=Decimal('9456'), total_value=Decimal('650'), total=Decimal('10106'))
+        account = accounts[StrategyEnum.PREDICTOR]
+        self.assert_attributes(account, cash=Decimal('9316'), total_value=Decimal('750'), total=Decimal('10066'))

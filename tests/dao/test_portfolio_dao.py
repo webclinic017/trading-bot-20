@@ -1,11 +1,11 @@
 from unittest.mock import patch
 
-from src import db
-from src.dao.portfolio_dao import PortfolioDAO
-from src.dao.stock_dao import StockDAO
-from src.entity.portfolio_entity import PortfolioEntity
-from src.enums.mode_enum import ModeEnum
 from tests.base_test_case import BaseTestCase
+from trading_bot import db
+from trading_bot.dao.portfolio_dao import PortfolioDAO
+from trading_bot.dao.stock_dao import StockDAO
+from trading_bot.entity.portfolio_entity import PortfolioEntity
+from trading_bot.enums.mode_enum import ModeEnum
 
 
 class PortfolioDAOTestCase(BaseTestCase):
@@ -17,7 +17,7 @@ class PortfolioDAOTestCase(BaseTestCase):
     def setUp(self):
         self.truncate_tables()
 
-    @patch('src.bo.stock_bo.StockBO.isin')
+    @patch('trading_bot.bo.stock_bo.StockBO.isin')
     def test_read_all(self, isin):
         self.truncate_tables()
         isin.return_value = 'isin'
