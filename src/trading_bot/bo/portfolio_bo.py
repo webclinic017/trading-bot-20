@@ -1,5 +1,5 @@
 import hashlib
-from typing import List, Any, Tuple, Union, Final
+from typing import List, Any, Union, Final
 
 from yahoo_fin.stock_info import tickers_sp500, tickers_nasdaq
 
@@ -30,8 +30,8 @@ class PortfolioBO:
 
     @classmethod
     def init(cls) -> None:
-        symbol_list: Tuple[Union[str, None], ...] = tickers_sp500() + tickers_nasdaq()
-        StockDAO.update(symbol_list)
+        symbol_list: List[Union[str, None], ...] = tickers_sp500() + tickers_nasdaq()
+        StockDAO.update(lambda: symbol_list)
         for symbol in symbol_list:
             PortfolioDAO.create(symbol, ModeEnum.BACKWARD)
             PortfolioDAO.create(symbol, ModeEnum.FORWARD)
@@ -46,7 +46,7 @@ class PortfolioBO:
 
     @staticmethod
     def update(symbol: str, mode: ModeEnum) -> None:
-        StockDAO.create_if_not_exists((symbol,))
+        StockDAO.create_if_not_exists([symbol, ])
         PortfolioDAO.update(symbol, mode)
 
     @staticmethod

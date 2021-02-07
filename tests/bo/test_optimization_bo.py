@@ -59,7 +59,7 @@ class OptimizationBOTestCase(BaseTestCase):
                              Decimal('0.25'))
         EvaluationDAO.create(Decimal('10000'), 'second', attempt, StrategyEnum.COUNTER_CYCLICAL)
         self.persist_default_intraday()
-        OptimizationBO.start(['AAA', 'BBB', 'CCC'], 3, 1)
+        OptimizationBO.start(lambda: ['AAA', 'BBB', 'CCC'], 3, 1)
         evaluation = EvaluationDAO.read_filter_by_strategy_order_by_sum(StrategyEnum.COUNTER_CYCLICAL)
         self.assertIsInstance(evaluation, EvaluationEntity)
         self.assert_attributes(evaluation, sum=Decimal('235112.5'), funds='235112.5', amount_buy=Decimal('2000'),
@@ -92,7 +92,7 @@ class OptimizationBOTestCase(BaseTestCase):
         predict = self.spy_decorator(PredictorAdapter.predict, past=self.PAST, future=self.FUTURE)
         with patch.object(BrokerBO, 'buy', buy), patch.object(BrokerBO, 'sell', sell), \
                 patch.object(PredictorAdapter, 'predict', predict):
-            OptimizationBO.start(['AAA'], 1, 1)
+            OptimizationBO.start(lambda: ['AAA'], 1, 1)
         self.assertEqual(buy.mock.call_count, 1)
         self.assertEqual(sell.mock.call_count, 5)
         evaluation = EvaluationDAO.read_filter_by_strategy_order_by_sum(StrategyEnum.PREDICTOR)

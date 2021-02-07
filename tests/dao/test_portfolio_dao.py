@@ -21,7 +21,7 @@ class PortfolioDAOTestCase(BaseTestCase):
     def test_read_all(self, isin):
         self.truncate_tables()
         isin.return_value = 'isin'
-        StockDAO.update(('symbol1', 'symbol2', 'symbol3',))
+        StockDAO.update(lambda: ['symbol1', 'symbol2', 'symbol3', ])
         PortfolioDAO.create('symbol1', ModeEnum.FORWARD)
         PortfolioDAO.create('symbol2', ModeEnum.BACKWARD)
         portfolio = PortfolioDAO.read()

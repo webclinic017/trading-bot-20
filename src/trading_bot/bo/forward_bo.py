@@ -2,7 +2,7 @@ from datetime import datetime
 from decimal import Decimal
 from json import dumps
 from random import choice
-from typing import Dict, List, Tuple, Any
+from typing import Dict, List, Tuple, Any, Callable
 
 from trading_bot.bo.analyser_bo import AnalyserBO
 from trading_bot.bo.broker_bo import BrokerBO
@@ -30,7 +30,8 @@ from trading_bot.utils.utils import Utils
 class ForwardBO:
 
     @classmethod
-    def start(cls, portfolio: List[str]) -> None:
+    def start(cls, forward_portfolio: Callable[[], List[str]]) -> None:
+        portfolio: List[str] = forward_portfolio()
         latest_date: datetime = ForwardDAO.read_filter_by_strategy_and_max_timestamp(StrategyEnum.COUNTER_CYCLICAL)
         strategy: StrategyEnum = choice(list(StrategyEnum))
         evaluation: EvaluationEntity = EvaluationDAO.read_filter_by_strategy_order_by_sum(strategy)
@@ -93,4 +94,4 @@ class ForwardBO:
 
 
 if __name__ == '__main__':
-    ForwardBO.start(PortfolioBO.forward_portfolio(100))
+    ForwardBO.start(lambda: PortfolioBO.forward_portfolio(100))

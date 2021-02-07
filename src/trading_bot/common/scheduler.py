@@ -24,8 +24,13 @@ class Scheduler:
 
     @staticmethod
     def init_database():
-        warning('Init database')
+        warning('Scheduler init database')
         get('http://127.0.0.1:5000/process/start/init-database')
+
+    @staticmethod
+    def fit():
+        warning('Scheduler fit')
+        get('http://127.0.0.1:5000/process/start/fit')
 
     @classmethod
     def start(cls) -> None:
@@ -34,6 +39,7 @@ class Scheduler:
         every(9).minutes.do(cls.update_table_intraday)
         every(5).minutes.do(cls.optimize)
         every(5).minutes.do(cls.forward)
+        every().day.at('18:00').do(cls.fit)
         while True:
             run_pending()
             sleep(1)

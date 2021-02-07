@@ -46,11 +46,11 @@ class IntradayBOTestCase(BaseTestCase):
     def test_update(self, isin, intraday):
         isin.return_value = 'isin'
         intraday.return_value = self.get_intraday_csv('BBB')
-        StockDAO.create_if_not_exists(('AAA',))
+        StockDAO.create_if_not_exists(['AAA', ])
         date = datetime.fromisoformat('2020-02-03')
         self.persist_intraday('AAA', date, 500, 500, 500, 500, 500)
         with patch('alpha_vantage.timeseries.TimeSeries.__init__', return_value=None):
-            IntradayBO.update(('AAA', 'BBB',))
+            IntradayBO.update(lambda: ['AAA', 'BBB', ])
         self.assertEqual(intraday.call_count, 24)
         self.assertEqual(isin.call_count, 3)
         rows = IntradayDAO.read_order_by_date_asc()
@@ -67,14 +67,14 @@ class IntradayBOTestCase(BaseTestCase):
     def test_update_all_available(self, isin, intraday):
         isin.return_value = 'isin'
         intraday.return_value = self.get_intraday()
-        StockDAO.create_if_not_exists(('AAA',))
+        StockDAO.create_if_not_exists(['AAA', ])
         self.persist_intraday('AAA', self.create_datetime('2011-11-04T23:00:00'), 500, 500, 500, 500, 500)
-        StockDAO.create_if_not_exists(('BBB',))
+        StockDAO.create_if_not_exists(['BBB', ])
         self.persist_intraday('BBB', self.create_datetime('2011-11-04T22:00:00'), 500, 500, 500, 500, 500)
-        StockDAO.create_if_not_exists(('CCC',))
+        StockDAO.create_if_not_exists(['CCC', ])
         self.persist_intraday('CCC', self.create_datetime('2011-11-03T23:00:00'), 500, 500, 500, 500, 500)
         with patch('alpha_vantage.timeseries.TimeSeries.__init__', return_value=None):
-            IntradayBO.update(('AAA', 'BBB', 'CCC'))
+            IntradayBO.update(lambda: ['AAA', 'BBB', 'CCC'])
         intraday.assert_called_with(symbol='CCC', outputsize='full')
         self.assertEqual(intraday.call_count, 24)
         rows = IntradayDAO.read_order_by_date_asc()

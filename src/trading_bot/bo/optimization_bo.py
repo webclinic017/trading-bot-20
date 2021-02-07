@@ -1,7 +1,7 @@
 import copy
 from decimal import Decimal
 from random import choice
-from typing import Tuple, List
+from typing import Tuple, List, Callable
 
 from trading_bot.bo.analyser_bo import AnalyserBO
 from trading_bot.bo.broker_bo import BrokerBO
@@ -72,7 +72,8 @@ class OptimizationBO:
                 EvaluationDAO.create(evaluation_sum, ','.join(map(str, analysis_funds)), evaluation_attempt, strategy)
 
     @classmethod
-    def start(cls, portfolio: List[str], number: int, group_number: int) -> None:
+    def start(cls, backward_portfolio: Callable[[], List[str]], number: int, group_number: int) -> None:
+        portfolio: List[str] = backward_portfolio()
         group_size: int = int(number / group_number)
         groups: Tuple[Tuple[str]] = Utils.group(group_size, portfolio[:number])
         strategy: StrategyEnum = choice(list(StrategyEnum))
@@ -80,4 +81,4 @@ class OptimizationBO:
 
 
 if __name__ == '__main__':
-    OptimizationBO.start(PortfolioBO.backward_portfolio(), 100, 4)
+    OptimizationBO.start(lambda: PortfolioBO.backward_portfolio(), 100, 4)
