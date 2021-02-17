@@ -3,6 +3,7 @@ import time
 from unittest.mock import patch
 
 from tests.base_test_case import BaseTestCase
+from trading_bot import db
 from trading_bot.bo.forward_bo import ForwardBO
 from trading_bot.bo.intraday_bo import IntradayBO
 from trading_bot.bo.optimization_bo import OptimizationBO
@@ -17,6 +18,7 @@ class ProcessManagerTestCase(BaseTestCase):
 
     @classmethod
     def setUpClass(cls):
+        db.create_all()
         cls.truncate_tables()
 
     class TestProcess:
@@ -41,19 +43,19 @@ class ProcessManagerTestCase(BaseTestCase):
         self.assertListEqual(list(ProcessManager.CONFIGURATION.keys()), names)
         update_table_stock = ProcessManager.CONFIGURATION['update-table-stock']
         self.assertEqual(update_table_stock[ProcessManager.TARGET], StockDAO.update)
-        self.assertEqual(update_table_stock[ProcessManager.ARGS], (PortfolioBO.backward_forward_portfolio(),))
+        self.assertEqual(update_table_stock[ProcessManager.ARGS], (PortfolioBO.backward_forward_portfolio,))
         update_table_intraday = ProcessManager.CONFIGURATION['update-table-intraday']
         self.assertEqual(update_table_intraday[ProcessManager.TARGET], IntradayBO.update)
-        self.assertEqual(update_table_intraday[ProcessManager.ARGS], (PortfolioBO.backward_forward_portfolio(),))
+        self.assertEqual(update_table_intraday[ProcessManager.ARGS], (PortfolioBO.backward_forward_portfolio,))
         schedule = ProcessManager.CONFIGURATION['schedule']
         self.assertEqual(schedule[ProcessManager.TARGET], Scheduler.start)
         self.assertEqual(schedule[ProcessManager.ARGS], [])
         optimize = ProcessManager.CONFIGURATION['optimize']
         self.assertEqual(optimize[ProcessManager.TARGET], OptimizationBO.start)
-        self.assertEqual(optimize[ProcessManager.ARGS], (PortfolioBO.backward_portfolio(), 100, 4))
+        self.assertEqual(optimize[ProcessManager.ARGS], (PortfolioBO.backward_portfolio, 100, 4))
         forward = ProcessManager.CONFIGURATION['forward']
         self.assertEqual(forward[ProcessManager.TARGET], ForwardBO.start)
-        self.assertEqual(forward[ProcessManager.ARGS], (PortfolioBO.forward_portfolio(),))
+        self.assertEqual(forward[ProcessManager.ARGS], (PortfolioBO.forward_portfolio,))
 
     @patch('trading_bot.common.process_manager.ProcessManager.CONFIGURATION', new=CONFIGURATION)
     def test_successful(self):

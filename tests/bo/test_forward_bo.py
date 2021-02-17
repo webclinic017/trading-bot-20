@@ -33,15 +33,15 @@ class ForwardBOTestCase(BaseTestCase):
     YOUNG_DATE = pytz.utc.localize(datetime.fromisoformat('2011-11-04T00:00:00'))
     OLD_DATE = pytz.utc.localize(datetime.fromisoformat('2011-11-03T00:00:00'))
     STATISTIC_JSON = [{
-        "strategy": "StrategyEnum.COUNTER_CYCLICAL"}, {
-        "action": "ActionEnum.SELL",
-        "date": "2000-05-29 04:00:00+00:00",
-        "price": "500.0000000000",
-        "symbol": "AAA"}, {
-        "action": "ActionEnum.BUY",
-        "date": "2000-05-29 04:00:00+00:00",
-        "price": "100.0000000000",
-        "symbol": "CCC"}]
+        'strategy': 'StrategyEnum.COUNTER_CYCLICAL'}, {
+        'action': 'ActionEnum.SELL',
+        'date': '2000-05-29 04:00:00+00:00',
+        'price': '500.0000000000',
+        'symbol': 'AAA'}, {
+        'action': 'ActionEnum.BUY',
+        'date': '2000-05-29 04:00:00+00:00',
+        'price': '100.0000000000',
+        'symbol': 'CCC'}]
 
     @classmethod
     def setUpClass(cls):
@@ -73,7 +73,7 @@ class ForwardBOTestCase(BaseTestCase):
         now.return_value = self.YOUNG_DATE
         EvaluationDAO.create(Decimal('40000'), EMPTY, AttemptDTO(), StrategyEnum.COUNTER_CYCLICAL)
         self.persist_default_intraday()
-        ForwardBO.start(['AAA', 'BBB', 'CCC'])
+        ForwardBO.start(lambda: ['AAA', 'BBB', 'CCC'])
         send_mail.assert_called_with(dumps(self.STATISTIC_JSON, indent=4, sort_keys=True, default=str))
         self.assertEqual(send_mail.call_count, 1)
         rows = ForwardDAO.read_all()
@@ -121,11 +121,11 @@ class ForwardBOTestCase(BaseTestCase):
         predict = self.spy_decorator(PredictorAdapter.predict, past=self.PAST, future=self.FUTURE)
         with patch.object(BrokerBO, 'buy', buy), patch.object(BrokerBO, 'sell', sell), \
                 patch.object(PredictorAdapter, 'predict', predict):
-            ForwardBO.start(['AAA'])
+            ForwardBO.start(lambda: ['AAA'])
         self.assertEqual(buy.mock.call_count, 2)
         self.assertEqual(sell.mock.call_count, 1)
         self.assertEqual(send_mail.call_count, 1)
-        ForwardBO.start(['AAA'])
+        ForwardBO.start(lambda: ['AAA'])
         rows = ForwardDAO.read_all()
         self.assertEqual(len(rows), 3)
         self.assert_attributes(rows[0], action=ActionEnum.BUY, cash=Decimal('8996.1'), timestamp=self.OLD_DATE,

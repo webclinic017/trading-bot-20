@@ -1,4 +1,4 @@
-from typing import Tuple, List, Union
+from typing import List, Callable, Union
 
 from trading_bot.bo.stock_bo import StockBO
 from trading_bot.dao.base_dao import BaseDAO
@@ -9,11 +9,11 @@ from trading_bot.utils.utils import Utils
 class StockDAO(BaseDAO):
 
     @classmethod
-    def create_if_not_exists(cls, portfolio: Tuple[str]) -> None:
+    def create_if_not_exists(cls, portfolio: List[str]) -> None:
         rows: List[StockEntity] = StockEntity.query.with_entities(StockEntity.symbol).filter(
             StockEntity.symbol.in_(portfolio)).all()
         if len(rows) < len(portfolio):
-            cls.update(portfolio)
+            cls.update(lambda: portfolio)
 
     @staticmethod
     def read_all() -> List[StockEntity]:
@@ -24,7 +24,8 @@ class StockDAO(BaseDAO):
         return StockEntity.query.with_entities(StockEntity.symbol).all()
 
     @classmethod
-    def update(cls, portfolio: Tuple[Union[str, None], ...]) -> None:
+    def update(cls, backward_forward_portfolio: Callable[[], List[Union[None, str]]]) -> None:
+        portfolio: List[str] = backward_forward_portfolio()
         for symbol in portfolio:
             stock: StockEntity = StockEntity()
             Utils.set_attributes(stock, symbol=symbol, isin=StockBO.isin(symbol))

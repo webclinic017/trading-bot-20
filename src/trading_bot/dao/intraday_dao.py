@@ -87,6 +87,11 @@ class IntradayDAO(BaseDAO):
         return db.session.query(func.max(IntradayEntity.date), IntradayEntity.symbol).group_by(
             IntradayEntity.symbol).all()
 
+    @staticmethod
+    def read_having_sufficient_data(sufficient_data: int) -> List[Tuple[str]]:
+        return db.session.query(IntradayEntity.symbol).group_by(IntradayEntity.symbol).having(func.count(
+            IntradayEntity.symbol) > sufficient_data).all()
+
     @classmethod
     def intraday_list_group(cls, group: Tuple[Tuple[str]]) -> List[List[IntradayEntity]]:
         return list(map(lambda g: cls.read(g), group))

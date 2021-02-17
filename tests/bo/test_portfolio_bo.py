@@ -66,7 +66,7 @@ class PortfolioBOTestCase(BaseTestCase):
         self.assertEqual(len(portfolio), 16)
         for p, symbol in zip(portfolio, symbol_list * 2):
             self.assertEqual(p, symbol)
-        update.assert_called_once_with(tuple(sorted(symbol_list)))
+        update.assert_called_once()
 
     @patch('trading_bot.bo.stock_bo.StockBO.isin')
     def test_update(self, isin):
@@ -82,7 +82,7 @@ class PortfolioBOTestCase(BaseTestCase):
     @staticmethod
     def __init_database(isin):
         isin.return_value = 'isin'
-        StockDAO.update(('symbol1', 'symbol2', 'symbol3', 'symbol4',))
+        StockDAO.update(lambda: ['symbol1', 'symbol2', 'symbol3', 'symbol4', ])
         PortfolioDAO.create('symbol1', ModeEnum.FORWARD)
         PortfolioDAO.create('symbol2', ModeEnum.FORWARD)
         PortfolioDAO.create('symbol3', ModeEnum.BACKWARD)

@@ -23,11 +23,11 @@ class ProcessManager:
         },
         'update-table-stock': {
             TARGET: StockDAO.update,
-            ARGS: (PortfolioBO.backward_forward_portfolio(),)
+            ARGS: (PortfolioBO.backward_forward_portfolio,)
         },
         'update-table-intraday': {
             TARGET: IntradayBO.update,
-            ARGS: (PortfolioBO.backward_forward_portfolio(),)
+            ARGS: (PortfolioBO.backward_forward_portfolio,)
         },
         'schedule': {
             TARGET: Scheduler.start,
@@ -35,11 +35,11 @@ class ProcessManager:
         },
         'optimize': {
             TARGET: OptimizationBO.start,
-            ARGS: (PortfolioBO.backward_portfolio(), 100, 4)
+            ARGS: (PortfolioBO.backward_portfolio, 100, 4)
         },
         'forward': {
             TARGET: ForwardBO.start,
-            ARGS: (PortfolioBO.forward_portfolio(),)
+            ARGS: (PortfolioBO.forward_portfolio,)
         },
         'fit': {
             TARGET: PredictorAdapter.fit,
