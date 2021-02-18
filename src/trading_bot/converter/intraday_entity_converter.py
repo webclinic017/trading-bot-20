@@ -31,7 +31,7 @@ class IntradayEntityConverter:
     def to_dataframe(intraday_list: List[IntradayEntity], column: str = 'close') -> DataFrame:
         frame: DataFrame = DataFrame()
         for intraday in intraday_list:
-            frame.at[intraday.date, intraday.symbol] = Decimal(getattr(intraday, column))
+            frame.at[intraday.date, intraday.symbol] = float(getattr(intraday, column))
         return frame.fillna(NAN)
 
     @staticmethod
@@ -46,7 +46,7 @@ class IntradayEntityConverter:
                             float(intraday.close),
                             float(intraday.volume),
                             intraday.symbol]
-        return frame.fillna(NAN)
+        return frame
 
     @classmethod
     def to_html(cls) -> Optional[str]:

@@ -72,8 +72,8 @@ class IntradayEntityConverterCase(BaseTestCase):
         frame = IntradayEntityConverter.to_dataframe(intraday_list)
         for i in range(frame.shape[0]):
             for j in range(frame.shape[1]):
-                self.assertIsInstance(frame.iloc[i][j], Decimal)
-                self.assertEqual(frame.iloc[i][j], Decimal(i))
+                self.assertIsInstance(frame.iloc[i][j], float)
+                self.assertEqual(frame.iloc[i][j], i)
         self.assertListEqual(list(frame.index), date_range(end='2020-02-02', periods=10).to_pydatetime().tolist())
 
     def test_to_float_dataframe(self):

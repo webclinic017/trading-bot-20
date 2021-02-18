@@ -13,12 +13,12 @@ from trading_bot.enums.strategy_enum import StrategyEnum
 class AnalyserBOTestCase(BaseTestCase):
 
     def test_analyser(self):
-        intraday_list = self.create_default_intraday_list()
+        intraday_dict = self.create_default_dict()
         broker = BrokerBO(cash=Decimal('10000'), fee=Decimal('3.9'))
         initial_cash = broker.cash
         cash = broker.cash
         attempt = AttemptDTO(Decimal('1000'), Decimal('30'), Decimal('2'), Decimal('1000'), Decimal('30'), Decimal('2'))
-        statistic = AnalyserBO.analyse(intraday_list, StrategyEnum.COUNTER_CYCLICAL, broker, StatisticBO(), attempt)
+        statistic = AnalyserBO.analyse(intraday_dict, StrategyEnum.COUNTER_CYCLICAL, broker, StatisticBO(), attempt)
         inventory = {'AAA': {'price': ZERO, 'number': ZERO},
                      'CCC': {'price': ZERO, 'number': ZERO}}
         for test_data in statistic.test_data:

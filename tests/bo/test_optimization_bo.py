@@ -42,7 +42,7 @@ class OptimizationBOTestCase(BaseTestCase):
         inverse.return_value = ZERO
         rows = EvaluationDAO.read_all()
         self.assertEqual(len(rows), 0)
-        OptimizationBO.optimise([self.create_default_intraday_list()], StrategyEnum.COUNTER_CYCLICAL)
+        OptimizationBO.optimise([self.create_default_dict()], StrategyEnum.COUNTER_CYCLICAL)
         evaluation = EvaluationDAO.read_filter_by_strategy_order_by_sum(StrategyEnum.COUNTER_CYCLICAL)
         self.assert_attributes(evaluation, sum=Decimal('185266.8'), funds='185266.8', amount_buy=Decimal('1000'),
                                amount_sell=Decimal('1000'), delta_buy=Decimal('1.5'), delta_sell=Decimal('1.5'),
@@ -62,7 +62,7 @@ class OptimizationBOTestCase(BaseTestCase):
         OptimizationBO.start(lambda: ['AAA', 'BBB', 'CCC'], 3, 1)
         evaluation = EvaluationDAO.read_filter_by_strategy_order_by_sum(StrategyEnum.COUNTER_CYCLICAL)
         self.assertIsInstance(evaluation, EvaluationEntity)
-        self.assert_attributes(evaluation, sum=Decimal('235112.5'), funds='235112.5', amount_buy=Decimal('2000'),
+        self.assert_attributes(evaluation, sum=Decimal('225520.3'), funds='225520.3', amount_buy=Decimal('2000'),
                                amount_sell=Decimal('2000'), delta_buy=Decimal('0.5'), delta_sell=Decimal('0.5'),
                                distance_buy=Decimal('20'), distance_sell=Decimal('20'),
                                strategy=StrategyEnum.COUNTER_CYCLICAL)

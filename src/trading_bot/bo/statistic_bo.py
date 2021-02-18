@@ -1,5 +1,3 @@
-from datetime import datetime
-from decimal import Decimal
 from typing import List, Dict
 
 from trading_bot.enums.action_enum import ActionEnum
@@ -12,11 +10,11 @@ class StatisticBO:
         self.__test_data: List[Dict[str, any]] = []
         self.__log_data: List[Dict[str, any]] = []
 
-    def plot(self, date: datetime, symbol: str, price: Decimal, buy: bool, sell: bool) -> None:
+    def plot(self, **kwargs) -> None:
         pass  # Do nothing
 
-    def test(self, action: ActionEnum, number: Decimal, symbol: str, price: Decimal) -> None:
-        self.__test_data.append({'action': action, 'number': number, 'symbol': symbol, 'price': price})
+    def test(self, **kwargs) -> None:
+        self.__test_data.append(kwargs)
 
     def log(self, **kwargs) -> None:
         self.__log_data.append(kwargs)

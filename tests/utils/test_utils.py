@@ -1,12 +1,11 @@
 import math
 import os
 from datetime import datetime, timedelta
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal
 from unittest.mock import patch, ANY
 
 import pytz
 from numpy import std, mean
-from pandas import date_range, DataFrame
 
 from tests.base_test_case import BaseTestCase
 from trading_bot import Utils
@@ -51,24 +50,6 @@ class UtilsTestCase(BaseTestCase):
         self.assertEqual(number, Decimal('3'))
         number = Utils.number(ZERO, ZERO)
         self.assertEqual(number, ZERO)
-
-    def test_day_delta_value(self):
-        dates = date_range('1/1/2000', periods=15, freq='8h')
-        symbols = ['AAA']
-        frame = DataFrame(index=dates, columns=symbols)
-        for i in range(frame.shape[0]):
-            for j in range(frame.shape[1]):
-                frame.iloc[i][j] = i + j
-        frame.sort_index(inplace=True, ascending=True)
-        date = frame.index.max()
-        value_aaa = Utils.day_delta_value(frame, date, Decimal('1'))
-        self.assertEqual(value_aaa, Decimal('11'))
-        value_aaa = Utils.day_delta_value(frame, date, Decimal('2'))
-        self.assertEqual(value_aaa, Decimal('8'))
-        value_aaa = Utils.day_delta_value(frame, date, Decimal('3'))
-        self.assertEqual(value_aaa, Decimal('5'))
-        value_aaa = Utils.day_delta_value(frame, date, Decimal('10'))
-        self.assertTrue(math.isnan(value_aaa))
 
     @patch('trading_bot.utils.utils.Utils.now')
     def test_is_today(self, now):
@@ -135,11 +116,11 @@ class UtilsTestCase(BaseTestCase):
         self.assertEqual(starttls.call_count, 1)
 
     def test_normalize(self):
-        intraday_list = self.create_intraday_list(decimal_list=[Decimal(i) for i in range(10)])
+        intraday_list = self.create_intraday_list(decimal_list=[i for i in range(10)])
         self.__assert_dataframe(intraday_list)
 
     def test_normalize_divide_zero(self):
-        intraday_list = self.create_intraday_list(decimal_list=[Decimal(0) for _ in range(10)])
+        intraday_list = self.create_intraday_list(decimal_list=[0 for _ in range(10)])
         self.__assert_dataframe(intraday_list)
 
     def __assert_dataframe(self, intraday_list):
@@ -152,9 +133,7 @@ class UtilsTestCase(BaseTestCase):
             for j in range(actual.shape[1]):
                 self.assertEqual(actual.columns[j], expected.columns[j])
                 self.assertEqual(actual.index.values[i], expected.index.values[i])
-                try:
-                    normalized = (expected.iloc[i][j] - average) / standard
-                except InvalidOperation:
-                    normalized = Decimal(0)
-                self.assertEqual(actual.iloc[i][j], normalized)
-                self.assertIsInstance(actual.iloc[i][j], Decimal)
+                normalized = (expected.iloc[i][j] - average) / standard
+                self.assertIsInstance(actual.iloc[i][j], float)
+                if not math.isnan(normalized):
+                    self.assertEqual(actual.iloc[i][j], normalized)

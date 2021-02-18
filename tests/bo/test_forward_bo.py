@@ -36,11 +36,11 @@ class ForwardBOTestCase(BaseTestCase):
         'strategy': 'StrategyEnum.COUNTER_CYCLICAL'}, {
         'action': 'ActionEnum.SELL',
         'date': '2000-05-29 04:00:00+00:00',
-        'price': '500.0000000000',
+        'price': '500',
         'symbol': 'AAA'}, {
         'action': 'ActionEnum.BUY',
         'date': '2000-05-29 04:00:00+00:00',
-        'price': '100.0000000000',
+        'price': '100',
         'symbol': 'CCC'}]
 
     @classmethod

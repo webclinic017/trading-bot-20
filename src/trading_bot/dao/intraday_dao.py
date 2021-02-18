@@ -11,7 +11,7 @@ from pandas import Series
 from sqlalchemy import func
 
 from trading_bot import db
-from trading_bot.common.constants import US_EASTERN, REQUEST_SLEEP
+from trading_bot.common.constants import US_EASTERN, REQUEST_SLEEP, MAX_DISTANCE
 from trading_bot.dao.base_dao import BaseDAO
 from trading_bot.entity.intraday_entity import IntradayEntity
 from trading_bot.utils.utils import Utils
@@ -92,9 +92,15 @@ class IntradayDAO(BaseDAO):
         return db.session.query(IntradayEntity.symbol).group_by(IntradayEntity.symbol).having(func.count(
             IntradayEntity.symbol) > sufficient_data).all()
 
-    @classmethod
-    def intraday_list_group(cls, group: Tuple[Tuple[str]]) -> List[List[IntradayEntity]]:
-        return list(map(lambda g: cls.read(g), group))
+    @staticmethod
+    def read_filter_by_symbol_order_by_date_limit(symbol: str) -> List[IntradayEntity]:
+        return IntradayEntity.query.filter_by(symbol=symbol).order_by(
+            IntradayEntity.date.asc()).limit(MAX_DISTANCE).all()
+
+    @staticmethod
+    def read_filter_by_symbol_order_by_date(symbol: str) -> List[IntradayEntity]:
+        return IntradayEntity.query.filter_by(symbol=symbol).order_by(
+            IntradayEntity.date.asc()).all()
 
     @staticmethod
     def init(row: Series, symbol: str, timezone: str,
