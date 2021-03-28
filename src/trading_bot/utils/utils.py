@@ -1,19 +1,18 @@
 import os
 import random
 import sys
-from datetime import timedelta, datetime
+from datetime import datetime
 from decimal import Decimal, ROUND_DOWN, ExtendedContext
 from email.mime.text import MIMEText
 from smtplib import SMTP
 from typing import Iterable, List, Iterator, Tuple, Optional, TypeVar, Sequence
 
-import pandas as pd
 import pytz
-from numpy import ndarray, divide, full
+from numpy import ndarray, divide
 from pandas import DataFrame
 from workalendar.usa import NewYork
 
-from trading_bot.common.constants import US_EASTERN, ZERO, NAN
+from trading_bot.common.constants import US_EASTERN, ZERO
 
 T = TypeVar('T')
 
@@ -40,16 +39,6 @@ class Utils:
     @staticmethod
     def number(numerator: Decimal, denominator: Decimal) -> Decimal:
         return ZERO if denominator == ZERO else ExtendedContext.divide_int(numerator, denominator)
-
-    @staticmethod
-    def day_delta_value(frame: DataFrame, date: datetime, delta: Decimal) -> Decimal:
-        column: str = frame.columns[0]
-        interval_end = date - timedelta(days=float(delta))
-        interval_start = date - timedelta(days=float(delta) + 7)
-        interval_date = frame.loc[interval_start:interval_end, column].index.max()
-        if pd.isnull(interval_date):
-            return NAN
-        return frame.at[interval_date, column]
 
     @classmethod
     def is_today(cls, today: Optional[datetime]) -> bool:
@@ -99,7 +88,7 @@ class Utils:
         data: ndarray = frame.values
         data_mean: ndarray = data.mean(axis=0)
         data_std: ndarray = data.std(axis=0)
-        features: ndarray = divide(data - data_mean, data_std, out=full(data.shape, [ZERO]), where=data_std != ZERO)
+        features: ndarray = divide(data - data_mean, data_std)
         return DataFrame(features, index=frame.index, columns=frame.columns)
 
 

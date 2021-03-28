@@ -1,6 +1,7 @@
 from random import choice
 from typing import List, Optional, Final, Any
 
+from pandas import DataFrame
 from predictor.dto.prediction_dto import PredictionDTO
 from predictor.main import Main
 from predictor.utils.predictor_utils import PredictorUtils
@@ -25,8 +26,7 @@ class PredictorAdapter:
                      **kwargs)
 
     @classmethod
-    def predict(cls, intraday_list: List[IntradayEntity], **kwargs: Any) -> Optional[PredictionDTO]:
+    def predict(cls, frame: DataFrame, **kwargs: Any) -> Optional[PredictionDTO]:
         past: int = kwargs['past'] if 'past' in kwargs else PredictorUtils.PAST
-        if len(intraday_list) >= past:
-            return Main.predict(IntradayEntityConverter.to_float_dataframe(intraday_list), step=cls.STEP,
-                                show_visualization=False, **kwargs)
+        if len(frame) >= past:
+            return Main.predict(frame, step=cls.STEP, show_visualization=False, **kwargs)

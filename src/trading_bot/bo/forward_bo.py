@@ -4,9 +4,12 @@ from json import dumps
 from random import choice
 from typing import Dict, List, Tuple, Any, Callable
 
+from pandas import DataFrame
+
 from trading_bot.bo.analyser_bo import AnalyserBO
 from trading_bot.bo.broker_bo import BrokerBO
 from trading_bot.bo.forward_broker_bo import ForwardBrokerBO
+from trading_bot.bo.intraday_bo import IntradayBO
 from trading_bot.bo.inventory_bo import InventoryBO
 from trading_bot.bo.portfolio_bo import PortfolioBO
 from trading_bot.bo.statistic_bo import StatisticBO
@@ -39,7 +42,7 @@ class ForwardBO:
             return
         read_latest_date: List[List[Any]] = IntradayDAO.read_latest_date()
         latest_date_dict: Dict[str, str] = {r[1]: r[0] for r in read_latest_date}
-        intraday_list: List[IntradayEntity] = IntradayDAO.read(portfolio)
+        intraday_list: Dict[str, DataFrame] = IntradayBO.intraday_list(portfolio)
         inventory, cash, fee = cls.init(strategy)
         broker: BrokerBO = ForwardBrokerBO(cash, fee, inventory, strategy)
         statistic: StatisticBO = StatisticBO('forward')

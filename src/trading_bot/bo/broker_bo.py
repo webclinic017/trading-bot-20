@@ -28,7 +28,7 @@ class BrokerBO:
             self.__inventory[symbol] = entry
 
     def buy(self, symbol: str, price: Decimal, number: Decimal) -> bool:
-        total_price: Decimal = price * number
+        total_price: Decimal = price * number  # TODO fee fehlt
         if self._cash >= total_price and number > 0:
             entry: InventoryBO = self.__inventory.get(symbol, InventoryBO(ZERO, price))
             entry.number += number
@@ -39,7 +39,7 @@ class BrokerBO:
         return False
 
     def sell(self, symbol: str, price: Decimal, number: Decimal) -> bool:
-        total_price: Decimal = price * number
+        total_price: Decimal = price * number  # TODO fee fehlt
         entry: InventoryBO = self.__inventory.get(symbol, InventoryBO(ZERO, price))
         if entry.number >= number > 0:
             entry.number -= number

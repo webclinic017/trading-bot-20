@@ -8,3 +8,4 @@ INFINITY: Final[Decimal] = Decimal('Inf')
 NAN: Final[Decimal] = Decimal('NaN')
 ZERO: Final[Decimal] = Decimal(0)
 EMPTY: Final[str] = ''
+MAX_DISTANCE: Final[int] = 10000
