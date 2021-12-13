@@ -15,5 +15,5 @@ requests==2.24.0
 pandas==1.1.2
 alpha-vantage==2.2.0
 fake-useragent==0.1.11
-lxml==4.5.2
+lxml==4.6.5
 SQLAlchemy-Utc==0.10.0
